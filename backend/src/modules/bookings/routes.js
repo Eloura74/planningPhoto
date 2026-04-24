@@ -146,17 +146,22 @@ router.patch("/:id/confirm", authenticate, requireAdmin, async (req, res) => {
 
 router.delete("/:id", authenticate, async (req, res) => {
   try {
+    console.log("DELETE booking appelé avec ID:", req.params.id);
     const { reason } = req.body;
-    const user = await pool.query("SELECT * FROM users WHERE id = $1", [
+    const user = await pool.query("SELECT * FROM users WHERE id = ?", [
       req.userId,
     ]);
     const cancelledBy = {
       id: req.userId,
       role: user.rows[0]?.role || "STUDENT",
     };
+    console.log("CancelledBy:", cancelledBy);
     const booking = await cancelBooking(req.params.id, cancelledBy, reason);
+    console.log("Réservation supprimée:", booking);
     res.json(booking);
   } catch (error) {
+    console.error("Erreur DELETE booking:", error.message);
+    console.error("Stack trace:", error.stack);
     res.status(400).json({ error: error.message });
   }
 });
