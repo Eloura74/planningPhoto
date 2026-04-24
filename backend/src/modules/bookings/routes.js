@@ -93,7 +93,7 @@ router.get("/pending", authenticate, requireAdmin, async (req, res) => {
       FROM bookings b
       JOIN users u ON b.user_id = u.id
       JOIN slots s ON b.slot_id = s.id
-      WHERE s.type = 'SOLO' ${statusFilter}
+      WHERE s.type = 'SOLO' ${statusFilter} AND b.status NOT IN ('CANCELLED', 'CANCELLED_BY_ADMIN', 'CANCELLED_BY_STUDENT')
       ORDER BY s.date DESC, b.created_at DESC
     `);
     res.json(result.rows);

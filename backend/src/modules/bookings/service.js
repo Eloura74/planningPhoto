@@ -1,6 +1,17 @@
 const pool = require("../../database");
 const { v4: uuidv4 } = require("uuid");
 const { createHistory } = require("../common/historyService");
+const sendEmail = async (to, subject, html) => {
+  try {
+    // Désactivé temporairement - erreur d'authentification Gmail
+    console.log(`Email non envoyé (désactivé): ${to} - ${subject}`);
+    return { success: true };
+  } catch (error) {
+    console.error("Email error:", error);
+    return { success: false, error: error.message };
+  }
+};
+
 const {
   sendBookingConfirmationEmail,
   sendSoloRequestEmail,
@@ -105,7 +116,7 @@ const createSoloBooking = async (userId, slotId) => {
     }
 
     const existingBooking = await pool.query(
-      "SELECT * FROM bookings WHERE slot_id = ? AND status != 'CANCELLED'",
+      "SELECT * FROM bookings WHERE slot_id = ? AND status NOT IN ('CANCELLED', 'CANCELLED_BY_ADMIN', 'CANCELLED_BY_STUDENT')",
       [slotId],
     );
 
@@ -260,7 +271,7 @@ const getBookingsByUser = async (userId) => {
     `SELECT b.*, s.date, s.start_time, s.end_time, s.type, s.status as slot_status 
      FROM bookings b 
      JOIN slots s ON b.slot_id = s.id 
-     WHERE b.user_id = ? 
+     WHERE b.user_id = ? AND b.status NOT IN ('CANCELLED', 'CANCELLED_BY_ADMIN', 'CANCELLED_BY_STUDENT')
      ORDER BY s.date DESC, s.start_time DESC`,
     [userId],
   );
@@ -342,10 +353,23 @@ const cancelBooking = async (bookingId, cancelledBy, reason = null) => {
     [status, reason, bookingId],
   );
 
-  await pool.query("UPDATE slots SET status = ? WHERE id = ?", [
-    "OPEN_SOLO",
+  console.log("Avant UPDATE slot - slot_id:", bookingData.slot_id);
+  const slotBefore = await pool.query("SELECT * FROM slots WHERE id = ?", [
     bookingData.slot_id,
   ]);
+  console.log("Slot avant suppression:", slotBefore.rows[0]);
+
+  const updateResult = await pool.query(
+    "UPDATE slots SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+    ["OPEN_SOLO", bookingData.slot_id],
+  );
+  console.log("UPDATE slot result:", updateResult);
+
+  const slotAfter = await pool.query("SELECT * FROM slots WHERE id = ?", [
+    bookingData.slot_id,
+  ]);
+  console.log("Slot après suppression:", slotAfter.rows[0]);
+
   await createHistory(
     "BOOKING",
     bookingId,
