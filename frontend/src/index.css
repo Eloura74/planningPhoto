@@ -2,6 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Dark Theme Colors */
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #121218;
+  --bg-tertiary: #1a1a24;
+  --bg-card: #16161f;
+  --bg-elevated: #1e1e2a;
+
+  /* Gold/Chrome Accents */
+  --gold-primary: #ffd700;
+  --gold-secondary: #ffb347;
+  --gold-accent: #ffcc00;
+  --gold-muted: #c9a227;
+  --gold-light: #ffe066;
+
+  /* Chrome/Metallic */
+  --chrome-light: #e8e8e8;
+  --chrome-medium: #a8a8a8;
+  --chrome-dark: #4a4a4a;
+  --chrome-gradient: linear-gradient(
+    135deg,
+    #ffd700 0%,
+    #ffb347 50%,
+    #ffd700 100%
+  );
+
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --text-muted: #a0a0a0;
+  --text-dark: #2a2a2a;
+
+  /* Borders */
+  --border-primary: #2a2a35;
+  --border-secondary: #3a3a45;
+  --border-gold: #ffd700;
+  --border-chrome: #a8a8a8;
+
+  /* Shadows */
+  --shadow-gold: 0 4px 20px rgba(255, 215, 0, 0.15);
+  --shadow-chrome: 0 4px 20px rgba(168, 168, 168, 0.1);
+  --shadow-elevated: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
 body {
   margin: 0;
   font-family:
@@ -9,6 +53,69 @@ body {
     "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Chrome/Gold Button Styles */
+.btn-gold {
+  background: var(--chrome-gradient);
+  color: var(--text-dark);
+  border: 1px solid var(--gold-primary);
+  font-weight: 600;
+  box-shadow: var(--shadow-gold);
+}
+
+.btn-gold:hover {
+  box-shadow: 0 6px 25px rgba(255, 215, 0, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-chrome {
+  background: linear-gradient(135deg, #3a3a45 0%, #4a4a55 50%, #3a3a45 100%);
+  color: var(--text-primary);
+  border: 1px solid var(--border-chrome);
+  font-weight: 600;
+  box-shadow: var(--shadow-chrome);
+}
+
+.btn-chrome:hover {
+  background: linear-gradient(135deg, #4a4a55 0%, #5a5a65 50%, #4a4a55 100%);
+  box-shadow: 0 6px 25px rgba(168, 168, 168, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Card Styles */
+.card-dark {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-primary);
+  box-shadow: var(--shadow-elevated);
+}
+
+.card-gold {
+  background: linear-gradient(
+    135deg,
+    var(--bg-card) 0%,
+    var(--bg-tertiary) 100%
+  );
+  border: 1px solid var(--border-gold);
+  box-shadow: var(--shadow-gold);
+}
+
+/* Input Styles */
+.input-dark {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+}
+
+.input-dark:focus {
+  border-color: var(--gold-primary);
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+}
+
+.input-dark::placeholder {
+  color: var(--text-muted);
 }
 
 /* Smooth transitions for all interactive elements */
@@ -95,4 +202,37 @@ textarea {
 
 .spinner {
   animation: spin 1s linear infinite;
+}
+
+/* Gold glow effect */
+.glow-gold {
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+/* Chrome shine effect */
+.chrome-shine {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gold-muted);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gold-primary);
 }

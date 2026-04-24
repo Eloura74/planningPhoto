@@ -1,48 +1,74 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../contexts/AuthContext'
-import { usersAPI } from '../services/api'
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { usersAPI } from "../services/api";
 
 function Profile() {
-  const [userData, setUserData] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
+  const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    loadUserData()
-  }, [])
+    loadUserData();
+  }, []);
 
   const loadUserData = async () => {
     try {
-      const response = await usersAPI.getMe()
-      setUserData(response.data)
+      const response = await usersAPI.getMe();
+      setUserData(response.data);
     } catch (error) {
-      console.error('Error loading user data:', error)
+      console.error("Error loading user data:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   if (loading) {
-    return <div className="flex items-center justify-center min-h-screen">Chargement...</div>
+    return (
+      <div
+        className="flex items-center justify-center min-h-screen fade-in"
+        style={{
+          backgroundColor: "var(--bg-primary)",
+          color: "var(--text-primary)",
+        }}
+      >
+        Chargement...
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow-sm">
+    <div
+      className="min-h-screen fade-in"
+      style={{ backgroundColor: "var(--bg-primary)" }}
+    >
+      <nav
+        className="shadow-sm"
+        style={{ backgroundColor: "var(--bg-secondary)" }}
+      >
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold">Mon Profil</h1>
+          <h1
+            className="text-xl font-bold"
+            style={{ color: "var(--gold-primary)" }}
+          >
+            Mon Profil
+          </h1>
           <div className="flex items-center gap-4">
             <button
-              onClick={() => navigate('/calendar')}
-              className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
+              onClick={() => navigate("/calendar")}
+              className="px-4 py-2 rounded-lg btn-chrome"
             >
               Calendrier
             </button>
             <button
               onClick={logout}
-              className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+              className="px-4 py-2 rounded-lg"
+              style={{
+                backgroundColor: "rgba(239, 68, 68, 0.2)",
+                color: "#ef4444",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+              }}
             >
               Déconnexion
             </button>
@@ -51,45 +77,84 @@ function Profile() {
       </nav>
 
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold mb-6">Informations personnelles</h2>
+        <div className="rounded-lg shadow-md p-6 card-gold">
+          <h2
+            className="text-2xl font-bold mb-6"
+            style={{ color: "var(--gold-primary)" }}
+          >
+            Informations personnelles
+          </h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">Nom</label>
-              <p className="text-gray-900">{userData?.name}</p>
+              <label
+                className="block font-semibold mb-2"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Nom
+              </label>
+              <p style={{ color: "var(--text-primary)" }}>{userData?.name}</p>
             </div>
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">Email</label>
-              <p className="text-gray-900">{userData?.email}</p>
+              <label
+                className="block font-semibold mb-2"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Email
+              </label>
+              <p style={{ color: "var(--text-primary)" }}>{userData?.email}</p>
             </div>
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">Téléphone</label>
-              <p className="text-gray-900">{userData?.phone || 'Non renseigné'}</p>
-            </div>
-            <div>
-              <label className="block text-gray-700 font-semibold mb-2">Rôle</label>
-              <p className="text-gray-900">
-                {userData?.role === 'ADMIN' ? 'Administrateur' : 'Élève'}
+              <label
+                className="block font-semibold mb-2"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Téléphone
+              </label>
+              <p style={{ color: "var(--text-primary)" }}>
+                {userData?.phone || "Non renseigné"}
               </p>
             </div>
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">Membre du groupe</label>
-              <p className="text-gray-900">
-                {userData?.is_group_member ? 'Oui' : 'Non'}
+              <label
+                className="block font-semibold mb-2"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Rôle
+              </label>
+              <p style={{ color: "var(--text-primary)" }}>
+                {userData?.role === "ADMIN" ? "Administrateur" : "Élève"}
               </p>
             </div>
             <div>
-              <label className="block text-gray-700 font-semibold mb-2">Membre depuis</label>
-              <p className="text-gray-900">
-                {userData?.created_at ? new Date(userData.created_at).toLocaleDateString('fr-FR') : '-'}
+              <label
+                className="block font-semibold mb-2"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Membre du groupe
+              </label>
+              <p style={{ color: "var(--text-primary)" }}>
+                {userData?.is_group_member ? "Oui" : "Non"}
+              </p>
+            </div>
+            <div>
+              <label
+                className="block font-semibold mb-2"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Membre depuis
+              </label>
+              <p style={{ color: "var(--text-primary)" }}>
+                {userData?.created_at
+                  ? new Date(userData.created_at).toLocaleDateString("fr-FR")
+                  : "-"}
               </p>
             </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default Profile
+export default Profile;

@@ -14,12 +14,15 @@ function BookingModal({
 
   const getStatusBadge = (status) => {
     const styles = {
-      OPEN_SOLO: "bg-green-100 text-green-800",
-      BLOCKED_FOR_GROUP: "bg-red-100 text-red-800",
-      GROUP_PREBOOKING: "bg-orange-100 text-orange-800",
-      GROUP_CONFIRMED: "bg-blue-100 text-blue-800",
-      BOOKED: "bg-purple-100 text-purple-800",
-      PENDING: "bg-yellow-100 text-yellow-800",
+      OPEN_SOLO: { bg: "rgba(0, 255, 0, 0.1)", color: "#00ff00" },
+      BLOCKED_FOR_GROUP: { bg: "rgba(255, 0, 0, 0.1)", color: "#ff0000" },
+      GROUP_PREBOOKING: {
+        bg: "rgba(255, 183, 71, 0.1)",
+        color: "var(--gold-secondary)",
+      },
+      GROUP_CONFIRMED: { bg: "rgba(0, 0, 255, 0.1)", color: "#0000ff" },
+      BOOKED: { bg: "rgba(168, 168, 168, 0.1)", color: "var(--chrome-light)" },
+      PENDING: { bg: "rgba(255, 215, 0, 0.1)", color: "var(--gold-primary)" },
     };
     const labels = {
       OPEN_SOLO: "Disponible",
@@ -29,9 +32,14 @@ function BookingModal({
       BOOKED: "Réservé",
       PENDING: "En attente",
     };
+    const style = styles[status] || {
+      bg: "rgba(128, 128, 128, 0.1)",
+      color: "var(--text-muted)",
+    };
     return (
       <span
-        className={`px-3 py-1 rounded-full text-sm font-medium ${styles[status] || "bg-gray-100 text-gray-800"}`}
+        className="px-3 py-1 rounded-full text-sm font-medium"
+        style={{ backgroundColor: style.bg, color: style.color }}
       >
         {labels[status] || status}
       </span>
@@ -39,16 +47,26 @@ function BookingModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto overflow-hidden">
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-4 sm:px-6 py-4">
+    <div
+      className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+    >
+      <div className="rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto overflow-hidden card-gold">
+        <div
+          className="px-4 sm:px-6 py-4"
+          style={{ background: "var(--chrome-gradient)" }}
+        >
           <div className="flex justify-between items-center">
-            <h3 className="text-lg sm:text-xl font-bold text-white">
+            <h3
+              className="text-lg sm:text-xl font-bold"
+              style={{ color: "var(--text-dark)" }}
+            >
               Détails du créneau
             </h3>
             <button
               onClick={onClose}
-              className="text-white/80 hover:text-white transition text-xl sm:text-2xl"
+              className="transition text-xl sm:text-2xl"
+              style={{ color: "var(--text-dark)" }}
             >
               ✕
             </button>
@@ -57,8 +75,11 @@ function BookingModal({
 
         <div className="p-4 sm:p-6">
           <div className="space-y-4 mb-6">
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <div className="text-indigo-600">
+            <div
+              className="flex items-center gap-3 p-3 rounded-lg"
+              style={{ backgroundColor: "var(--bg-tertiary)" }}
+            >
+              <div style={{ color: "var(--gold-primary)" }}>
                 <svg
                   className="w-6 h-6"
                   fill="none"
@@ -74,8 +95,13 @@ function BookingModal({
                 </svg>
               </div>
               <div>
-                <div className="text-sm text-gray-600">Date</div>
-                <div className="font-semibold text-gray-900">
+                <div className="text-sm" style={{ color: "var(--text-muted)" }}>
+                  Date
+                </div>
+                <div
+                  className="font-semibold"
+                  style={{ color: "var(--text-primary)" }}
+                >
                   {new Date(slot.date).toLocaleDateString("fr-FR", {
                     weekday: "long",
                     year: "numeric",
@@ -86,8 +112,11 @@ function BookingModal({
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <div className="text-indigo-600">
+            <div
+              className="flex items-center gap-3 p-3 rounded-lg"
+              style={{ backgroundColor: "var(--bg-tertiary)" }}
+            >
+              <div style={{ color: "var(--gold-primary)" }}>
                 <svg
                   className="w-6 h-6"
                   fill="none"
@@ -103,15 +132,23 @@ function BookingModal({
                 </svg>
               </div>
               <div>
-                <div className="text-sm text-gray-600">Horaires</div>
-                <div className="font-semibold text-gray-900">
+                <div className="text-sm" style={{ color: "var(--text-muted)" }}>
+                  Horaires
+                </div>
+                <div
+                  className="font-semibold"
+                  style={{ color: "var(--text-primary)" }}
+                >
                   {slot.start_time} - {slot.end_time}
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <div className="text-indigo-600">
+            <div
+              className="flex items-center gap-3 p-3 rounded-lg"
+              style={{ backgroundColor: "var(--bg-tertiary)" }}
+            >
+              <div style={{ color: "var(--gold-primary)" }}>
                 <svg
                   className="w-6 h-6"
                   fill="none"
@@ -127,8 +164,13 @@ function BookingModal({
                 </svg>
               </div>
               <div>
-                <div className="text-sm text-gray-600">Type</div>
-                <div className="font-semibold text-gray-900">
+                <div className="text-sm" style={{ color: "var(--text-muted)" }}>
+                  Type
+                </div>
+                <div
+                  className="font-semibold"
+                  style={{ color: "var(--text-primary)" }}
+                >
                   {slot.type === "SOLO"
                     ? "Session individuelle"
                     : "Session de groupe"}
@@ -136,8 +178,11 @@ function BookingModal({
               </div>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <div className="text-indigo-600">
+            <div
+              className="flex items-center gap-3 p-3 rounded-lg"
+              style={{ backgroundColor: "var(--bg-tertiary)" }}
+            >
+              <div style={{ color: "var(--gold-primary)" }}>
                 <svg
                   className="w-6 h-6"
                   fill="none"
@@ -153,7 +198,9 @@ function BookingModal({
                 </svg>
               </div>
               <div>
-                <div className="text-sm text-gray-600">Statut</div>
+                <div className="text-sm" style={{ color: "var(--text-muted)" }}>
+                  Statut
+                </div>
                 {getStatusBadge(status)}
               </div>
             </div>
@@ -163,7 +210,7 @@ function BookingModal({
             {canBookSolo && (
               <button
                 onClick={() => onBookSolo(slot.id)}
-                className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="w-full py-3 rounded-xl font-semibold btn-gold"
               >
                 Réserver ce créneau
               </button>
@@ -172,23 +219,35 @@ function BookingModal({
             {canBookGroup && (
               <button
                 onClick={() => onBookGroup(slot.id)}
-                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="w-full py-3 rounded-xl font-semibold btn-chrome"
               >
                 Pré-réserver (Groupe)
               </button>
             )}
 
             {status === "BOOKED" && (
-              <div className="text-center py-3 bg-purple-50 rounded-xl">
-                <div className="text-purple-700 font-medium">
+              <div
+                className="text-center py-3 rounded-xl"
+                style={{ backgroundColor: "rgba(168, 168, 168, 0.1)" }}
+              >
+                <div
+                  className="font-medium"
+                  style={{ color: "var(--chrome-light)" }}
+                >
                   ✓ Vous avez déjà réservé ce créneau
                 </div>
               </div>
             )}
 
             {status === "PENDING" && (
-              <div className="text-center py-3 bg-yellow-50 rounded-xl">
-                <div className="text-yellow-700 font-medium">
+              <div
+                className="text-center py-3 rounded-xl"
+                style={{ backgroundColor: "rgba(255, 215, 0, 0.1)" }}
+              >
+                <div
+                  className="font-medium"
+                  style={{ color: "var(--gold-primary)" }}
+                >
                   ⏳ Votre réservation est en attente de validation
                 </div>
               </div>
@@ -198,8 +257,11 @@ function BookingModal({
               !canBookGroup &&
               status !== "BOOKED" &&
               status !== "PENDING" && (
-                <div className="text-center py-3 bg-gray-50 rounded-xl">
-                  <div className="text-gray-600">
+                <div
+                  className="text-center py-3 rounded-xl"
+                  style={{ backgroundColor: "var(--bg-tertiary)" }}
+                >
+                  <div style={{ color: "var(--text-muted)" }}>
                     Ce créneau n'est pas disponible pour la réservation
                   </div>
                 </div>
@@ -208,7 +270,7 @@ function BookingModal({
 
           <button
             onClick={onClose}
-            className="w-full mt-4 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition"
+            className="w-full mt-4 py-3 rounded-xl font-semibold btn-chrome"
           >
             Fermer
           </button>

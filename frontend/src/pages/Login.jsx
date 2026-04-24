@@ -24,33 +24,42 @@ function Login() {
 
   return (
     <div
-      className={`min-h-screen flex items-center justify-center ${isDark ? "bg-gray-900" : "bg-gray-50"}`}
+      className="min-h-screen flex items-center justify-center"
+      style={{ backgroundColor: "var(--bg-primary)" }}
     >
-      <div
-        className={`max-w-md w-full rounded-lg shadow-md p-8 ${isDark ? "bg-gray-800" : "bg-white"}`}
-      >
+      <div className="max-w-md w-full rounded-lg p-8 card-gold fade-in">
         <div className="flex justify-between items-center mb-6">
           <h2
-            className={`text-2xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}
+            className="text-2xl font-bold"
+            style={{ color: "var(--gold-primary)" }}
           >
             Connexion
           </h2>
           <button
             onClick={toggleTheme}
-            className={`px-3 py-1 rounded-lg ${isDark ? "bg-gray-700 text-white hover:bg-gray-600" : "bg-gray-200 text-gray-900 hover:bg-gray-300"}`}
+            className="px-3 py-1 rounded-lg btn-chrome"
+            style={{ color: "var(--gold-primary)" }}
           >
             {isDark ? "☀️" : "🌙"}
           </button>
         </div>
         {error && (
-          <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
+          <div
+            className="p-3 rounded mb-4"
+            style={{
+              backgroundColor: "rgba(255, 0, 0, 0.1)",
+              color: "#ff6b6b",
+              border: "1px solid rgba(255, 0, 0, 0.3)",
+            }}
+          >
             {error}
           </div>
         )}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label
-              className={`block ${isDark ? "text-gray-300" : "text-gray-700"} mb-2`}
+              className="block mb-2"
+              style={{ color: "var(--text-secondary)" }}
             >
               Email
             </label>
@@ -58,13 +67,14 @@ function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300"}`}
+              className="w-full px-3 py-2 rounded-lg input-dark"
               required
             />
           </div>
           <div className="mb-6">
             <label
-              className={`block ${isDark ? "text-gray-300" : "text-gray-700"} mb-2`}
+              className="block mb-2"
+              style={{ color: "var(--text-secondary)" }}
             >
               Mot de passe
             </label>
@@ -72,22 +82,23 @@ function Login() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${isDark ? "bg-gray-700 border-gray-600 text-white" : "bg-white border-gray-300"}`}
+              className="w-full px-3 py-2 rounded-lg input-dark"
               required
             />
           </div>
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-          >
+          <button type="submit" className="w-full py-2 rounded-lg btn-gold">
             Se connecter
           </button>
         </form>
-        <p
-          className={`text-center mt-4 ${isDark ? "text-gray-400" : "text-gray-600"}`}
-        >
+        <p className="text-center mt-4" style={{ color: "var(--text-muted)" }}>
           Pas de compte ?{" "}
-          <a href="/register" className="text-blue-600 hover:underline">
+          <a
+            href="/register"
+            style={{
+              color: "var(--gold-primary)",
+              textDecoration: "underline",
+            }}
+          >
             S'inscrire
           </a>
         </p>

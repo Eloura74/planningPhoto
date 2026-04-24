@@ -134,13 +134,26 @@ function UsersManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 fade-in">
-      <nav className="bg-white shadow-lg border-b border-gray-100">
+    <div
+      className="min-h-screen fade-in"
+      style={{ backgroundColor: "var(--bg-primary)" }}
+    >
+      <nav
+        className="shadow-lg border-b"
+        style={{
+          backgroundColor: "var(--bg-secondary)",
+          borderColor: "var(--border-primary)",
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg">
+            <div
+              className="p-2 rounded-lg glow-gold"
+              style={{ background: "var(--chrome-gradient)" }}
+            >
               <svg
-                className="w-6 h-6 text-white"
+                className="w-6 h-6"
+                style={{ color: "var(--text-dark)" }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -153,40 +166,66 @@ function UsersManagement() {
                 />
               </svg>
             </div>
-            <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            <h1
+              className="text-lg sm:text-xl font-bold"
+              style={{
+                background: "var(--chrome-gradient)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
               Gestion des Utilisateurs
             </h1>
           </div>
           <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
             {user && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full">
-                <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+              <div
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full"
+                style={{ backgroundColor: "var(--bg-tertiary)" }}
+              >
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm"
+                  style={{
+                    background: "var(--chrome-gradient)",
+                    color: "var(--text-dark)",
+                  }}
+                >
                   {user.name?.charAt(0).toUpperCase()}
                 </div>
                 <div className="hidden sm:block">
-                  <p className="text-sm font-medium text-gray-800">
+                  <p
+                    className="text-sm font-medium"
+                    style={{ color: "var(--text-primary)" }}
+                  >
                     {user.name}
                   </p>
-                  <p className="text-xs text-gray-500">Administrateur</p>
+                  <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                    Administrateur
+                  </p>
                 </div>
               </div>
             )}
             <div className="flex items-center gap-2">
               <button
                 onClick={() => navigate("/admin")}
-                className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 transition text-sm"
+                className="px-3 py-2 rounded-lg transition text-sm btn-chrome"
               >
                 Dashboard
               </button>
               <button
                 onClick={() => navigate("/calendar")}
-                className="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 transition text-sm"
+                className="px-3 py-2 rounded-lg transition text-sm btn-chrome"
               >
                 Calendrier
               </button>
               <button
                 onClick={logout}
-                className="bg-gradient-to-r from-red-500 to-rose-500 text-white px-3 py-2 rounded-lg hover:from-red-600 hover:to-rose-600 transition shadow-md text-sm"
+                className="px-3 py-2 rounded-lg transition text-sm"
+                style={{
+                  backgroundColor: "rgba(239, 68, 68, 0.2)",
+                  color: "#ef4444",
+                  border: "1px solid rgba(239, 68, 68, 0.3)",
+                }}
               >
                 Déconnexion
               </button>
@@ -196,48 +235,74 @@ function UsersManagement() {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="rounded-lg shadow-md p-6 card-dark">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Liste des utilisateurs</h2>
+            <h2
+              className="text-2xl font-bold"
+              style={{ color: "var(--gold-primary)" }}
+            >
+              Liste des utilisateurs
+            </h2>
             <button
               onClick={() => setShowForm(true)}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+              className="px-4 py-2 rounded-lg btn-gold"
             >
               + Créer un utilisateur
             </button>
           </div>
 
           {showForm && (
-            <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-lg font-semibold mb-4">Nouvel utilisateur</h3>
+            <div
+              className="mb-6 p-4 rounded-lg"
+              style={{ backgroundColor: "var(--bg-tertiary)" }}
+            >
+              <h3
+                className="text-lg font-semibold mb-4"
+                style={{ color: "var(--gold-primary)" }}
+              >
+                Nouvel utilisateur
+              </h3>
               <form onSubmit={handleCreateUser} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-gray-700 mb-2">Nom</label>
+                    <label
+                      className="block mb-2"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      Nom
+                    </label>
                     <input
                       type="text"
                       value={newUser.name}
                       onChange={(e) =>
                         setNewUser({ ...newUser, name: e.target.value })
                       }
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="w-full px-3 py-2 rounded-lg input-dark"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-700 mb-2">Email</label>
+                    <label
+                      className="block mb-2"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      Email
+                    </label>
                     <input
                       type="email"
                       value={newUser.email}
                       onChange={(e) =>
                         setNewUser({ ...newUser, email: e.target.value })
                       }
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="w-full px-3 py-2 rounded-lg input-dark"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-700 mb-2">
+                    <label
+                      className="block mb-2"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
                       Téléphone
                     </label>
                     <input
@@ -246,11 +311,14 @@ function UsersManagement() {
                       onChange={(e) =>
                         setNewUser({ ...newUser, phone: e.target.value })
                       }
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="w-full px-3 py-2 rounded-lg input-dark"
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-700 mb-2">
+                    <label
+                      className="block mb-2"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
                       Mot de passe
                     </label>
                     <input
@@ -259,18 +327,23 @@ function UsersManagement() {
                       onChange={(e) =>
                         setNewUser({ ...newUser, password: e.target.value })
                       }
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="w-full px-3 py-2 rounded-lg input-dark"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-700 mb-2">Rôle</label>
+                    <label
+                      className="block mb-2"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      Rôle
+                    </label>
                     <select
                       value={newUser.role}
                       onChange={(e) =>
                         setNewUser({ ...newUser, role: e.target.value })
                       }
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="w-full px-3 py-2 rounded-lg input-dark"
                     >
                       <option value="STUDENT">Élève</option>
                       <option value="ADMIN">Admin</option>
@@ -287,21 +360,24 @@ function UsersManagement() {
                         })
                       }
                       className="mr-2"
+                      style={{ accentColor: "var(--gold-primary)" }}
                     />
-                    <label className="text-gray-700">Membre du groupe</label>
+                    <label style={{ color: "var(--text-secondary)" }}>
+                      Membre du groupe
+                    </label>
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                    className="px-4 py-2 rounded-lg btn-gold"
                   >
                     Créer
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowForm(false)}
-                    className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
+                    className="px-4 py-2 rounded-lg btn-chrome"
                   >
                     Annuler
                   </button>
@@ -311,26 +387,45 @@ function UsersManagement() {
           )}
 
           {showEditForm && editingUser && (
-            <div className="mb-6 p-4 bg-purple-50 rounded-lg border border-purple-200">
-              <h3 className="text-lg font-semibold mb-4">
+            <div
+              className="mb-6 p-4 rounded-lg"
+              style={{
+                backgroundColor: "rgba(255, 215, 0, 0.1)",
+                border: "1px solid var(--border-gold)",
+              }}
+            >
+              <h3
+                className="text-lg font-semibold mb-4"
+                style={{ color: "var(--gold-primary)" }}
+              >
                 Modifier l'utilisateur
               </h3>
               <form onSubmit={handleUpdateUser} className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-gray-700 mb-2">Nom</label>
+                    <label
+                      className="block mb-2"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      Nom
+                    </label>
                     <input
                       type="text"
                       value={editingUser.name}
                       onChange={(e) =>
                         setEditingUser({ ...editingUser, name: e.target.value })
                       }
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="w-full px-3 py-2 rounded-lg input-dark"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-700 mb-2">Email</label>
+                    <label
+                      className="block mb-2"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      Email
+                    </label>
                     <input
                       type="email"
                       value={editingUser.email}
@@ -340,12 +435,15 @@ function UsersManagement() {
                           email: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="w-full px-3 py-2 rounded-lg input-dark"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-700 mb-2">
+                    <label
+                      className="block mb-2"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
                       Téléphone
                     </label>
                     <input
@@ -357,11 +455,14 @@ function UsersManagement() {
                           phone: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="w-full px-3 py-2 rounded-lg input-dark"
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-700 mb-2">
+                    <label
+                      className="block mb-2"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
                       Nouveau mot de passe (optionnel)
                     </label>
                     <input
@@ -373,17 +474,22 @@ function UsersManagement() {
                           password: e.target.value,
                         })
                       }
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="w-full px-3 py-2 rounded-lg input-dark"
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-700 mb-2">Rôle</label>
+                    <label
+                      className="block mb-2"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      Rôle
+                    </label>
                     <select
                       value={editingUser.role}
                       onChange={(e) =>
                         setEditingUser({ ...editingUser, role: e.target.value })
                       }
-                      className="w-full px-3 py-2 border rounded-lg"
+                      className="w-full px-3 py-2 rounded-lg input-dark"
                     >
                       <option value="STUDENT">Élève</option>
                       <option value="ADMIN">Admin</option>
@@ -400,14 +506,17 @@ function UsersManagement() {
                         })
                       }
                       className="mr-2"
+                      style={{ accentColor: "var(--gold-primary)" }}
                     />
-                    <label className="text-gray-700">Membre du groupe</label>
+                    <label style={{ color: "var(--text-secondary)" }}>
+                      Membre du groupe
+                    </label>
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700"
+                    className="px-4 py-2 rounded-lg btn-gold"
                   >
                     Mettre à jour
                   </button>
@@ -417,7 +526,7 @@ function UsersManagement() {
                       setShowEditForm(false);
                       setEditingUser(null);
                     }}
-                    className="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300"
+                    className="px-4 py-2 rounded-lg btn-chrome"
                   >
                     Annuler
                   </button>
@@ -429,76 +538,198 @@ function UsersManagement() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b">
-                  <th className="text-left p-3">Nom</th>
-                  <th className="text-left p-3">Email</th>
-                  <th className="text-left p-3">Téléphone</th>
-                  <th className="text-left p-3">Rôle</th>
-                  <th className="text-left p-3">Groupe</th>
-                  <th className="text-left p-3">Statut</th>
-                  <th className="text-left p-3">Créé le</th>
-                  <th className="text-left p-3">Actions</th>
+                <tr
+                  className="border-b"
+                  style={{ borderColor: "var(--border-primary)" }}
+                >
+                  <th
+                    className="text-left p-3"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    Nom
+                  </th>
+                  <th
+                    className="text-left p-3"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    Email
+                  </th>
+                  <th
+                    className="text-left p-3"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    Téléphone
+                  </th>
+                  <th
+                    className="text-left p-3"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    Rôle
+                  </th>
+                  <th
+                    className="text-left p-3"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    Groupe
+                  </th>
+                  <th
+                    className="text-left p-3"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    Statut
+                  </th>
+                  <th
+                    className="text-left p-3"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    Créé le
+                  </th>
+                  <th
+                    className="text-left p-3"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {users.map((user) => (
-                  <tr key={user.id} className="border-b">
-                    <td className="p-3">{user.name}</td>
-                    <td className="p-3">{user.email}</td>
-                    <td className="p-3">{user.phone || "-"}</td>
+                  <tr
+                    key={user.id}
+                    className="border-b"
+                    style={{ borderColor: "var(--border-secondary)" }}
+                  >
+                    <td
+                      className="p-3"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      {user.name}
+                    </td>
+                    <td
+                      className="p-3"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      {user.email}
+                    </td>
+                    <td
+                      className="p-3"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      {user.phone || "-"}
+                    </td>
                     <td className="p-3">
                       <span
-                        className={`px-2 py-1 rounded text-xs text-white ${
-                          user.role === "ADMIN"
-                            ? "bg-purple-600"
-                            : "bg-blue-600"
-                        }`}
+                        className="px-2 py-1 rounded text-xs"
+                        style={{
+                          backgroundColor:
+                            user.role === "ADMIN"
+                              ? "rgba(168, 168, 168, 0.2)"
+                              : "rgba(0, 0, 255, 0.2)",
+                          color:
+                            user.role === "ADMIN"
+                              ? "var(--chrome-light)"
+                              : "#0000ff",
+                          border:
+                            "1px solid " +
+                            (user.role === "ADMIN"
+                              ? "var(--chrome-medium)"
+                              : "#0000ff"),
+                        }}
                       >
                         {user.role === "ADMIN" ? "Admin" : "Élève"}
                       </span>
                     </td>
                     <td className="p-3">
                       {user.is_group_member ? (
-                        <span className="px-2 py-1 rounded text-xs text-white bg-green-600">
+                        <span
+                          className="px-2 py-1 rounded text-xs"
+                          style={{
+                            backgroundColor: "rgba(0, 255, 0, 0.2)",
+                            color: "#00ff00",
+                            border: "1px solid #00ff00",
+                          }}
+                        >
                           Oui
                         </span>
                       ) : (
-                        <span className="px-2 py-1 rounded text-xs text-white bg-gray-400">
+                        <span
+                          className="px-2 py-1 rounded text-xs"
+                          style={{
+                            backgroundColor: "rgba(128, 128, 128, 0.2)",
+                            color: "var(--text-muted)",
+                            border: "1px solid var(--border-secondary)",
+                          }}
+                        >
                           Non
                         </span>
                       )}
                     </td>
                     <td className="p-3">
                       {user.is_active ? (
-                        <span className="px-2 py-1 rounded text-xs text-white bg-green-600">
+                        <span
+                          className="px-2 py-1 rounded text-xs"
+                          style={{
+                            backgroundColor: "rgba(0, 255, 0, 0.2)",
+                            color: "#00ff00",
+                            border: "1px solid #00ff00",
+                          }}
+                        >
                           Actif
                         </span>
                       ) : (
-                        <span className="px-2 py-1 rounded text-xs text-white bg-red-600">
+                        <span
+                          className="px-2 py-1 rounded text-xs"
+                          style={{
+                            backgroundColor: "rgba(255, 0, 0, 0.2)",
+                            color: "#ff6b6b",
+                            border: "1px solid #ff6b6b",
+                          }}
+                        >
                           Inactif
                         </span>
                       )}
                     </td>
-                    <td className="p-3">
+                    <td
+                      className="p-3"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
                       {new Date(user.created_at).toLocaleDateString("fr-FR")}
                     </td>
                     <td className="p-3">
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleEditUser(user)}
-                          className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+                          className="px-3 py-1 rounded text-sm btn-chrome"
                         >
                           Modifier
                         </button>
                         <button
                           onClick={() => handleToggleUserStatus(user.id)}
-                          className={`${user.is_active ? "bg-yellow-600 hover:bg-yellow-700" : "bg-green-600 hover:bg-green-700"} text-white px-3 py-1 rounded text-sm`}
+                          className="px-3 py-1 rounded text-sm"
+                          style={{
+                            backgroundColor: user.is_active
+                              ? "rgba(255, 215, 0, 0.2)"
+                              : "rgba(0, 255, 0, 0.2)",
+                            color: user.is_active
+                              ? "var(--gold-primary)"
+                              : "#00ff00",
+                            border:
+                              "1px solid " +
+                              (user.is_active
+                                ? "var(--gold-primary)"
+                                : "#00ff00"),
+                          }}
                         >
                           {user.is_active ? "Désactiver" : "Activer"}
                         </button>
                         <button
                           onClick={() => handleDeleteUser(user.id)}
-                          className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+                          className="px-3 py-1 rounded text-sm"
+                          style={{
+                            backgroundColor: "rgba(239, 68, 68, 0.2)",
+                            color: "#ef4444",
+                            border: "1px solid rgba(239, 68, 68, 0.3)",
+                          }}
                         >
                           Supprimer
                         </button>

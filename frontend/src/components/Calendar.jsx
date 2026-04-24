@@ -41,21 +41,38 @@ function Calendar({ slots, onSlotClick, getSlotStatus, getSlotColor }) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 sm:px-6 py-4">
+    <div className="rounded-xl shadow-lg overflow-hidden card-dark">
+      <div
+        className="px-4 sm:px-6 py-4"
+        style={{
+          background: "var(--chrome-gradient)",
+          color: "var(--text-dark)",
+        }}
+      >
         <div className="flex justify-between items-center">
           <button
             onClick={previousMonth}
-            className="px-3 py-2 sm:px-4 bg-white/20 rounded-lg hover:bg-white/30 transition font-semibold text-sm sm:text-base"
+            className="px-3 py-2 sm:px-4 rounded-lg transition font-semibold text-sm sm:text-base"
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
+              color: "var(--text-dark)",
+            }}
           >
             ← Mois précédent
           </button>
-          <h2 className="text-xl sm:text-2xl font-bold">
+          <h2
+            className="text-xl sm:text-2xl font-bold"
+            style={{ color: "var(--text-dark)" }}
+          >
             {format(currentDate, "MMMM yyyy", { locale: fr })}
           </h2>
           <button
             onClick={nextMonth}
-            className="px-3 py-2 sm:px-4 bg-white/20 rounded-lg hover:bg-white/30 transition font-semibold text-sm sm:text-base"
+            className="px-3 py-2 sm:px-4 rounded-lg transition font-semibold text-sm sm:text-base"
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
+              color: "var(--text-dark)",
+            }}
           >
             Mois suivant →
           </button>
@@ -67,7 +84,8 @@ function Calendar({ slots, onSlotClick, getSlotStatus, getSlotColor }) {
           {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((day) => (
             <div
               key={day}
-              className="text-center font-semibold text-gray-700 text-xs md:text-sm uppercase tracking-wide"
+              className="text-center font-semibold text-xs md:text-sm uppercase tracking-wide"
+              style={{ color: "var(--gold-primary)" }}
             >
               {day}
             </div>
@@ -85,14 +103,33 @@ function Calendar({ slots, onSlotClick, getSlotStatus, getSlotColor }) {
                 key={day.toISOString()}
                 className={`min-h-20 md:min-h-32 p-1 md:p-3 rounded-xl border-2 transition-all ${
                   isToday
-                    ? "border-indigo-500 bg-indigo-50"
+                    ? "glow-gold"
                     : isCurrentMonth
-                      ? "border-gray-200 hover:border-indigo-300 hover:shadow-md"
-                      : "border-gray-100 bg-gray-50 opacity-50"
+                      ? "card-dark hover:shadow-md"
+                      : "opacity-50"
                 }`}
+                style={{
+                  borderColor: isToday
+                    ? "var(--gold-primary)"
+                    : isCurrentMonth
+                      ? "var(--border-secondary)"
+                      : "var(--border-primary)",
+                  backgroundColor: isToday
+                    ? "rgba(255, 215, 0, 0.1)"
+                    : isCurrentMonth
+                      ? "var(--bg-card)"
+                      : "var(--bg-tertiary)",
+                }}
               >
                 <div
-                  className={`font-semibold mb-1 md:mb-2 text-xs md:text-base ${isToday ? "text-indigo-600" : isCurrentMonth ? "text-gray-800" : "text-gray-400"}`}
+                  className={`font-semibold mb-1 md:mb-2 text-xs md:text-base`}
+                  style={{
+                    color: isToday
+                      ? "var(--gold-primary)"
+                      : isCurrentMonth
+                        ? "var(--text-primary)"
+                        : "var(--text-muted)",
+                  }}
                 >
                   {format(day, "d")}
                 </div>
@@ -101,12 +138,21 @@ function Calendar({ slots, onSlotClick, getSlotStatus, getSlotColor }) {
                     <div
                       key={slot.id}
                       onClick={() => onSlotClick(slot)}
-                      className={`p-1 md:p-2 rounded-lg cursor-pointer hover:scale-105 transition-transform ${getSlotColor(getSlotStatus(slot))}`}
+                      className="p-1 md:p-2 rounded-lg cursor-pointer hover:scale-105 transition-transform"
+                      style={{
+                        backgroundColor: getSlotColor(getSlotStatus(slot)),
+                      }}
                     >
-                      <div className="text-[10px] md:text-xs font-semibold text-white">
+                      <div
+                        className="text-[10px] md:text-xs font-semibold"
+                        style={{ color: "var(--text-primary)" }}
+                      >
                         {slot.start_time}
                       </div>
-                      <div className="text-[10px] md:text-xs text-white/90 hidden md:block">
+                      <div
+                        className="text-[10px] md:text-xs hidden md:block"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
                         {getSlotTypeLabel(slot.type)}
                       </div>
                     </div>

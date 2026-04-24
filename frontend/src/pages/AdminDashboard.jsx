@@ -306,13 +306,26 @@ function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 fade-in">
-      <nav className="bg-white shadow-lg border-b border-gray-100">
+    <div
+      className="min-h-screen fade-in"
+      style={{ backgroundColor: "var(--bg-primary)" }}
+    >
+      <nav
+        className="shadow-lg border-b"
+        style={{
+          backgroundColor: "var(--bg-secondary)",
+          borderColor: "var(--border-primary)",
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg">
+            <div
+              className="p-2 rounded-lg glow-gold"
+              style={{ background: "var(--chrome-gradient)" }}
+            >
               <svg
-                className="w-6 h-6 text-white"
+                className="w-6 h-6"
+                style={{ color: "var(--text-dark)" }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -325,26 +338,38 @@ function AdminDashboard() {
                 />
               </svg>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            <h1
+              className="text-xl sm:text-2xl font-bold"
+              style={{
+                background: "var(--chrome-gradient)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
               Admin Dashboard
             </h1>
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => navigate("/admin/users")}
-              className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold hover:from-indigo-600 hover:to-purple-600 transition shadow-md text-sm"
+              className="px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold text-sm btn-gold"
             >
               Utilisateurs
             </button>
             <button
               onClick={() => navigate("/calendar")}
-              className="bg-white border border-gray-200 text-gray-700 px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold hover:bg-gray-50 transition text-sm"
+              className="px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold text-sm btn-chrome"
             >
               Calendrier
             </button>
             <button
               onClick={handleLogout}
-              className="bg-red-500 text-white px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold hover:bg-red-600 transition text-sm"
+              className="px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold text-sm"
+              style={{
+                backgroundColor: "rgba(239, 68, 68, 0.2)",
+                color: "#ef4444",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+              }}
             >
               Déconnexion
             </button>
@@ -355,11 +380,18 @@ function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Alertes */}
         {lowParticipationAlerts.length > 0 && (
-          <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mb-6 rounded-r-lg">
+          <div
+            className="p-4 mb-6 rounded-r-lg"
+            style={{
+              backgroundColor: "rgba(255, 183, 71, 0.1)",
+              borderLeft: "4px solid var(--gold-secondary)",
+            }}
+          >
             <div className="flex items-start">
               <div className="flex-shrink-0">
                 <svg
-                  className="h-5 w-5 text-amber-500"
+                  className="h-5 w-5"
+                  style={{ color: "var(--gold-secondary)" }}
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -371,11 +403,17 @@ function AdminDashboard() {
                 </svg>
               </div>
               <div className="ml-3 flex-1">
-                <h3 className="text-sm font-medium text-amber-800">
+                <h3
+                  className="text-sm font-medium"
+                  style={{ color: "var(--gold-primary)" }}
+                >
                   Alertes seuil groupe non atteint
                 </h3>
                 <div className="mt-2">
-                  <ul className="list-disc list-inside text-sm text-amber-700">
+                  <ul
+                    className="list-disc list-inside text-sm"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
                     {lowParticipationAlerts.map((alert) => (
                       <li key={alert.id}>
                         {alert.date} - {alert.participant_count} participant(s)
@@ -391,10 +429,11 @@ function AdminDashboard() {
 
         {dashboardData && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-            <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 p-6 rounded-xl shadow-lg text-white">
+            <div className="p-6 rounded-xl text-white card-gold scale-in">
               <div className="flex items-center gap-3 mb-2">
                 <svg
                   className="w-8 h-8"
+                  style={{ color: "var(--gold-primary)" }}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -406,16 +445,25 @@ function AdminDashboard() {
                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                   />
                 </svg>
-                <h3 className="text-white/90 text-sm font-medium">
+                <h3
+                  className="text-sm font-medium"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   Utilisateurs
                 </h3>
               </div>
-              <p className="text-4xl font-bold">{dashboardData.totalUsers}</p>
+              <p
+                className="text-4xl font-bold"
+                style={{ color: "var(--gold-primary)" }}
+              >
+                {dashboardData.totalUsers}
+              </p>
             </div>
-            <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-6 rounded-xl shadow-lg text-white">
+            <div className="p-6 rounded-xl text-white card-dark scale-in">
               <div className="flex items-center gap-3 mb-2">
                 <svg
                   className="w-8 h-8"
+                  style={{ color: "var(--chrome-medium)" }}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -427,14 +475,25 @@ function AdminDashboard() {
                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-                <h3 className="text-white/90 text-sm font-medium">Créneaux</h3>
+                <h3
+                  className="text-sm font-medium"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  Créneaux
+                </h3>
               </div>
-              <p className="text-4xl font-bold">{dashboardData.totalSlots}</p>
+              <p
+                className="text-4xl font-bold"
+                style={{ color: "var(--chrome-light)" }}
+              >
+                {dashboardData.totalSlots}
+              </p>
             </div>
-            <div className="bg-gradient-to-br from-yellow-500 to-orange-500 p-6 rounded-xl shadow-lg text-white">
+            <div className="p-6 rounded-xl text-white card-dark scale-in">
               <div className="flex items-center gap-3 mb-2">
                 <svg
                   className="w-8 h-8"
+                  style={{ color: "var(--gold-secondary)" }}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -446,18 +505,25 @@ function AdminDashboard() {
                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <h3 className="text-white/90 text-sm font-medium">
+                <h3
+                  className="text-sm font-medium"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   En attente
                 </h3>
               </div>
-              <p className="text-4xl font-bold">
+              <p
+                className="text-4xl font-bold"
+                style={{ color: "var(--gold-secondary)" }}
+              >
                 {dashboardData.pendingBookings}
               </p>
             </div>
-            <div className="bg-gradient-to-br from-blue-500 to-cyan-500 p-6 rounded-xl shadow-lg text-white">
+            <div className="p-6 rounded-xl text-white card-dark scale-in">
               <div className="flex items-center gap-3 mb-2">
                 <svg
                   className="w-8 h-8"
+                  style={{ color: "var(--chrome-light)" }}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -469,18 +535,25 @@ function AdminDashboard() {
                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                   />
                 </svg>
-                <h3 className="text-white/90 text-sm font-medium">
+                <h3
+                  className="text-sm font-medium"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   Pré-réservations
                 </h3>
               </div>
-              <p className="text-4xl font-bold">
+              <p
+                className="text-4xl font-bold"
+                style={{ color: "var(--chrome-light)" }}
+              >
                 {dashboardData.groupPrebookings}
               </p>
             </div>
-            <div className="bg-gradient-to-br from-green-500 to-emerald-500 p-6 rounded-xl shadow-lg text-white">
+            <div className="p-6 rounded-xl text-white card-gold scale-in">
               <div className="flex items-center gap-3 mb-2">
                 <svg
                   className="w-8 h-8"
+                  style={{ color: "var(--gold-primary)" }}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -489,12 +562,20 @@ function AdminDashboard() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-                <h3 className="text-white/90 text-sm font-medium">À venir</h3>
+                <h3
+                  className="text-sm font-medium"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  À venir
+                </h3>
               </div>
-              <p className="text-4xl font-bold">
+              <p
+                className="text-4xl font-bold"
+                style={{ color: "var(--gold-primary)" }}
+              >
                 {dashboardData.upcomingSlots}
               </p>
             </div>
@@ -502,12 +583,16 @@ function AdminDashboard() {
         )}
 
         {pendingBookings.length > 0 && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <div className="rounded-xl shadow-lg p-6 mb-8 card-dark">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-yellow-100 rounded-lg">
+                <div
+                  className="p-2 rounded-lg glow-gold"
+                  style={{ background: "var(--chrome-gradient)" }}
+                >
                   <svg
-                    className="w-6 h-6 text-yellow-600"
+                    className="w-6 h-6"
+                    style={{ color: "var(--text-dark)" }}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -516,12 +601,23 @@ function AdminDashboard() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                     />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold">Réservations Solo</h2>
-                <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+                <h2
+                  className="text-2xl font-bold"
+                  style={{ color: "var(--gold-primary)" }}
+                >
+                  Réservations Solo
+                </h2>
+                <span
+                  className="px-3 py-1 rounded-full text-sm font-medium"
+                  style={{
+                    backgroundColor: "rgba(255, 215, 0, 0.2)",
+                    color: "var(--gold-primary)",
+                  }}
+                >
                   {pendingBookings.length}
                 </span>
               </div>
@@ -529,20 +625,13 @@ function AdminDashboard() {
                 <select
                   value={bookingStatusFilter}
                   onChange={(e) => setBookingStatusFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="px-3 py-2 rounded-lg text-sm input-dark"
                 >
                   <option value="ALL">Tous les statuts</option>
-                  <option value="REQUESTED">Demandées</option>
-                  <option value="PENDING_ADMIN_VALIDATION">
-                    En attente validation
-                  </option>
-                  <option value="CONFIRMED">Confirmées</option>
-                  <option value="REFUSED">Refusées</option>
-                  <option value="CANCELLED_BY_STUDENT">Annulées (élève)</option>
-                  <option value="CANCELLED_BY_ADMIN">Annulées (admin)</option>
-                  <option value="MODIFIED">Modifiées</option>
-                  <option value="COMPLETED">Terminées</option>
-                  <option value="NO_SHOW">Absences</option>
+                  <option value="REQUESTED">En attente</option>
+                  <option value="CONFIRMED">Confirmé</option>
+                  <option value="CANCELLED_BY_ADMIN">Annulé par admin</option>
+                  <option value="CANCELLED_BY_STUDENT">Annulé par élève</option>
                 </select>
               </div>
             </div>
@@ -695,7 +784,10 @@ function AdminDashboard() {
                       </svg>
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900">
+                      <p
+                        className="font-semibold"
+                        style={{ color: "var(--text-primary)" }}
+                      >
                         {new Date(slot.date).toLocaleDateString("fr-FR", {
                           weekday: "short",
                           day: "numeric",
@@ -703,12 +795,18 @@ function AdminDashboard() {
                         })}{" "}
                         - {slot.start_time} - {slot.end_time}
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p
+                        className="text-sm"
+                        style={{ color: "var(--text-muted)" }}
+                      >
                         {slot.prebookingCount} pré-choix / {slot.capacity_max}{" "}
                         max
                       </p>
                       {slot.prebookingCount < 3 && (
-                        <p className="text-xs text-amber-600 font-medium mt-1">
+                        <p
+                          className="text-xs font-medium mt-1"
+                          style={{ color: "var(--gold-secondary)" }}
+                        >
                           ⚠️ Seuil minimum non atteint (3 requis)
                         </p>
                       )}
@@ -717,7 +815,7 @@ function AdminDashboard() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleConfirmGroupSlot(slot.id)}
-                      className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-2 rounded-xl font-semibold hover:from-purple-600 hover:to-purple-700 transition shadow-md text-sm"
+                      className="px-4 py-2 rounded-xl font-semibold text-sm btn-gold"
                     >
                       Confirmer
                     </button>
@@ -728,12 +826,16 @@ function AdminDashboard() {
           </div>
         )}
 
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div className="rounded-xl shadow-lg p-6 mb-8 card-dark">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 rounded-lg">
+              <div
+                className="p-2 rounded-lg glow-gold"
+                style={{ background: "var(--chrome-gradient)" }}
+              >
                 <svg
-                  className="w-6 h-6 text-purple-600"
+                  className="w-6 h-6"
+                  style={{ color: "var(--text-dark)" }}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -746,11 +848,16 @@ function AdminDashboard() {
                   />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold">Gestion des créneaux</h2>
+              <h2
+                className="text-2xl font-bold"
+                style={{ color: "var(--gold-primary)" }}
+              >
+                Gestion des créneaux
+              </h2>
             </div>
             <button
-              onClick={() => setShowSlotForm(true)}
-              className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-2 rounded-xl font-semibold hover:from-purple-600 hover:to-purple-700 transition shadow-md hover:shadow-lg"
+              onClick={() => setShowSlotForm(!showSlotForm)}
+              className="px-4 py-2 rounded-xl font-semibold text-sm btn-gold"
             >
               + Créer un créneau
             </button>
@@ -758,8 +865,11 @@ function AdminDashboard() {
         </div>
 
         {showSlotForm && (
-          <div className="mb-6 p-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200">
-            <h3 className="text-lg font-bold mb-4 text-purple-900">
+          <div className="mb-6 p-6 rounded-xl card-gold">
+            <h3
+              className="text-lg font-bold mb-4"
+              style={{ color: "var(--gold-primary)" }}
+            >
               Nouveau créneau
             </h3>
             <form onSubmit={handleCreateSlot} className="space-y-4">
@@ -774,12 +884,15 @@ function AdminDashboard() {
                     onChange={(e) =>
                       setNewSlot({ ...newSlot, date: e.target.value })
                     }
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition"
+                    className="w-full px-3 py-2 rounded-lg input-dark"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 mb-2 font-medium">
+                  <label
+                    className="block mb-2 font-medium"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
                     Type
                   </label>
                   <select
@@ -795,15 +908,17 @@ function AdminDashboard() {
                         endTime: type === "GROUP" ? "18:00" : "17:00",
                       });
                     }}
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition"
-                    required
+                    className="w-full px-3 py-2 rounded-lg input-dark"
                   >
                     <option value="SOLO">Solo</option>
                     <option value="GROUP">Groupe</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-gray-700 mb-2 font-medium">
+                  <label
+                    className="block mb-2 font-medium"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
                     Heure début
                   </label>
                   <input
@@ -812,12 +927,15 @@ function AdminDashboard() {
                     onChange={(e) =>
                       setNewSlot({ ...newSlot, startTime: e.target.value })
                     }
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition"
+                    className="w-full px-3 py-2 rounded-lg input-dark"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-gray-700 mb-2 font-medium">
+                  <label
+                    className="block mb-2 font-medium"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
                     Heure fin
                   </label>
                   <input
@@ -826,14 +944,17 @@ function AdminDashboard() {
                     onChange={(e) =>
                       setNewSlot({ ...newSlot, endTime: e.target.value })
                     }
-                    className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition"
+                    className="w-full px-3 py-2 rounded-lg input-dark"
                     required
                   />
                 </div>
                 {newSlot.type === "GROUP" && (
                   <>
                     <div>
-                      <label className="block text-gray-700 mb-2 font-medium">
+                      <label
+                        className="block mb-2 font-medium"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
                         Capacité min
                       </label>
                       <input
@@ -847,7 +968,7 @@ function AdminDashboard() {
                             capacityMin: parseInt(e.target.value),
                           })
                         }
-                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition"
+                        className="w-full px-3 py-2 rounded-lg input-dark"
                         required
                       />
                     </div>
@@ -866,24 +987,24 @@ function AdminDashboard() {
                             capacityMax: parseInt(e.target.value),
                           })
                         }
-                        className="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition"
+                        className="w-full px-3 py-2 rounded-lg input-dark"
                         required
                       />
                     </div>
                   </>
                 )}
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <button
                   type="submit"
-                  className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-2 rounded-xl font-semibold hover:from-purple-600 hover:to-purple-700 transition shadow-md hover:shadow-lg"
+                  className="px-6 py-2 rounded-lg font-semibold btn-gold"
                 >
                   Créer
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowSlotForm(false)}
-                  className="bg-gray-100 text-gray-700 px-6 py-2 rounded-xl font-semibold hover:bg-gray-200 transition"
+                  className="px-6 py-2 rounded-lg font-semibold btn-chrome"
                 >
                   Annuler
                 </button>
@@ -893,11 +1014,15 @@ function AdminDashboard() {
         )}
 
         {historyEntries.length > 0 && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <div className="rounded-xl shadow-lg p-6 mb-8 card-dark">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-blue-100 rounded-lg">
+              <div
+                className="p-2 rounded-lg glow-gold"
+                style={{ background: "var(--chrome-gradient)" }}
+              >
                 <svg
-                  className="w-6 h-6 text-blue-600"
+                  className="w-6 h-6"
+                  style={{ color: "var(--text-dark)" }}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -910,17 +1035,27 @@ function AdminDashboard() {
                   />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold">Historique des actions</h2>
+              <h2
+                className="text-2xl font-bold"
+                style={{ color: "var(--gold-primary)" }}
+              >
+                Historique des actions
+              </h2>
             </div>
             <div className="space-y-3 max-h-96 overflow-y-auto">
               {historyEntries.map((entry) => (
                 <div
                   key={entry.id}
-                  className="flex items-start gap-4 p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-200"
+                  className="flex items-start gap-4 p-4 rounded-xl card-dark"
+                  style={{ border: "1px solid var(--border-secondary)" }}
                 >
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{ backgroundColor: "rgba(255, 215, 0, 0.1)" }}
+                  >
                     <svg
-                      className="w-5 h-5 text-blue-600"
+                      className="w-5 h-5"
+                      style={{ color: "var(--gold-primary)" }}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -929,28 +1064,42 @@ function AdminDashboard() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold text-gray-900">
-                        {entry.action}
+                      <span
+                        className="font-semibold"
+                        style={{ color: "var(--gold-primary)" }}
+                      >
+                        {entry.action_type}
                       </span>
-                      <span className="text-sm text-gray-500">sur</span>
-                      <span className="text-sm font-medium text-blue-600">
-                        {entry.entity_type}
+                      <span
+                        className="text-sm"
+                        style={{ color: "var(--text-muted)" }}
+                      >
+                        sur
                       </span>
-                      <span className="text-xs text-gray-400">
+                      <span
+                        className="text-sm font-medium"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
                         #{entry.entity_id?.substring(0, 8)}...
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600">
-                      {entry.reason || "Aucune raison spécifiée"}
+                    <p
+                      className="text-sm"
+                      style={{ color: "var(--text-muted)" }}
+                    >
+                      {entry.description || "Aucune raison spécifiée"}
                     </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Par {entry.user_name || "Système"} -{" "}
+                    <p
+                      className="text-xs mt-1"
+                      style={{ color: "var(--text-muted)" }}
+                    >
+                      Par {entry.created_by} -{" "}
                       {new Date(entry.created_at).toLocaleString("fr-FR")}
                     </p>
                   </div>
@@ -960,11 +1109,15 @@ function AdminDashboard() {
           </div>
         )}
 
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <div className="rounded-xl shadow-lg p-6 mb-8 card-dark">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-blue-100 rounded-lg">
+            <div
+              className="p-2 rounded-lg glow-gold"
+              style={{ background: "var(--chrome-gradient)" }}
+            >
               <svg
-                className="w-6 h-6 text-blue-600"
+                className="w-6 h-6"
+                style={{ color: "var(--text-dark)" }}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -977,7 +1130,12 @@ function AdminDashboard() {
                 />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold">Gestion des créneaux groupe</h2>
+            <h2
+              className="text-2xl font-bold"
+              style={{ color: "var(--gold-primary)" }}
+            >
+              Gestion des créneaux groupe
+            </h2>
           </div>
 
           {selectedSlots.length > 0 && (
@@ -1078,53 +1236,132 @@ function AdminDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b">
-                  <th className="text-left p-2">Date</th>
-                  <th className="text-left p-2">Horaires</th>
-                  <th className="text-left p-2">Type</th>
-                  <th className="text-left p-2">Statut</th>
-                  <th className="text-left p-2">Actions</th>
+                <tr
+                  className="border-b"
+                  style={{ borderColor: "var(--border-primary)" }}
+                >
+                  <th
+                    className="p-2 text-left font-semibold"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    Date
+                  </th>
+                  <th
+                    className="p-2 text-left font-semibold"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    Horaires
+                  </th>
+                  <th
+                    className="p-2 text-left font-semibold"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    Type
+                  </th>
+                  <th
+                    className="p-2 text-left font-semibold"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    Statut
+                  </th>
+                  <th
+                    className="p-2 text-left font-semibold"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {slots.map((slot) => (
-                  <tr key={slot.id} className="border-b">
-                    <td className="p-2">
-                      {new Date(slot.date).toLocaleDateString("fr-FR")}
-                    </td>
-                    <td className="p-2">
-                      {slot.start_time} - {slot.end_time}
-                    </td>
-                    <td className="p-2">
-                      {slot.type === "SOLO" ? "Solo" : "Groupe"}
-                    </td>
-                    <td className="p-2">
-                      <span
-                        className={`px-2 py-1 rounded text-white text-xs ${
-                          slot.status === "OPEN_SOLO"
-                            ? "bg-green-500"
-                            : slot.status === "BLOCKED_FOR_GROUP"
-                              ? "bg-red-500"
-                              : slot.status === "GROUP_PREBOOKING"
-                                ? "bg-yellow-500"
-                                : slot.status === "GROUP_CONFIRMED"
-                                  ? "bg-blue-500"
-                                  : "bg-gray-500"
-                        }`}
+                {slots
+                  .filter(
+                    (slot) =>
+                      (slotTypeFilter === "ALL" ||
+                        slot.type === slotTypeFilter) &&
+                      (slotStatusFilter === "ALL" ||
+                        slot.status === slotStatusFilter),
+                  )
+                  .map((slot) => (
+                    <tr
+                      key={slot.id}
+                      className="border-b"
+                      style={{ borderColor: "var(--border-secondary)" }}
+                    >
+                      <td
+                        className="p-2"
+                        style={{ color: "var(--text-secondary)" }}
                       >
-                        {slot.status}
-                      </span>
-                    </td>
-                    <td className="p-2">
-                      <button
-                        onClick={() => handleDeleteSlot(slot.id)}
-                        className="bg-red-500 text-white px-2 py-1 rounded text-sm hover:bg-red-600"
+                        {new Date(slot.date).toLocaleDateString("fr-FR")}
+                      </td>
+                      <td
+                        className="p-2"
+                        style={{ color: "var(--text-secondary)" }}
                       >
-                        Supprimer
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                        {slot.start_time} - {slot.end_time}
+                      </td>
+                      <td
+                        className="p-2"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
+                        {slot.type === "SOLO" ? "Solo" : "Groupe"}
+                      </td>
+                      <td className="p-2">
+                        <span
+                          className="px-2 py-1 rounded text-xs"
+                          style={{
+                            backgroundColor:
+                              slot.status === "OPEN_SOLO"
+                                ? "rgba(0, 255, 0, 0.1)"
+                                : slot.status === "BLOCKED_FOR_GROUP"
+                                  ? "rgba(255, 0, 0, 0.1)"
+                                  : slot.status === "GROUP_PREBOOKING"
+                                    ? "rgba(255, 215, 0, 0.1)"
+                                    : slot.status === "GROUP_CONFIRMED"
+                                      ? "rgba(0, 0, 255, 0.1)"
+                                      : "rgba(128, 128, 128, 0.1)",
+                            color:
+                              slot.status === "OPEN_SOLO"
+                                ? "#00ff00"
+                                : slot.status === "BLOCKED_FOR_GROUP"
+                                  ? "#ff0000"
+                                  : slot.status === "GROUP_PREBOOKING"
+                                    ? "var(--gold-primary)"
+                                    : slot.status === "GROUP_CONFIRMED"
+                                      ? "#0000ff"
+                                      : "var(--text-muted)",
+                          }}
+                        >
+                          {slot.status}
+                        </span>
+                      </td>
+                      <td className="p-2">
+                        <div className="flex gap-2">
+                          {slot.type === "GROUP" &&
+                            slot.status === "BLOCKED_FOR_GROUP" && (
+                              <button
+                                onClick={() =>
+                                  setSelectedSlots([...selectedSlots, slot.id])
+                                }
+                                className="px-2 py-1 rounded text-xs btn-chrome"
+                              >
+                                Sélectionner
+                              </button>
+                            )}
+                          <button
+                            onClick={() => handleDeleteSlot(slot.id)}
+                            className="px-2 py-1 rounded text-xs"
+                            style={{
+                              backgroundColor: "rgba(239, 68, 68, 0.2)",
+                              color: "#ef4444",
+                              border: "1px solid rgba(239, 68, 68, 0.3)",
+                            }}
+                          >
+                            Supprimer
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
               </tbody>
             </table>
           </div>

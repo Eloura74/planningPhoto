@@ -40,31 +40,38 @@ function Dashboard() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
+      <div
+        className="flex items-center justify-center min-h-screen fade-in"
+        style={{
+          backgroundColor: "var(--bg-primary)",
+          color: "var(--text-primary)",
+        }}
+      >
         Chargement...
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen ${isDark ? "bg-gray-900" : "bg-gray-50"}`}>
-      <nav className={`${isDark ? "bg-gray-800" : "bg-white"} shadow-sm`}>
+    <div
+      className="min-h-screen fade-in"
+      style={{ backgroundColor: "var(--bg-primary)" }}
+    >
+      <nav
+        className="shadow-sm"
+        style={{ backgroundColor: "var(--bg-secondary)" }}
+      >
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <h1
-            className={`text-xl font-bold ${isDark ? "text-white" : "text-gray-900"}`}
+            className="text-xl font-bold"
+            style={{ color: "var(--gold-primary)" }}
           >
             Mes Réservations
           </h1>
           <div className="flex gap-2">
             <button
-              onClick={toggleTheme}
-              className={`px-4 py-2 rounded-lg ${isDark ? "bg-gray-700 text-white hover:bg-gray-600" : "bg-gray-200 text-gray-900 hover:bg-gray-300"}`}
-            >
-              {isDark ? "☀️" : "🌙"}
-            </button>
-            <button
               onClick={() => navigate("/calendar")}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              className="px-4 py-2 rounded-lg btn-gold"
             >
               Voir le calendrier
             </button>
@@ -73,18 +80,18 @@ function Dashboard() {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div
-          className={`${isDark ? "bg-gray-800" : "bg-white"} rounded-lg shadow-md p-6`}
-        >
+        <div className="rounded-lg shadow-md p-6 card-dark">
           <h2
-            className={`text-2xl font-bold mb-6 ${isDark ? "text-white" : "text-gray-900"}`}
+            className="text-2xl font-bold mb-6"
+            style={{ color: "var(--gold-primary)" }}
           >
             Mes réservations
           </h2>
 
           {bookings.length === 0 ? (
             <div
-              className={`text-center py-8 ${isDark ? "text-gray-400" : "text-gray-500"}`}
+              className="text-center py-8"
+              style={{ color: "var(--text-muted)" }}
             >
               Vous n'avez aucune réservation
             </div>
@@ -93,11 +100,13 @@ function Dashboard() {
               {bookings.map((booking) => (
                 <div
                   key={booking.id}
-                  className={`p-4 border rounded-lg flex justify-between items-center ${isDark ? "bg-gray-700 border-gray-600" : "bg-white border-gray-200"}`}
+                  className="p-4 rounded-lg flex justify-between items-center card-dark"
+                  style={{ border: "1px solid var(--border-secondary)" }}
                 >
                   <div>
                     <p
-                      className={`font-semibold ${isDark ? "text-white" : "text-gray-900"}`}
+                      className="font-semibold"
+                      style={{ color: "var(--text-primary)" }}
                     >
                       {new Date(booking.date).toLocaleDateString("fr-FR", {
                         weekday: "long",
@@ -106,29 +115,36 @@ function Dashboard() {
                         day: "numeric",
                       })}
                     </p>
-                    <p className={isDark ? "text-gray-300" : "text-gray-600"}>
+                    <p style={{ color: "var(--text-secondary)" }}>
                       {booking.start_time} - {booking.end_time}
                     </p>
                     <p
-                      className={`text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}
+                      className="text-sm"
+                      style={{ color: "var(--text-secondary)" }}
                     >
                       Type:{" "}
-                      <span className="font-semibold">
+                      <span
+                        className="font-semibold"
+                        style={{ color: "var(--gold-primary)" }}
+                      >
                         {booking.type === "SOLO" ? "Solo" : "Groupe"}
                       </span>
                     </p>
                     <p
-                      className={`text-sm mt-1 ${isDark ? "text-gray-300" : "text-gray-600"}`}
+                      className="text-sm mt-1"
+                      style={{ color: "var(--text-secondary)" }}
                     >
                       Statut:{" "}
                       <span
-                        className={`font-semibold ${
-                          booking.status === "CONFIRMED"
-                            ? "text-green-500"
-                            : booking.status === "PENDING"
-                              ? "text-yellow-500"
-                              : "text-red-500"
-                        }`}
+                        className="font-semibold"
+                        style={{
+                          color:
+                            booking.status === "CONFIRMED"
+                              ? "#00ff00"
+                              : booking.status === "PENDING"
+                                ? "var(--gold-primary)"
+                                : "#ff6b6b",
+                        }}
                       >
                         {booking.status === "CONFIRMED"
                           ? "Confirmée"
@@ -141,7 +157,12 @@ function Dashboard() {
                   {booking.status !== "CANCELLED" && (
                     <button
                       onClick={() => handleCancelBooking(booking.id)}
-                      className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                      className="px-4 py-2 rounded-lg"
+                      style={{
+                        backgroundColor: "rgba(239, 68, 68, 0.2)",
+                        color: "#ef4444",
+                        border: "1px solid rgba(239, 68, 68, 0.3)",
+                      }}
                     >
                       Annuler
                     </button>
