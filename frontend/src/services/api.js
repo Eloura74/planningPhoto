@@ -1,9 +1,5 @@
 import axios from "axios";
-
-const API_BASE_URL =
-  import.meta.env.MODE === "production"
-    ? "https://planningphoto.onrender.com/api"
-    : import.meta.env.VITE_API_URL || "/api";
+import { API_BASE_URL } from "../config";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
