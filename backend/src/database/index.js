@@ -1,35 +1,27 @@
-const sqlite3 = require("sqlite3").verbose();
+const Database = require("better-sqlite3");
 const path = require("path");
 
 const dbPath = path.join(__dirname, "../../planning.db");
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error("Erreur de connexion SQLite:", err.message);
-  } else {
-    console.log("Connecté à SQLite");
-  }
-});
+const db = new Database(dbPath);
+
+console.log("Connecté à SQLite (better-sqlite3)");
 
 // Adapter l'API pour ressembler à pg (pool.query)
 const pool = {
   query: (sql, params = []) => {
-    return new Promise((resolve, reject) => {
+    try {
       // Convertir les paramètres nommés ($1, $2...) en paramètres positionnels (?, ?...)
       const convertedSql = sql.replace(/\$\d+/g, "?");
-
-      db.all(convertedSql, params, (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({ rows });
-        }
-      });
-    });
+      const stmt = db.prepare(convertedSql);
+      const rows = stmt.all(...params);
+      return { rows };
+    } catch (err) {
+      throw err;
+    }
   },
   end: () => {
-    return new Promise((resolve) => {
-      db.close(() => resolve());
-    });
+    db.close();
+    return Promise.resolve();
   },
 };
 

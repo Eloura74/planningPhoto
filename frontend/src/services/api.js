@@ -1,62 +1,67 @@
 import axios from "axios";
 
-const API_BASE_URL = "/api";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
+
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 
 export const slotsAPI = {
   getAll: (startDate, endDate) =>
-    axios.get(`${API_BASE_URL}/slots`, { params: { startDate, endDate } }),
-  getById: (id) => axios.get(`${API_BASE_URL}/slots/${id}`),
-  create: (data) => axios.post(`${API_BASE_URL}/slots`, data),
-  update: (id, data) => axios.put(`${API_BASE_URL}/slots/${id}`, data),
-  delete: (id) => axios.delete(`${API_BASE_URL}/slots/${id}`),
-  blockSlot: (id) => axios.patch(`${API_BASE_URL}/slots/${id}/block`),
-  releaseSlot: (id) => axios.patch(`${API_BASE_URL}/slots/${id}/release`),
-  confirmGroup: (slotIds) =>
-    axios.post(`${API_BASE_URL}/slots/confirm-group`, { slotIds }),
+    api.get("/slots", { params: { startDate, endDate } }),
+  getById: (id) => api.get(`/slots/${id}`),
+  create: (data) => api.post("/slots", data),
+  update: (id, data) => api.put(`/slots/${id}`, data),
+  delete: (id) => api.delete(`/slots/${id}`),
+  blockSlot: (id) => api.patch(`/slots/${id}/block`),
+  releaseSlot: (id) => api.patch(`/slots/${id}/release`),
+  confirmGroup: (slotIds) => api.post("/slots/confirm-group", { slotIds }),
 };
 
 export const bookingsAPI = {
-  createSolo: (slotId) =>
-    axios.post(`${API_BASE_URL}/bookings/solo`, { slotId }),
-  createGroup: (slotId) =>
-    axios.post(`${API_BASE_URL}/bookings/group`, { slotId }),
-  getMyBookings: () => axios.get(`${API_BASE_URL}/bookings/my`),
-  getBySlot: (slotId) => axios.get(`${API_BASE_URL}/bookings/slot/${slotId}`),
-  getGroupPrebookings: (slotId) =>
-    axios.get(`${API_BASE_URL}/bookings/group/${slotId}`),
-  confirm: (id) => axios.patch(`${API_BASE_URL}/bookings/${id}/confirm`),
-  cancel: (id, reason) =>
-    axios.delete(`${API_BASE_URL}/bookings/${id}`, { data: { reason } }),
+  createSolo: (slotId) => api.post("/bookings/solo", { slotId }),
+  createGroup: (slotId) => api.post("/bookings/group", { slotId }),
+  getMyBookings: () => api.get("/bookings/my"),
+  getBySlot: (slotId) => api.get(`/bookings/slot/${slotId}`),
+  getGroupPrebookings: (slotId) => api.get(`/bookings/group/${slotId}`),
+  confirm: (id) => api.patch(`/bookings/${id}/confirm`),
+  cancel: (id, reason) => api.delete(`/bookings/${id}`, { data: { reason } }),
   getAllPending: (status) =>
-    axios.get(`${API_BASE_URL}/bookings/pending`, { params: { status } }),
-  cancelGroupPrebooking: (slotId) =>
-    axios.delete(`${API_BASE_URL}/bookings/group/${slotId}`),
-  getLowGroupParticipation: () =>
-    axios.get(`${API_BASE_URL}/bookings/low-participation`),
+    api.get("/bookings/pending", { params: { status } }),
+  cancelGroupPrebooking: (slotId) => api.delete(`/bookings/group/${slotId}`),
+  getLowGroupParticipation: () => api.get("/bookings/low-participation"),
 };
 
 export const adminAPI = {
-  validateGroup: (slotId) =>
-    axios.post(`${API_BASE_URL}/admin/validate-group`, { slotId }),
-  releaseSlots: (slotIds) =>
-    axios.post(`${API_BASE_URL}/admin/release-slots`, { slotIds }),
-  blockSlot: (slotId) =>
-    axios.post(`${API_BASE_URL}/admin/block-slot`, { slotId }),
+  validateGroup: (slotId) => api.post("/admin/validate-group", { slotId }),
+  releaseSlots: (slotIds) => api.post("/admin/release-slots", { slotIds }),
+  blockSlot: (slotId) => api.post("/admin/block-slot", { slotId }),
   setAvailability: (date, isAvailable) =>
-    axios.post(`${API_BASE_URL}/admin/availability`, { date, isAvailable }),
+    api.post("/admin/availability", { date, isAvailable }),
   getAvailability: (startDate, endDate) =>
-    axios.get(`${API_BASE_URL}/admin/availability`, {
+    api.get("/admin/availability", {
       params: { startDate, endDate },
     }),
   getHistory: (entity, limit) =>
-    axios.get(`${API_BASE_URL}/admin/history`, { params: { entity, limit } }),
-  getDashboard: () => axios.get(`${API_BASE_URL}/admin/dashboard`),
+    api.get("/admin/history", { params: { entity, limit } }),
+  getDashboard: () => api.get("/admin/dashboard"),
 };
 
 export const usersAPI = {
-  getMe: () => axios.get(`${API_BASE_URL}/users/me`),
-  getAll: () => axios.get(`${API_BASE_URL}/users`),
-  getById: (id) => axios.get(`${API_BASE_URL}/users/${id}`),
-  update: (id, data) => axios.put(`${API_BASE_URL}/users/${id}`, data),
-  toggleStatus: (id) => axios.post(`${API_BASE_URL}/users/${id}/toggle-status`),
+  getMe: () => api.get("/users/me"),
+  getAll: () => api.get("/users"),
+  getById: (id) => api.get(`/users/${id}`),
+  update: (id, data) => api.put(`/users/${id}`, data),
+  toggleStatus: (id) => api.post(`/users/${id}/toggle-status`),
 };
