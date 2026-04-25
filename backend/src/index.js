@@ -28,7 +28,7 @@ const PORT = process.env.PORT || 5000;
 
 async function runMigrations() {
   try {
-    console.log("Exécution des migrations de base de données...");
+    console.log("Exécution des migrations de base de données....");
 
     // Users table
     await pool.query(`
