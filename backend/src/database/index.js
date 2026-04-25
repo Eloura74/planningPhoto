@@ -1,28 +1,19 @@
-const Database = require("better-sqlite3");
-const path = require("path");
+const { Pool } = require("pg");
 
-const dbPath = path.join(__dirname, "../../planning.db");
-const db = new Database(dbPath);
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? { rejectUnauthorized: false }
+      : false,
+});
 
-console.log("Connecté à SQLite (better-sqlite3)");
+pool.on("connect", () => {
+  console.log("Connecté à PostgreSQL");
+});
 
-// Adapter l'API pour ressembler à pg (pool.query)
-const pool = {
-  query: (sql, params = []) => {
-    try {
-      // Convertir les paramètres nommés ($1, $2...) en paramètres positionnels (?, ?...)
-      const convertedSql = sql.replace(/\$\d+/g, "?");
-      const stmt = db.prepare(convertedSql);
-      const rows = stmt.all(...params);
-      return { rows };
-    } catch (err) {
-      throw err;
-    }
-  },
-  end: () => {
-    db.close();
-    return Promise.resolve();
-  },
-};
+pool.on("error", (err) => {
+  console.error("Erreur de connexion PostgreSQL:", err);
+});
 
 module.exports = pool;
