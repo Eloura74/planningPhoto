@@ -11,15 +11,15 @@ const createTables = async () => {
         email TEXT UNIQUE NOT NULL,
         phone TEXT,
         role TEXT CHECK (role IN ('ADMIN', 'STUDENT')) NOT NULL,
-        is_group_member INTEGER DEFAULT 0,
-        is_active INTEGER DEFAULT 1,
+        is_group_member BOOLEAN DEFAULT false,
+        is_active BOOLEAN DEFAULT true,
         password_hash TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
     // Slots table
-    await pool.query("DROP TABLE IF EXISTS slots");
+    await pool.query("DROP TABLE IF EXISTS slots CASCADE");
 
     await pool.query(`
       CREATE TABLE slots (
@@ -81,13 +81,13 @@ const createTables = async () => {
       CREATE TABLE IF NOT EXISTS availability (
         id TEXT PRIMARY KEY,
         date TEXT UNIQUE NOT NULL,
-        is_available INTEGER DEFAULT 1,
+        is_available BOOLEAN DEFAULT true,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `);
 
     // History table
-    await pool.query("DROP TABLE IF EXISTS history");
+    await pool.query("DROP TABLE IF EXISTS history CASCADE");
 
     await pool.query(`
       CREATE TABLE history (
@@ -108,7 +108,7 @@ const createTables = async () => {
         id TEXT PRIMARY KEY,
         start_date TEXT NOT NULL,
         end_date TEXT NOT NULL,
-        is_group_prebooking_open INTEGER DEFAULT 0,
+        is_group_prebooking_open BOOLEAN DEFAULT false,
         group_prebooking_close_date TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         created_by TEXT REFERENCES users(id),
@@ -121,9 +121,9 @@ const createTables = async () => {
       CREATE TABLE IF NOT EXISTS user_settings (
         id TEXT PRIMARY KEY,
         user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
-        is_active INTEGER DEFAULT 1,
-        solo_booking_enabled INTEGER DEFAULT 1,
-        group_booking_enabled INTEGER DEFAULT 1,
+        is_active BOOLEAN DEFAULT true,
+        solo_booking_enabled BOOLEAN DEFAULT true,
+        group_booking_enabled BOOLEAN DEFAULT true,
         max_solo_per_week INTEGER DEFAULT 1,
         max_solo_per_month INTEGER DEFAULT 4,
         min_solo_advance_days INTEGER DEFAULT 7,
