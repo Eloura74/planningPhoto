@@ -37,7 +37,7 @@ async function initializeDefaultAdmin() {
 
     // Vérifier si un utilisateur avec cet email existe
     const existingUser = await pool.query(
-      "SELECT * FROM users WHERE email = ?",
+      "SELECT * FROM users WHERE email = $1",
       [adminEmail],
     );
 
@@ -50,8 +50,16 @@ async function initializeDefaultAdmin() {
 
       await pool.query(
         `INSERT INTO users (id, name, email, password_hash, role, is_group_member, is_active) 
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [adminId, "Fabien Licata", adminEmail, hashedPassword, "ADMIN", 1, 1],
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [
+          adminId,
+          "Fabien Licata",
+          adminEmail,
+          hashedPassword,
+          "ADMIN",
+          true,
+          true,
+        ],
       );
 
       console.log("✓ Admin par défaut créé avec succès");
