@@ -48,6 +48,9 @@ function CalendarPage() {
       const response = await slotsAPI.getAll(startDate, endDate);
       let filteredSlots = response.data;
 
+      console.log("🔍 Créneaux reçus:", filteredSlots.length, filteredSlots);
+      console.log("🔍 User:", user);
+
       // Filtre par rôle et type d'élève
       if (user?.role === "STUDENT") {
         if (user?.isGroupMember) {
@@ -80,6 +83,12 @@ function CalendarPage() {
           (slot) => slot.status === slotStatusFilter,
         );
       }
+
+      console.log(
+        "🔍 Créneaux après filtrage:",
+        filteredSlots.length,
+        filteredSlots,
+      );
 
       setSlots(filteredSlots);
     } catch (error) {
