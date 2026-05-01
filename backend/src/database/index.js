@@ -53,8 +53,9 @@ const pool = {
 
     try {
       // Convertir les placeholders PostgreSQL ($1, $2) en SQLite (?)
+      // SQLite utilise déjà ? donc on convertit seulement si nécessaire
       let sqliteSql = sql;
-      if (params.length > 0) {
+      if (params.length > 0 && sql.includes("$")) {
         sqliteSql = sql.replace(/\$\d+/g, "?");
       }
 
