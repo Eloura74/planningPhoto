@@ -46,7 +46,7 @@ async function runMigrations() {
     `);
 
     // Slots table
-    await pool.query("DROP TABLE IF EXISTS slots CASCADE");
+    await pool.query("DROP TABLE IF EXISTS slots");
 
     await pool.query(`
       CREATE TABLE slots (
@@ -114,7 +114,7 @@ async function runMigrations() {
     `);
 
     // History table
-    await pool.query("DROP TABLE IF EXISTS history CASCADE");
+    await pool.query("DROP TABLE IF EXISTS history");
 
     await pool.query(`
       CREATE TABLE history (
