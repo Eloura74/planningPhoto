@@ -17,14 +17,14 @@ const register = async (
   const passwordHash = await bcrypt.hash(password, 10);
   const userId = uuidv4();
 
-  const result = await pool.query(
-    "INSERT INTO users (id, name, email, phone, role, is_group_member, password_hash) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, name, email, role, is_group_member",
+  await pool.query(
+    "INSERT INTO users (id, name, email, phone, role, is_group_member, password_hash) VALUES ($1, $2, $3, $4, $5, $6, $7)",
     [userId, name, email, phone, role, isGroupMember, passwordHash],
   );
 
   await createHistory(
     "USER",
-    result.rows[0].id,
+    userId,
     "CREATE",
     {
       name,
@@ -34,7 +34,13 @@ const register = async (
     null,
   );
 
-  return result.rows[0];
+  return {
+    id: userId,
+    name,
+    email,
+    role,
+    is_group_member: isGroupMember,
+  };
 };
 
 const login = async (email, password) => {
