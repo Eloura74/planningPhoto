@@ -290,8 +290,19 @@ const getBookingsBySlot = async (slotId) => {
 };
 
 const confirmBooking = async (bookingId, adminId) => {
-  const result = await pool.query(
-    "UPDATE bookings SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *",
+  // Récupérer la réservation avant de la modifier
+  const bookingResult = await pool.query(
+    "SELECT * FROM bookings WHERE id = ?",
+    [bookingId],
+  );
+  if (bookingResult.rows.length === 0) {
+    throw new Error("Booking not found");
+  }
+  const booking = bookingResult.rows[0];
+
+  // Mettre à jour le statut
+  await pool.query(
+    "UPDATE bookings SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2",
     ["CONFIRMED", bookingId],
   );
 
@@ -305,7 +316,6 @@ const confirmBooking = async (bookingId, adminId) => {
   );
 
   // Send confirmation email
-  const booking = result.rows[0];
   const user = await pool.query("SELECT * FROM users WHERE id = ?", [
     booking.user_id,
   ]);
