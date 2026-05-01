@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../contexts/ToastContext";
 import { usersAPI } from "../services/api";
 import axios from "axios";
+import { API_BASE_URL } from "../api-config";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 function UsersManagement() {
@@ -46,7 +47,7 @@ function UsersManagement() {
   const handleCreateUser = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("/api/auth/register", newUser);
+      await axios.post(`${API_BASE_URL}/auth/register`, newUser);
       showToast("Utilisateur créé avec succès", "success");
       setShowForm(false);
       setNewUser({
@@ -104,7 +105,7 @@ function UsersManagement() {
       return;
     }
     try {
-      await axios.delete(`/api/users/${userId}`);
+      await axios.delete(`${API_BASE_URL}/users/${userId}`);
       showToast("Utilisateur supprimé avec succès", "success");
       loadUsers();
     } catch (error) {
