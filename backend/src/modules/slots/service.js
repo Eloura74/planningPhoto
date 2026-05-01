@@ -56,7 +56,7 @@ const createSlot = async (data, userId) => {
       if (type === "SOLO") {
         status = "OPEN_SOLO";
       } else if (type === "GROUP") {
-        status = isTuesdayOrThursday ? "BLOCKED_FOR_GROUP" : "DRAFT";
+        status = "BLOCKED_FOR_GROUP";
       }
     }
 
