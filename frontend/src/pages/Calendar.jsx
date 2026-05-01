@@ -48,13 +48,25 @@ function CalendarPage() {
       const response = await slotsAPI.getAll(startDate, endDate);
       let filteredSlots = response.data;
 
-      // Filtre par rôle : les élèves ne voient que les créneaux SOLO ouverts
+      // Filtre par rôle et type d'élève
       if (user?.role === "STUDENT") {
-        filteredSlots = filteredSlots.filter(
-          (slot) =>
-            slot.type === "SOLO" &&
-            (slot.status === "OPEN_SOLO" || slot.status === "SOLO_CONFIRMED"),
-        );
+        if (user?.isGroupMember) {
+          // Membres du groupe : voir les créneaux GROUP disponibles
+          filteredSlots = filteredSlots.filter(
+            (slot) =>
+              slot.type === "GROUP" &&
+              (slot.status === "BLOCKED_FOR_GROUP" ||
+                slot.status === "GROUP_PREBOOKING" ||
+                slot.status === "GROUP_CONFIRMED"),
+          );
+        } else {
+          // Élèves solo : voir les créneaux SOLO ouverts
+          filteredSlots = filteredSlots.filter(
+            (slot) =>
+              slot.type === "SOLO" &&
+              (slot.status === "OPEN_SOLO" || slot.status === "SOLO_CONFIRMED"),
+          );
+        }
       }
 
       if (slotTypeFilter !== "ALL") {
