@@ -51,8 +51,21 @@ const deleteUser = async (id) => {
 };
 
 const toggleUserStatus = async (id) => {
+  // Vérifier si c'est l'admin principal
+  const user = await pool.query("SELECT email, role FROM users WHERE id = $1", [
+    id,
+  ]);
+  if (
+    user.rows[0]?.email === "fabien.licata@gmail.com" &&
+    user.rows[0]?.role === "ADMIN"
+  ) {
+    throw new Error(
+      "Impossible de désactiver le compte administrateur principal",
+    );
+  }
+
   const result = await pool.query(
-    "UPDATE users SET is_active = NOT is_active WHERE id = $1 RETURNING id, name, email, is_active",
+    "UPDATE users SET is_active = NOT is_active WHERE id = $1 RETURNING id, name, email, is_active, role",
     [id],
   );
   await createHistory("USER", id, "TOGGLE_STATUS", {

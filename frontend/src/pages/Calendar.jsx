@@ -54,14 +54,16 @@ function CalendarPage() {
       // Filtre par rôle et type d'élève
       if (user?.role === "STUDENT") {
         if (user?.isGroupMember) {
-          // Membres du groupe : voir tous les mardis disponibles
+          // Membres du groupe : voir les créneaux groupe ET solo
           filteredSlots = filteredSlots.filter(
             (slot) =>
               slot.status === "OPEN_TUESDAY" ||
               slot.status === "MIXED" ||
               slot.status === "BLOCKED_FOR_GROUP" ||
               slot.status === "GROUP_PREBOOKING" ||
-              slot.status === "GROUP_CONFIRMED",
+              slot.status === "GROUP_CONFIRMED" ||
+              slot.status === "OPEN_SOLO" ||
+              slot.status === "SOLO_CONFIRMED",
           );
         } else {
           // Élèves solo : voir les créneaux SOLO et MIXED (mardis sans groupe)

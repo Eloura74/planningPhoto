@@ -143,7 +143,8 @@ function UsersManagement() {
           : "Utilisateur ajouté au groupe",
         "success",
       );
-      loadUsers();
+      // Forcer le rechargement immédiat
+      await loadUsers();
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors de la mise à jour",
