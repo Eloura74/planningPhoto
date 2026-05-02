@@ -46,28 +46,36 @@ const createSoloBooking = async (userId, slotId) => {
   try {
     console.log("createSoloBooking appelé avec:", { userId, slotId });
 
-    const slot = await pool.query("SELECT * FROM slots WHERE id = $1", [
-      slotId,
-    ]);
+    // Vérifier si le slot existe, sinon le créer (slot virtuel)
+    let slot = await pool.query("SELECT * FROM slots WHERE id = $1", [slotId]);
+
+    let slotData;
     if (slot.rows.length === 0) {
-      throw new Error("Slot not found");
+      // Slot virtuel - extraire date et heure de l'ID (format: YYYY-MM-DD_HH:MM)
+      const [date, startTime] = slotId.split("_");
+      const endTime = startTime === "09:00" ? "12:00" : "17:00";
+
+      // Créer le slot
+      const { v4: uuidv4 } = require("uuid");
+      const newSlotId = uuidv4();
+      const newSlot = await pool.query(
+        "INSERT INTO slots (id, date, start_time, end_time, type, status, capacity_min, capacity_max) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+        [newSlotId, date, startTime, endTime, "SOLO", "OPEN_SOLO", 1, 1],
+      );
+      slotData = newSlot.rows[0];
+      slotId = newSlotId; // Utiliser le vrai ID maintenant
+    } else {
+      slotData = slot.rows[0];
     }
 
-    const slotData = slot.rows[0];
-    console.log("Slot trouvé:", slotData);
+    console.log("Slot trouvé/créé:", slotData);
 
-    if (slotData.status !== "OPEN_SOLO") {
+    if (slotData.status !== "OPEN_SOLO" && slotData.status !== "OPEN_TUESDAY") {
       throw new Error("Slot not available for solo booking");
     }
 
-    if (slotData.type !== "SOLO") {
-      throw new Error("Slot is not a solo slot");
-    }
-
-    // Règle : Vérifier que ce n'est pas un mardi/jeudi bloqué pour le groupe
-    const dayOfWeek = new Date(slotData.date).getDay();
-    if (dayOfWeek === 2 || dayOfWeek === 4) {
-      throw new Error("Les mardis et jeudis sont réservés à la logique groupe");
+    if (slotData.type !== "SOLO" && slotData.type !== "MIXED") {
+      throw new Error("Slot is not available for solo booking");
     }
 
     // Règle : Anti-concurrence - Vérifier que l'utilisateur n'a pas déjà une réservation solo le même jour
