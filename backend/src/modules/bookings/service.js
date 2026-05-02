@@ -375,7 +375,12 @@ const confirmBooking = async (bookingId, adminId) => {
     );
   }
 
-  return result.rows[0];
+  // Récupérer la réservation mise à jour
+  const updatedBooking = await pool.query(
+    "SELECT * FROM bookings WHERE id = $1",
+    [bookingId],
+  );
+  return updatedBooking.rows[0];
 };
 
 const cancelBooking = async (bookingId, cancelledBy, reason = null) => {
