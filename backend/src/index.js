@@ -67,6 +67,18 @@ async function runMigrations() {
         modification_reason TEXT
       );
     `);
+    console.log("✓ Table slots créée");
+
+    // Unavailabilities table
+    await pool.query(`
+      CREATE TABLE unavailabilities (
+        id TEXT PRIMARY KEY,
+        date DATE NOT NULL UNIQUE,
+        created_by TEXT REFERENCES users(id),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+    console.log("✓ Table unavailabilities créée");
 
     // Bookings table
     await pool.query(`
