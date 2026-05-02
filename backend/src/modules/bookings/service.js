@@ -239,27 +239,24 @@ const createGroupPrebooking = async (userId, slotId) => {
     slotData = slot.rows[0];
   }
 
-  // Vérifier que la fenêtre de pré-réservation est ouverte
-  const { isGroupPrebookingOpen } = require("../availabilityPeriods/service");
-  const isOpen = await isGroupPrebookingOpen();
-  if (!isOpen) {
-    throw new Error("La fenêtre de pré-réservation groupe est fermée");
-  }
-
-  if (
-    slotData.status !== "BLOCKED_FOR_GROUP" &&
-    slotData.status !== "GROUP_PREBOOKING_OPEN" &&
-    slotData.status !== "GROUP_PREBOOKING"
-  ) {
-    throw new Error("Slot not available for group pre-booking");
-  }
-
-  // Vérifier que ce n'est pas un mardi/jeudi
-  const dayOfWeek = new Date(slotData.date).getDay();
+  // Vérifier que c'est bien un mardi ou jeudi
+  const slotDate = new Date(slotData.date + "T00:00:00");
+  const dayOfWeek = slotDate.getDay();
   if (dayOfWeek !== 2 && dayOfWeek !== 4) {
     throw new Error(
       "Les pré-réservations groupe ne sont possibles que les mardis et jeudis",
     );
+  }
+
+  // Vérifier que le slot est disponible pour le groupe
+  if (
+    slotData.status !== "BLOCKED_FOR_GROUP" &&
+    slotData.status !== "GROUP_PREBOOKING_OPEN" &&
+    slotData.status !== "GROUP_PREBOOKING" &&
+    slotData.status !== "OPEN_TUESDAY" &&
+    slotData.status !== "MIXED"
+  ) {
+    throw new Error("Slot not available for group pre-booking");
   }
 
   const existingPrebooking = await pool.query(
