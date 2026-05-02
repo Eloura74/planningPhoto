@@ -54,11 +54,20 @@ const getAvailableSlots = async (startDate, endDate) => {
       continue;
     }
 
-    // Créneaux par défaut (9h-12h et 14h-17h)
-    const timeSlots = [
-      { start: "09:00", end: "12:00" },
-      { start: "14:00", end: "17:00" },
-    ];
+    // Créneaux selon le jour
+    const isTuesdayOrThursday = dayOfWeek === 2 || dayOfWeek === 4; // Mardi ou Jeudi
+
+    let timeSlots;
+    if (isTuesdayOrThursday) {
+      // Mardi/Jeudi : groupe toute la journée (9h-12h et 14h-17h)
+      timeSlots = [
+        { start: "09:00", end: "12:00" },
+        { start: "14:00", end: "17:00" },
+      ];
+    } else {
+      // Autres jours : solo uniquement l'après-midi (14h-17h)
+      timeSlots = [{ start: "14:00", end: "17:00" }];
+    }
 
     for (const timeSlot of timeSlots) {
       const slotKey = `${dateStr}_${timeSlot.start}`;
@@ -78,8 +87,8 @@ const getAvailableSlots = async (startDate, endDate) => {
         // Créer un slot virtuel
         let status, type;
 
-        if (isTuesday) {
-          // Mardi : disponible pour groupe en priorité, solo si pas de groupe
+        if (isTuesdayOrThursday) {
+          // Mardi/Jeudi : disponible pour groupe en priorité
           status = "OPEN_TUESDAY";
           type = "MIXED";
         } else {
