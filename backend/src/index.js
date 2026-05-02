@@ -46,10 +46,10 @@ async function runMigrations() {
     `);
 
     // Unavailabilities table (nouvelle table pour les indisponibilités)
-    await pool.query("DROP TABLE IF EXISTS unavailabilities");
+    await pool.query("DROP TABLE IF EXISTS unavailabilities CASCADE");
 
     // Slots table
-    await pool.query("DROP TABLE IF EXISTS slots");
+    await pool.query("DROP TABLE IF EXISTS slots CASCADE");
 
     await pool.query(`
       CREATE TABLE slots (
