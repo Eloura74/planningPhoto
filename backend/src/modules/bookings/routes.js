@@ -20,44 +20,8 @@ router.post("/solo", authenticate, async (req, res) => {
   try {
     const { slotId } = req.body;
 
-    const slot = await pool.query("SELECT date FROM slots WHERE id = $1", [
-      slotId,
-    ]);
-    const slotDate = new Date(slot.rows[0].date);
-    const now = new Date();
-    const oneWeekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-    // Temporarily disabled for testing
-    // if (slotDate < oneWeekLater) {
-    //   throw new Error("Booking must be made at least one week in advance");
-    // }
-
-    const weekStart = new Date(now);
-    weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekEnd.getDate() + 6);
-
-    const weeklyCount = await getUserWeeklyBookings(
-      req.userId,
-      weekStart.toISOString().split("T")[0],
-      weekEnd.toISOString().split("T")[0],
-    );
-    if (weeklyCount >= 1) {
-      throw new Error("Maximum 1 solo booking per week");
-    }
-
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-    const monthlyCount = await getUserMonthlyBookings(
-      req.userId,
-      monthStart.toISOString().split("T")[0],
-      monthEnd.toISOString().split("T")[0],
-    );
-    if (monthlyCount >= 4) {
-      throw new Error("Maximum 4 solo bookings per month");
-    }
-
+    // Toutes les vérifications sont maintenant dans createSoloBooking
+    // pour supporter les slots virtuels
     const booking = await createSoloBooking(req.userId, slotId);
     res.status(201).json(booking);
   } catch (error) {
