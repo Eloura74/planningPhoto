@@ -258,12 +258,47 @@ const confirmGroupSlotsAdmin = async (slotIds, adminId) => {
   }
 };
 
+const blockSlot = async (slotId, userId) => {
+  const result = await pool.query(
+    "UPDATE slots SET status = $1, modified_by = $2, modification_reason = $3 WHERE id = $4 RETURNING *",
+    ["BLOCKED_FOR_GROUP", userId, "Blocked by admin", slotId],
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error("Slot not found");
+  }
+
+  await createHistory(
+    "SLOT",
+    slotId,
+    "BLOCK",
+    { status: "BLOCKED_FOR_GROUP" },
+    userId,
+  );
+  return result.rows[0];
+};
+
+const releaseSlot = async (slotId) => {
+  const result = await pool.query(
+    "UPDATE slots SET status = $1 WHERE id = $2 RETURNING *",
+    ["OPEN_TUESDAY", slotId],
+  );
+
+  if (result.rows.length === 0) {
+    throw new Error("Slot not found");
+  }
+
+  return result.rows[0];
+};
+
 module.exports = {
   getAllSlots,
   getSlotById,
   createSlot,
   updateSlot,
   deleteSlot,
+  blockSlot,
+  releaseSlot,
   getSlotsByDateRange,
   confirmGroupSlots,
   confirmGroupSlotsAdmin,
