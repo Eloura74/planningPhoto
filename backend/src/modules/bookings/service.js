@@ -23,9 +23,9 @@ const {
 const getUserWeeklyBookings = async (userId, startDate, endDate) => {
   const result = await pool.query(
     `SELECT COUNT(*) as count FROM bookings 
-     WHERE user_id = ? AND slot_id IN (
-       SELECT id FROM slots WHERE date >= ? AND date <= ?
-     ) AND status != ?`,
+     WHERE user_id = $1 AND slot_id IN (
+       SELECT id FROM slots WHERE date >= $1 AND date <= $2
+     ) AND status != $1`,
     [userId, startDate, endDate, "CANCELLED"],
   );
   return parseInt(result.rows[0].count);
@@ -34,9 +34,9 @@ const getUserWeeklyBookings = async (userId, startDate, endDate) => {
 const getUserMonthlyBookings = async (userId, startDate, endDate) => {
   const result = await pool.query(
     `SELECT COUNT(*) as count FROM bookings 
-     WHERE user_id = ? AND slot_id IN (
-       SELECT id FROM slots WHERE date >= ? AND date <= ?
-     ) AND status != ?`,
+     WHERE user_id = $1 AND slot_id IN (
+       SELECT id FROM slots WHERE date >= $1 AND date <= $2
+     ) AND status != $1`,
     [userId, startDate, endDate, "CANCELLED"],
   );
   return parseInt(result.rows[0].count);
@@ -46,7 +46,7 @@ const createSoloBooking = async (userId, slotId) => {
   try {
     console.log("createSoloBooking appelé avec:", { userId, slotId });
 
-    const slot = await pool.query("SELECT * FROM slots WHERE id = ?", [slotId]);
+    const slot = await pool.query("SELECT * FROM slots WHERE id = $1", [slotId]);
     if (slot.rows.length === 0) {
       throw new Error("Slot not found");
     }
@@ -70,7 +70,7 @@ const createSoloBooking = async (userId, slotId) => {
 
     // Règle : Anti-concurrence - Vérifier que l'utilisateur n'a pas déjà une réservation solo le même jour
     const sameDayBookings = await pool.query(
-      "SELECT b.*, s.date FROM bookings b JOIN slots s ON b.slot_id = s.id WHERE b.user_id = ? AND b.status NOT IN ('CANCELLED', 'CANCELLED_BY_STUDENT', 'CANCELLED_BY_ADMIN') AND s.date = ?",
+      "SELECT b.*, s.date FROM bookings b JOIN slots s ON b.slot_id = s.id WHERE b.user_id = $1 AND b.status NOT IN ('CANCELLED', 'CANCELLED_BY_STUDENT', 'CANCELLED_BY_ADMIN') AND s.date = $2",
       [userId, slotData.date],
     );
 
@@ -116,7 +116,7 @@ const createSoloBooking = async (userId, slotId) => {
     }
 
     const existingBooking = await pool.query(
-      "SELECT * FROM bookings WHERE slot_id = ? AND status NOT IN ('CANCELLED', 'CANCELLED_BY_ADMIN', 'CANCELLED_BY_STUDENT')",
+      "SELECT * FROM bookings WHERE slot_id = $1 AND status NOT IN ('CANCELLED', 'CANCELLED_BY_ADMIN', 'CANCELLED_BY_STUDENT')",
       [slotId],
     );
 
@@ -130,7 +130,7 @@ const createSoloBooking = async (userId, slotId) => {
       [bookingId, userId, slotId, "REQUESTED"],
     );
 
-    await pool.query("UPDATE slots SET status = ? WHERE id = ?", [
+    await pool.query("UPDATE slots SET status = $1 WHERE id = $2", [
       "SOLO_PENDING",
       slotId,
     ]);
@@ -148,7 +148,7 @@ const createSoloBooking = async (userId, slotId) => {
     );
 
     // Envoyer notification à l'étudiant
-    const user = await pool.query("SELECT * FROM users WHERE id = ?", [userId]);
+    const user = await pool.query("SELECT * FROM users WHERE id = $1", [userId]);
     if (user.rows.length > 0) {
       await sendSoloRequestEmail(
         user.rows[0].email,
@@ -179,7 +179,7 @@ const createSoloBooking = async (userId, slotId) => {
 };
 
 const createGroupPrebooking = async (userId, slotId) => {
-  const slot = await pool.query("SELECT * FROM slots WHERE id = ?", [slotId]);
+  const slot = await pool.query("SELECT * FROM slots WHERE id = $1", [slotId]);
   if (slot.rows.length === 0) {
     throw new Error("Slot not found");
   }
@@ -210,7 +210,7 @@ const createGroupPrebooking = async (userId, slotId) => {
   }
 
   const existingPrebooking = await pool.query(
-    "SELECT * FROM group_prebookings WHERE user_id = ? AND slot_id = ?",
+    "SELECT * FROM group_prebookings WHERE user_id = $1 AND slot_id = $2",
     [userId, slotId],
   );
 
@@ -220,7 +220,7 @@ const createGroupPrebooking = async (userId, slotId) => {
 
   // Vérifier le nombre de participants (max 5)
   const currentPrebookings = await pool.query(
-    "SELECT COUNT(*) as count FROM group_prebookings WHERE slot_id = ?",
+    "SELECT COUNT(*) as count FROM group_prebookings WHERE slot_id = $1",
     [slotId],
   );
   const currentCount = parseInt(currentPrebookings.rows[0].count);
@@ -235,7 +235,7 @@ const createGroupPrebooking = async (userId, slotId) => {
   );
 
   const prebookings = await pool.query(
-    "SELECT COUNT(*) as count FROM group_prebookings WHERE slot_id = ?",
+    "SELECT COUNT(*) as count FROM group_prebookings WHERE slot_id = $1",
     [slotId],
   );
 
@@ -245,7 +245,7 @@ const createGroupPrebooking = async (userId, slotId) => {
     count >= slotData.capacity_min &&
     slotData.status === "BLOCKED_FOR_GROUP"
   ) {
-    await pool.query("UPDATE slots SET status = ? WHERE id = ?", [
+    await pool.query("UPDATE slots SET status = $1 WHERE id = $2", [
       "GROUP_PREBOOKING",
       slotId,
     ]);
@@ -271,7 +271,7 @@ const getBookingsByUser = async (userId) => {
     `SELECT b.*, s.date, s.start_time, s.end_time, s.type, s.status as slot_status 
      FROM bookings b 
      JOIN slots s ON b.slot_id = s.id 
-     WHERE b.user_id = ? AND b.status NOT IN ('CANCELLED', 'CANCELLED_BY_ADMIN', 'CANCELLED_BY_STUDENT')
+     WHERE b.user_id = $1 AND b.status NOT IN ('CANCELLED', 'CANCELLED_BY_ADMIN', 'CANCELLED_BY_STUDENT')
      ORDER BY s.date DESC, s.start_time DESC`,
     [userId],
   );
@@ -283,7 +283,7 @@ const getBookingsBySlot = async (slotId) => {
     `SELECT b.*, u.name, u.email 
    FROM bookings b 
    JOIN users u ON b.user_id = u.id 
-   WHERE b.slot_id = ? AND b.status != 'CANCELLED'`,
+   WHERE b.slot_id = $1 AND b.status != 'CANCELLED'`,
     [slotId],
   );
   return result.rows;
@@ -292,7 +292,7 @@ const getBookingsBySlot = async (slotId) => {
 const confirmBooking = async (bookingId, adminId) => {
   // Récupérer la réservation avant de la modifier
   const bookingResult = await pool.query(
-    "SELECT * FROM bookings WHERE id = ?",
+    "SELECT * FROM bookings WHERE id = $1",
     [bookingId],
   );
   if (bookingResult.rows.length === 0) {
@@ -316,10 +316,10 @@ const confirmBooking = async (bookingId, adminId) => {
   );
 
   // Send confirmation email
-  const user = await pool.query("SELECT * FROM users WHERE id = ?", [
+  const user = await pool.query("SELECT * FROM users WHERE id = $1", [
     booking.user_id,
   ]);
-  const slot = await pool.query("SELECT * FROM slots WHERE id = ?", [
+  const slot = await pool.query("SELECT * FROM slots WHERE id = $1", [
     booking.slot_id,
   ]);
 
@@ -328,7 +328,7 @@ const confirmBooking = async (bookingId, adminId) => {
     const slotData = slot.rows[0];
 
     // Mettre à jour le statut du créneau
-    await pool.query("UPDATE slots SET status = ? WHERE id = ?", [
+    await pool.query("UPDATE slots SET status = $1 WHERE id = $2", [
       slotData.type === "SOLO" ? "SOLO_CONFIRMED" : "GROUP_CONFIRMED",
       booking.slot_id,
     ]);
@@ -345,7 +345,7 @@ const confirmBooking = async (bookingId, adminId) => {
 };
 
 const cancelBooking = async (bookingId, cancelledBy, reason = null) => {
-  const booking = await pool.query("SELECT * FROM bookings WHERE id = ?", [
+  const booking = await pool.query("SELECT * FROM bookings WHERE id = $1", [
     bookingId,
   ]);
   if (booking.rows.length === 0) {
@@ -359,23 +359,23 @@ const cancelBooking = async (bookingId, cancelledBy, reason = null) => {
     : "CANCELLED_BY_STUDENT";
 
   const result = await pool.query(
-    "UPDATE bookings SET status = ?, updated_at = CURRENT_TIMESTAMP, cancellation_reason = ? WHERE id = ? RETURNING *",
+    "UPDATE bookings SET status = $1, updated_at = CURRENT_TIMESTAMP, cancellation_reason = $2 WHERE id = $3 RETURNING *",
     [status, reason, bookingId],
   );
 
   console.log("Avant UPDATE slot - slot_id:", bookingData.slot_id);
-  const slotBefore = await pool.query("SELECT * FROM slots WHERE id = ?", [
+  const slotBefore = await pool.query("SELECT * FROM slots WHERE id = $1", [
     bookingData.slot_id,
   ]);
   console.log("Slot avant suppression:", slotBefore.rows[0]);
 
   const updateResult = await pool.query(
-    "UPDATE slots SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+    "UPDATE slots SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2",
     ["OPEN_SOLO", bookingData.slot_id],
   );
   console.log("UPDATE slot result:", updateResult);
 
-  const slotAfter = await pool.query("SELECT * FROM slots WHERE id = ?", [
+  const slotAfter = await pool.query("SELECT * FROM slots WHERE id = $1", [
     bookingData.slot_id,
   ]);
   console.log("Slot après suppression:", slotAfter.rows[0]);
@@ -390,10 +390,10 @@ const cancelBooking = async (bookingId, cancelledBy, reason = null) => {
   );
 
   // Envoyer notification
-  const user = await pool.query("SELECT * FROM users WHERE id = ?", [
+  const user = await pool.query("SELECT * FROM users WHERE id = $1", [
     bookingData.user_id,
   ]);
-  const slot = await pool.query("SELECT * FROM slots WHERE id = ?", [
+  const slot = await pool.query("SELECT * FROM slots WHERE id = $1", [
     bookingData.slot_id,
   ]);
 
@@ -424,11 +424,11 @@ const cancelBooking = async (bookingId, cancelledBy, reason = null) => {
 
 const getGroupPrebookingsBySlot = async (slotId, userId = null) => {
   let query =
-    "SELECT gp.*, u.name as user_name FROM group_prebookings gp JOIN users u ON gp.user_id = u.id WHERE gp.slot_id = ?";
+    "SELECT gp.*, u.name as user_name FROM group_prebookings gp JOIN users u ON gp.user_id = u.id WHERE gp.slot_id = $1";
   const params = [slotId];
 
   if (userId) {
-    query += " AND gp.user_id = ?";
+    query += " AND gp.user_id = $1";
     params.push(userId);
   }
 
@@ -437,7 +437,7 @@ const getGroupPrebookingsBySlot = async (slotId, userId = null) => {
 };
 
 const deleteGroupPrebooking = async (userId, slotId) => {
-  const slot = await pool.query("SELECT * FROM slots WHERE id = ?", [slotId]);
+  const slot = await pool.query("SELECT * FROM slots WHERE id = $1", [slotId]);
   if (slot.rows.length === 0) {
     throw new Error("Slot not found");
   }
@@ -462,17 +462,17 @@ const deleteGroupPrebooking = async (userId, slotId) => {
   }
 
   const result = await pool.query(
-    "DELETE FROM group_prebookings WHERE user_id = ? AND slot_id = ? RETURNING *",
+    "DELETE FROM group_prebookings WHERE user_id = $1 AND slot_id = $2 RETURNING *",
     [userId, slotId],
   );
 
   const remaining = await pool.query(
-    "SELECT COUNT(*) as count FROM group_prebookings WHERE slot_id = ?",
+    "SELECT COUNT(*) as count FROM group_prebookings WHERE slot_id = $1",
     [slotId],
   );
 
   if (parseInt(remaining.rows[0].count) === 0) {
-    await pool.query("UPDATE slots SET status = ? WHERE id = ?", [
+    await pool.query("UPDATE slots SET status = $1 WHERE id = $2", [
       "BLOCKED_FOR_GROUP",
       slotId,
     ]);
