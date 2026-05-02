@@ -3,33 +3,52 @@ const { v4: uuidv4 } = require("uuid");
 
 // Générer les créneaux disponibles pour une période donnée
 const getAvailableSlots = async (startDate, endDate) => {
-  // Récupérer les indisponibilités de l'admin
-  const unavailabilities = await pool.query(
-    "SELECT * FROM unavailabilities WHERE date >= $1 AND date <= $2",
-    [startDate, endDate],
-  );
-
-  const unavailableDates = new Set(
-    unavailabilities.rows.map((u) => u.date.toISOString().split("T")[0]),
-  );
-
-  // Récupérer tous les slots existants
+  // Récupérer les slots existants
   const existingSlots = await pool.query(
     "SELECT * FROM slots WHERE date >= $1 AND date <= $2",
     [startDate, endDate],
   );
+
+  // Récupérer les pré-réservations groupe
+  const groupPrebookings = await pool.query(
+    `SELECT gp.*, s.date, s.start_time 
+     FROM group_prebookings gp 
+     JOIN slots s ON gp.slot_id = s.id 
+     WHERE s.date >= $1 AND s.date <= $2`,
+    [startDate, endDate],
+  );
+
+  // Récupérer les jours indisponibles
+  const unavailabilities = await pool.query(
+    "SELECT date FROM unavailabilities WHERE date >= $1 AND date <= $2",
+    [startDate, endDate],
+  );
+
+  // Compter les créneaux groupe confirmés dans le mois
+  const start = new Date(startDate);
+  const monthStart = new Date(start.getFullYear(), start.getMonth(), 1)
+    .toISOString()
+    .split("T")[0];
+  const monthEnd = new Date(start.getFullYear(), start.getMonth() + 1, 0)
+    .toISOString()
+    .split("T")[0];
+
+  const confirmedGroupSlots = await pool.query(
+    `SELECT COUNT(*) as count FROM slots 
+     WHERE type = 'GROUP' 
+     AND status = 'GROUP_CONFIRMED' 
+     AND date >= $1 AND date <= $2`,
+    [monthStart, monthEnd],
+  );
+
+  const groupSlotsConfirmedCount = parseInt(confirmedGroupSlots.rows[0].count);
+  const shouldReleaseForSolo = groupSlotsConfirmedCount >= 2;
 
   const existingSlotsMap = new Map();
   existingSlots.rows.forEach((slot) => {
     const key = `${slot.date}_${slot.start_time}`;
     existingSlotsMap.set(key, slot);
   });
-
-  // Récupérer les pré-réservations groupe
-  const groupPrebookings = await pool.query(
-    "SELECT * FROM group_prebookings",
-    [],
-  );
 
   const groupPrebookingsBySlot = new Map();
   groupPrebookings.rows.forEach((gp) => {
@@ -39,15 +58,16 @@ const getAvailableSlots = async (startDate, endDate) => {
     groupPrebookingsBySlot.get(gp.slot_id).push(gp);
   });
 
+  const unavailableDates = new Set(unavailabilities.rows.map((u) => u.date));
+
   const slots = [];
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  const startLoop = new Date(startDate);
+  const endLoop = new Date(endDate);
 
   // Générer tous les jours de la période
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+  for (let d = new Date(startLoop); d <= endLoop; d.setDate(d.getDate() + 1)) {
     const dateStr = d.toISOString().split("T")[0];
     const dayOfWeek = d.getDay();
-    const isTuesday = dayOfWeek === 2;
 
     // Ignorer les dimanches et les jours indisponibles
     if (dayOfWeek === 0 || unavailableDates.has(dateStr)) {
@@ -87,12 +107,12 @@ const getAvailableSlots = async (startDate, endDate) => {
         // Créer un slot virtuel
         let status, type;
 
-        if (isTuesdayOrThursday) {
-          // Mardi/Jeudi : disponible pour groupe en priorité
+        if (isTuesdayOrThursday && !shouldReleaseForSolo) {
+          // Mardi/Jeudi : disponible pour groupe en priorité (si moins de 2 confirmés)
           status = "OPEN_TUESDAY";
           type = "MIXED";
         } else {
-          // Autres jours : solo uniquement
+          // Autres jours OU mardis/jeudis libérés : solo uniquement
           status = "OPEN_SOLO";
           type = "SOLO";
         }
@@ -108,6 +128,7 @@ const getAvailableSlots = async (startDate, endDate) => {
           capacity_max: type === "GROUP" ? 5 : 1,
           group_prebooking_count: 0,
           is_virtual: true,
+          released_for_solo: shouldReleaseForSolo && isTuesdayOrThursday,
         });
       }
     }
