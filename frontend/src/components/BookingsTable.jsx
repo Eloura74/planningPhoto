@@ -18,7 +18,7 @@ function BookingsTable() {
       console.log("🔍 Bookings loaded:", response.data);
       setBookings(response.data);
     } catch (error) {
-      console.error("❌ Error loading bookings:", error);
+      console.error("❌ Error loading bookings ", error);
       console.error("❌ Error details:", error.response?.data);
     }
   };
