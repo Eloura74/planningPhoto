@@ -240,20 +240,15 @@ const createGroupPrebooking = async (userId, slotId) => {
   }
 
   // Vérifier que c'est bien un mardi ou jeudi
-  const slotDate = new Date(slotData.date + "T00:00:00");
+  const slotDate =
+    slotData.date instanceof Date
+      ? slotData.date
+      : new Date(slotData.date + "T00:00:00");
   const dayOfWeek = slotDate.getDay();
-
-  console.log("🔍 Debug slot date:", {
-    rawDate: slotData.date,
-    slotDate: slotDate.toISOString(),
-    dayOfWeek,
-    isTuesday: dayOfWeek === 2,
-    isThursday: dayOfWeek === 4,
-  });
 
   if (dayOfWeek !== 2 && dayOfWeek !== 4) {
     throw new Error(
-      `Les pré-réservations groupe ne sont possibles que les mardis et jeudis (jour détecté: ${dayOfWeek})`,
+      `Les pré-réservations groupe ne sont possibles que les mardis et jeudis`,
     );
   }
 
