@@ -18,8 +18,8 @@ const register = async (
   const userId = uuidv4();
 
   await pool.query(
-    "INSERT INTO users (id, name, email, phone, role, is_group_member, password_hash) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-    [userId, name, email, phone, role, isGroupMember, passwordHash],
+    "INSERT INTO users (id, name, email, phone, role, is_group_member, is_active, password_hash) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+    [userId, name, email, phone, role, isGroupMember, true, passwordHash],
   );
 
   await createHistory(

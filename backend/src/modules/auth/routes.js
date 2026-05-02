@@ -42,4 +42,21 @@ router.post("/activate-admin-emergency", async (req, res) => {
   }
 });
 
+// Route temporaire pour activer un utilisateur par email
+router.post("/activate-user-emergency", async (req, res) => {
+  try {
+    const pool = require("../../database");
+    const { email } = req.body;
+    await pool.query("UPDATE users SET is_active = true WHERE email = $1", [
+      email,
+    ]);
+    res.json({
+      success: true,
+      message: `Utilisateur ${email} activé avec succès`,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
