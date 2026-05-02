@@ -56,12 +56,16 @@ const createSoloBooking = async (userId, slotId) => {
       const endTime = startTime === "09:00" ? "12:00" : "17:00";
 
       // Créer le slot
-      const { v4: uuidv4 } = require("uuid");
       const newSlotId = uuidv4();
-      const newSlot = await pool.query(
-        "INSERT INTO slots (id, date, start_time, end_time, type, status, capacity_min, capacity_max) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *",
+      await pool.query(
+        "INSERT INTO slots (id, date, start_time, end_time, type, status, capacity_min, capacity_max) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
         [newSlotId, date, startTime, endTime, "SOLO", "OPEN_SOLO", 1, 1],
       );
+
+      // Récupérer le slot créé
+      const newSlot = await pool.query("SELECT * FROM slots WHERE id = $1", [
+        newSlotId,
+      ]);
       slotData = newSlot.rows[0];
       slotId = newSlotId; // Utiliser le vrai ID maintenant
     } else {
