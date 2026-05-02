@@ -52,27 +52,45 @@ const createSoloBooking = async (userId, slotId) => {
     let slotData;
     if (slot.rows.length === 0) {
       // Slot virtuel - extraire date et heure de l'ID (format: YYYY-MM-DD_HH:MM)
+      console.log("🔍 Slot virtuel détecté, slotId:", slotId);
       const [date, startTime] = slotId.split("_");
       const endTime = startTime === "09:00" ? "12:00" : "17:00";
+      console.log(
+        "🔍 Date extraite:",
+        date,
+        "StartTime:",
+        startTime,
+        "EndTime:",
+        endTime,
+      );
 
       // Créer le slot
       const newSlotId = uuidv4();
+      console.log("🔍 Création du slot avec ID:", newSlotId);
       await pool.query(
         "INSERT INTO slots (id, date, start_time, end_time, type, status, capacity_min, capacity_max) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
         [newSlotId, date, startTime, endTime, "SOLO", "OPEN_SOLO", 1, 1],
       );
+      console.log("🔍 Slot inséré, récupération...");
 
       // Récupérer le slot créé
       const newSlot = await pool.query("SELECT * FROM slots WHERE id = $1", [
         newSlotId,
       ]);
+      console.log("🔍 Résultat SELECT:", newSlot.rows);
       slotData = newSlot.rows[0];
+      console.log("🔍 slotData après SELECT:", slotData);
       slotId = newSlotId; // Utiliser le vrai ID maintenant
     } else {
       slotData = slot.rows[0];
+      console.log("🔍 Slot existant trouvé:", slotData);
     }
 
-    console.log("Slot trouvé/créé:", slotData);
+    console.log("🔍 Slot final avant vérifications:", slotData);
+
+    if (!slotData) {
+      throw new Error("Erreur: slot non trouvé après création/récupération");
+    }
 
     if (slotData.status !== "OPEN_SOLO" && slotData.status !== "OPEN_TUESDAY") {
       throw new Error("Slot not available for solo booking");
