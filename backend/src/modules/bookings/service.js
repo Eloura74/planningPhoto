@@ -306,7 +306,7 @@ const createGroupPrebooking = async (userId, slotId) => {
 
   const prebookingId = uuidv4();
   await pool.query(
-    "INSERT INTO group_prebookings (id, user_id, slot_id) VALUES (?, ?, ?)",
+    "INSERT INTO group_prebookings (id, user_id, slot_id) VALUES ($1, $2, $3)",
     [prebookingId, userId, slotId],
   );
 
