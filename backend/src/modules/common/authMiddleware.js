@@ -15,18 +15,22 @@ const authenticate = async (req, res, next) => {
     req.userId = decoded.userId;
     req.userRole = decoded.role;
 
-    // Vérifier si l'utilisateur est actif (désactivé temporairement pour le debug)
-    try {
-      const user = await pool.query(
-        "SELECT is_active FROM users WHERE id = $1",
-        [decoded.userId],
-      );
-      if (user.rows.length > 0 && !user.rows[0].is_active) {
-        return res.status(403).json({ error: "Account is deactivated" });
-      }
-    } catch (e) {
-      // Ignorer l'erreur si la colonne n'existe pas
+    // Vérifier que l'utilisateur existe dans la base de données
+    const user = await pool.query(
+      "SELECT id, role, is_active FROM users WHERE id = $1",
+      [decoded.userId],
+    );
+
+    if (user.rows.length === 0) {
+      return res.status(403).json({ error: "User not found" });
     }
+
+    if (!user.rows[0].is_active) {
+      return res.status(403).json({ error: "Account is deactivated" });
+    }
+
+    // Mettre à jour le rôle depuis la base de données (au cas où il a changé)
+    req.userRole = user.rows[0].role;
 
     next();
   } catch (error) {
