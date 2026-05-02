@@ -273,18 +273,20 @@ function BookingModal({
 
           <div className="flex gap-3 mt-4">
             {(slot.type === "GROUP" || slot.type === "MIXED") &&
-              user?.isGroupMember &&
-              slot.group_prebooking_count > 0 && (
+              user?.isGroupMember && (
                 <button
                   onClick={() => onViewDetails && onViewDetails(slot)}
                   className="flex-1 py-3 rounded-xl font-semibold btn-gold"
                 >
-                  👥 Voir les participants ({slot.group_prebooking_count})
+                  👥 Voir les participants{" "}
+                  {slot.group_prebooking_count
+                    ? `(${slot.group_prebooking_count})`
+                    : ""}
                 </button>
               )}
             <button
               onClick={onClose}
-              className={`${(slot.type === "GROUP" || slot.type === "MIXED") && user?.isGroupMember && slot.group_prebooking_count > 0 ? "flex-1" : "w-full"} py-3 rounded-xl font-semibold btn-chrome`}
+              className={`${(slot.type === "GROUP" || slot.type === "MIXED") && user?.isGroupMember ? "flex-1" : "w-full"} py-3 rounded-xl font-semibold btn-chrome`}
             >
               Fermer
             </button>

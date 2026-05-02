@@ -13,10 +13,13 @@ function BookingsTable() {
 
   const loadBookings = async () => {
     try {
+      console.log("🔍 Loading all bookings...");
       const response = await bookingsAPI.getAll();
+      console.log("🔍 Bookings loaded:", response.data);
       setBookings(response.data);
     } catch (error) {
-      console.error("Error loading bookings:", error);
+      console.error("❌ Error loading bookings:", error);
+      console.error("❌ Error details:", error.response?.data);
     }
   };
 
