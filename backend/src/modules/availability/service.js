@@ -58,7 +58,13 @@ const getAvailableSlots = async (startDate, endDate) => {
     groupPrebookingsBySlot.get(gp.slot_id).push(gp);
   });
 
-  const unavailableDates = new Set(unavailabilities.rows.map((u) => u.date));
+  const unavailableDates = new Set(
+    unavailabilities.rows.map((u) => {
+      const date =
+        u.date instanceof Date ? u.date : new Date(u.date + "T00:00:00");
+      return date.toISOString().split("T")[0];
+    }),
+  );
 
   const slots = [];
   const startLoop = new Date(startDate);

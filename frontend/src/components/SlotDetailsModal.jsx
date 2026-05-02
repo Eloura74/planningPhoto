@@ -13,11 +13,15 @@ function SlotDetailsModal({ slot, onClose, user }) {
     try {
       setLoading(true);
       if (slot.type === "GROUP" || slot.type === "MIXED") {
-        const response = await bookingsAPI.getGroupPrebookings(slot.id);
+        // Utiliser slot_id s'il existe (slot réel), sinon slot.id (slot virtuel)
+        const slotId = slot.slot_id || slot.id;
+        console.log("🔍 Loading participants for slot:", slotId);
+        const response = await bookingsAPI.getGroupPrebookings(slotId);
+        console.log("🔍 Participants loaded:", response.data);
         setParticipants(response.data);
       }
     } catch (error) {
-      console.error("Error loading participants:", error);
+      console.error("❌ Error loading participants:", error);
     } finally {
       setLoading(false);
     }
@@ -85,13 +89,19 @@ function SlotDetailsModal({ slot, onClose, user }) {
         </div>
 
         {/* Slot Info */}
-        <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: "var(--bg-tertiary)" }}>
+        <div
+          className="mb-6 p-4 rounded-lg"
+          style={{ backgroundColor: "var(--bg-tertiary)" }}
+        >
           <div className="grid grid-cols-2 gap-4">
             <div>
               <p className="text-sm" style={{ color: "var(--text-muted)" }}>
                 Date
               </p>
-              <p className="font-semibold" style={{ color: "var(--text-primary)" }}>
+              <p
+                className="font-semibold"
+                style={{ color: "var(--text-primary)" }}
+              >
                 {new Date(slot.date + "T00:00:00").toLocaleDateString("fr-FR", {
                   weekday: "long",
                   year: "numeric",
@@ -104,7 +114,10 @@ function SlotDetailsModal({ slot, onClose, user }) {
               <p className="text-sm" style={{ color: "var(--text-muted)" }}>
                 Horaire
               </p>
-              <p className="font-semibold" style={{ color: "var(--text-primary)" }}>
+              <p
+                className="font-semibold"
+                style={{ color: "var(--text-primary)" }}
+              >
                 {slot.start_time} - {slot.end_time}
               </p>
             </div>
@@ -112,7 +125,10 @@ function SlotDetailsModal({ slot, onClose, user }) {
               <p className="text-sm" style={{ color: "var(--text-muted)" }}>
                 Type
               </p>
-              <p className="font-semibold" style={{ color: "var(--gold-primary)" }}>
+              <p
+                className="font-semibold"
+                style={{ color: "var(--gold-primary)" }}
+              >
                 {slot.type === "GROUP" ? "Session de groupe" : "Session solo"}
               </p>
             </div>
@@ -120,7 +136,10 @@ function SlotDetailsModal({ slot, onClose, user }) {
               <p className="text-sm" style={{ color: "var(--text-muted)" }}>
                 Participants
               </p>
-              <p className="font-semibold" style={{ color: "var(--gold-primary)" }}>
+              <p
+                className="font-semibold"
+                style={{ color: "var(--gold-primary)" }}
+              >
                 {participants.length} / 5
               </p>
             </div>
@@ -137,11 +156,17 @@ function SlotDetailsModal({ slot, onClose, user }) {
           </h3>
 
           {loading ? (
-            <div className="text-center py-8" style={{ color: "var(--text-muted)" }}>
+            <div
+              className="text-center py-8"
+              style={{ color: "var(--text-muted)" }}
+            >
               Chargement...
             </div>
           ) : participants.length === 0 ? (
-            <div className="text-center py-8" style={{ color: "var(--text-muted)" }}>
+            <div
+              className="text-center py-8"
+              style={{ color: "var(--text-muted)" }}
+            >
               Aucun participant pour le moment
             </div>
           ) : (
@@ -168,7 +193,10 @@ function SlotDetailsModal({ slot, onClose, user }) {
                     >
                       {participant.user_name}
                     </p>
-                    <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+                    <p
+                      className="text-sm"
+                      style={{ color: "var(--text-muted)" }}
+                    >
                       {participant.user_email}
                     </p>
                   </div>
@@ -191,7 +219,10 @@ function SlotDetailsModal({ slot, onClose, user }) {
 
         {/* Footer */}
         <div className="mt-6 flex justify-end">
-          <button onClick={onClose} className="px-6 py-2 rounded-lg font-semibold btn-chrome">
+          <button
+            onClick={onClose}
+            className="px-6 py-2 rounded-lg font-semibold btn-chrome"
+          >
             Fermer
           </button>
         </div>
