@@ -19,7 +19,7 @@ function UnavailabilityManager() {
 
       const response = await availabilityAPI.getUnavailabilities(
         startDate,
-        endDate
+        endDate,
       );
       setUnavailabilities(response.data);
     } catch (error) {
@@ -43,7 +43,7 @@ function UnavailabilityManager() {
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors de la mise à jour",
-        "error"
+        "error",
       );
     }
   };
@@ -56,7 +56,7 @@ function UnavailabilityManager() {
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors de la suppression",
-        "error"
+        "error",
       );
     }
   };
@@ -73,59 +73,87 @@ function UnavailabilityManager() {
         📅 Gestion des indisponibilités
       </h3>
 
-      <form onSubmit={handleMarkUnavailable} className="mb-6">
-        <div className="flex gap-3">
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-            className="flex-1 px-3 py-2 rounded-lg input-dark"
-            min={new Date().toISOString().split("T")[0]}
-            required
-          />
-          <button type="submit" className="px-6 py-2 rounded-lg btn-gold">
-            Marquer indisponible
-          </button>
-        </div>
-      </form>
+      <div className="mb-6">
+        <p style={{ color: "var(--text-muted)" }} className="mb-3">
+          💡 Sélectionnez une date pour la marquer comme indisponible. Les
+          créneaux de cette journée n'apparaîtront plus dans le calendrier.
+        </p>
+        <form onSubmit={handleMarkUnavailable}>
+          <div className="flex gap-3">
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="flex-1 px-3 py-2 rounded-lg input-dark"
+              min={new Date().toISOString().split("T")[0]}
+              required
+            />
+            <button type="submit" className="px-6 py-2 rounded-lg btn-gold">
+              ➕ Marquer indisponible
+            </button>
+          </div>
+        </form>
+      </div>
 
-      <div className="space-y-2">
-        {unavailabilities.length === 0 ? (
-          <p style={{ color: "var(--text-muted)" }}>
-            Aucune indisponibilité définie
-          </p>
-        ) : (
-          unavailabilities.map((unavail) => (
+      <div>
+        <h4
+          className="font-semibold mb-3"
+          style={{ color: "var(--text-primary)" }}
+        >
+          📅 Jours indisponibles ({unavailabilities.length})
+        </h4>
+        <div className="space-y-2 max-h-64 overflow-y-auto">
+          {unavailabilities.length === 0 ? (
             <div
-              key={unavail.date}
-              className="flex justify-between items-center p-3 rounded-lg"
+              className="text-center py-6 rounded-lg"
               style={{ backgroundColor: "var(--bg-tertiary)" }}
             >
-              <span style={{ color: "var(--text-primary)" }}>
-                {new Date(unavail.date + "T00:00:00").toLocaleDateString(
-                  "fr-FR",
-                  {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  }
-                )}
-              </span>
-              <button
-                onClick={() => handleRemoveUnavailability(unavail.date)}
-                className="px-3 py-1 rounded text-sm"
-                style={{
-                  backgroundColor: "rgba(255, 0, 0, 0.1)",
-                  color: "#ff6b6b",
-                  border: "1px solid rgba(255, 0, 0, 0.3)",
-                }}
+              <p style={{ color: "var(--text-muted)" }}>
+                ✅ Aucune indisponibilité définie
+              </p>
+              <p
+                style={{ color: "var(--text-muted)", fontSize: "0.875rem" }}
+                className="mt-1"
               >
-                Retirer
-              </button>
+                Tous les jours sont disponibles pour les réservations
+              </p>
             </div>
-          ))
-        )}
+          ) : (
+            unavailabilities.map((unavail) => (
+              <div
+                key={unavail.date}
+                className="flex justify-between items-center p-3 rounded-lg hover:opacity-80 transition-opacity"
+                style={{ backgroundColor: "var(--bg-tertiary)" }}
+              >
+                <div className="flex items-center gap-2">
+                  <span style={{ color: "var(--gold-primary)" }}>🚫</span>
+                  <span style={{ color: "var(--text-primary)" }}>
+                    {new Date(unavail.date + "T00:00:00").toLocaleDateString(
+                      "fr-FR",
+                      {
+                        weekday: "long",
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      },
+                    )}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleRemoveUnavailability(unavail.date)}
+                  className="px-3 py-1 rounded text-sm hover:opacity-80 transition-opacity"
+                  style={{
+                    backgroundColor: "rgba(255, 0, 0, 0.1)",
+                    color: "#ff6b6b",
+                    border: "1px solid rgba(255, 0, 0, 0.3)",
+                  }}
+                >
+                  ✕ Retirer
+                </button>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
