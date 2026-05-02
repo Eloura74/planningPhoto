@@ -158,7 +158,7 @@ const createSoloBooking = async (userId, slotId) => {
 
     const bookingId = uuidv4();
     const result = await pool.query(
-      "INSERT INTO bookings (id, user_id, slot_id, status) VALUES (?, ?, ?, ?) RETURNING *",
+      "INSERT INTO bookings (id, user_id, slot_id, status) VALUES ($1, $2, $3, $4) RETURNING *",
       [bookingId, userId, slotId, "REQUESTED"],
     );
 
