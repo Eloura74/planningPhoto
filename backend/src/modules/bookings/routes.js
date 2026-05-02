@@ -64,7 +64,16 @@ router.get("/", authenticate, requireAdmin, async (req, res) => {
     // Combiner les deux listes
     const allBookings = [...soloBookings.rows, ...groupBookings.rows];
     allBookings.sort((a, b) => {
-      const dateCompare = b.slot_date.localeCompare(a.slot_date);
+      // Convertir les dates en string pour la comparaison
+      const dateA =
+        a.slot_date instanceof Date
+          ? a.slot_date.toISOString().split("T")[0]
+          : a.slot_date;
+      const dateB =
+        b.slot_date instanceof Date
+          ? b.slot_date.toISOString().split("T")[0]
+          : b.slot_date;
+      const dateCompare = dateB.localeCompare(dateA);
       if (dateCompare !== 0) return dateCompare;
       return b.slot_start_time.localeCompare(a.slot_start_time);
     });
