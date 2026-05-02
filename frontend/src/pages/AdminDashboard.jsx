@@ -4,6 +4,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../contexts/ToastContext";
 import { adminAPI, slotsAPI, bookingsAPI } from "../services/api";
 import LoadingSpinner from "../components/LoadingSpinner";
+import UnavailabilityManager from "../components/UnavailabilityManager";
 
 function AdminDashboard() {
   const [dashboardData, setDashboardData] = useState(null);
@@ -1109,14 +1110,19 @@ function AdminDashboard() {
           </div>
         )}
 
-        <div className="rounded-xl shadow-lg p-6 mb-8 card-dark">
+        <UnavailabilityManager />
+
+        <div
+          className="p-6 rounded-2xl card-gold mt-6"
+          style={{ backgroundColor: "var(--bg-secondary)" }}
+        >
           <div className="flex items-center gap-3 mb-6">
             <div
-              className="p-2 rounded-lg glow-gold"
+              className="p-3 rounded-xl glow-gold"
               style={{ background: "var(--chrome-gradient)" }}
             >
               <svg
-                className="w-6 h-6"
+                className="w-8 h-8"
                 style={{ color: "var(--text-dark)" }}
                 fill="none"
                 stroke="currentColor"

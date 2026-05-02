@@ -78,16 +78,18 @@ router.get("/slot/:slotId", authenticate, async (req, res) => {
 router.get("/group/:slotId", authenticate, async (req, res) => {
   try {
     const { slotId } = req.params;
-    const userRole = await pool.query("SELECT role FROM users WHERE id = $1", [
-      req.userId,
-    ]);
-    const role = userRole.rows[0]?.role;
+    const userData = await pool.query(
+      "SELECT role, is_group_member FROM users WHERE id = $1",
+      [req.userId],
+    );
+    const { role, is_group_member } = userData.rows[0] || {};
 
     let bookings;
-    if (role === "ADMIN") {
+    if (role === "ADMIN" || is_group_member) {
+      // Admin et membres du groupe voient tous les participants (affinités)
       bookings = await getGroupPrebookingsBySlot(slotId);
     } else {
-      // Les élèves ne voient que leurs propres pré-réservations
+      // Les élèves solo ne voient que leurs propres pré-réservations
       bookings = await getGroupPrebookingsBySlot(slotId, req.userId);
     }
     res.json(bookings);
