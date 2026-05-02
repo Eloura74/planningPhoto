@@ -130,6 +130,28 @@ function UsersManagement() {
     }
   };
 
+  const handleToggleGroupMember = async (userId, currentStatus) => {
+    try {
+      const userToUpdate = users.find((u) => u.id === userId);
+      await usersAPI.update(userId, {
+        ...userToUpdate,
+        is_group_member: !currentStatus,
+      });
+      showToast(
+        currentStatus
+          ? "Utilisateur retiré du groupe"
+          : "Utilisateur ajouté au groupe",
+        "success",
+      );
+      loadUsers();
+    } catch (error) {
+      showToast(
+        error.response?.data?.error || "Erreur lors de la mise à jour",
+        "error",
+      );
+    }
+  };
+
   if (loading) {
     return <LoadingSpinner />;
   }
@@ -641,29 +663,25 @@ function UsersManagement() {
                       </span>
                     </td>
                     <td className="p-3">
-                      {user.is_group_member ? (
-                        <span
-                          className="px-2 py-1 rounded text-xs"
-                          style={{
-                            backgroundColor: "rgba(0, 255, 0, 0.2)",
-                            color: "#00ff00",
-                            border: "1px solid #00ff00",
-                          }}
-                        >
-                          Oui
-                        </span>
-                      ) : (
-                        <span
-                          className="px-2 py-1 rounded text-xs"
-                          style={{
-                            backgroundColor: "rgba(128, 128, 128, 0.2)",
-                            color: "var(--text-muted)",
-                            border: "1px solid var(--border-secondary)",
-                          }}
-                        >
-                          Non
-                        </span>
-                      )}
+                      <button
+                        onClick={() =>
+                          handleToggleGroupMember(user.id, user.is_group_member)
+                        }
+                        className="px-2 py-1 rounded text-xs cursor-pointer hover:opacity-80 transition-opacity"
+                        style={{
+                          backgroundColor: user.is_group_member
+                            ? "rgba(0, 255, 0, 0.2)"
+                            : "rgba(128, 128, 128, 0.2)",
+                          color: user.is_group_member
+                            ? "#00ff00"
+                            : "var(--text-muted)",
+                          border: user.is_group_member
+                            ? "1px solid #00ff00"
+                            : "1px solid var(--border-secondary)",
+                        }}
+                      >
+                        {user.is_group_member ? "✓ Groupe" : "➕ Ajouter"}
+                      </button>
                     </td>
                     <td className="p-3">
                       {user.is_active ? (

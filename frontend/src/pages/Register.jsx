@@ -10,7 +10,6 @@ function Register() {
     password: "",
     confirmPassword: "",
     role: "STUDENT",
-    isGroupMember: false,
   });
   const [error, setError] = useState("");
   const { register } = useAuth();
@@ -40,7 +39,7 @@ function Register() {
         formData.phone,
         formData.password,
         formData.role,
-        formData.isGroupMember,
+        false, // L'admin décide qui est dans le groupe
       );
       navigate("/login");
     } catch (err) {
@@ -152,22 +151,10 @@ function Register() {
               required
             />
           </div>
-          <div className="mb-6">
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                name="isGroupMember"
-                checked={formData.isGroupMember}
-                onChange={handleChange}
-                className="mr-2"
-                style={{ accentColor: "var(--gold-primary)" }}
-              />
-              <span style={{ color: "var(--text-secondary)" }}>
-                Membre du groupe
-              </span>
-            </label>
-          </div>
-          <button type="submit" className="w-full py-2 rounded-lg btn-gold">
+          <button
+            type="submit"
+            className="w-full py-2 rounded-lg btn-gold mt-6"
+          >
             S'inscrire
           </button>
         </form>
