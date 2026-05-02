@@ -16,6 +16,33 @@ const {
   getSlotsWithLowGroupParticipation,
 } = require("./service");
 
+// Route pour récupérer toutes les réservations (admin seulement)
+router.get("/", authenticate, requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        b.id,
+        b.status,
+        b.created_at,
+        u.id as user_id,
+        u.name as user_name,
+        u.email as user_email,
+        s.id as slot_id,
+        s.date as slot_date,
+        s.start_time as slot_start_time,
+        s.end_time as slot_end_time,
+        s.type as slot_type
+      FROM bookings b
+      JOIN users u ON b.user_id = u.id
+      JOIN slots s ON b.slot_id = s.id
+      ORDER BY s.date DESC, s.start_time DESC
+    `);
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.post("/solo", authenticate, async (req, res) => {
   try {
     const { slotId } = req.body;

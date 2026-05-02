@@ -48,6 +48,7 @@ export const slotsAPI = {
 };
 
 export const bookingsAPI = {
+  getAll: () => api.get("/bookings"),
   createSolo: (slotId) => api.post("/bookings/solo", { slotId }),
   createGroup: (slotId) => api.post("/bookings/group", { slotId }),
   getMyBookings: () => api.get("/bookings/my"),

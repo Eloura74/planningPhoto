@@ -26,7 +26,7 @@ function GroupSlotManager() {
           (s.type === "GROUP" || s.type === "MIXED") &&
           (s.status === "BLOCKED_FOR_GROUP" ||
             s.status === "GROUP_PREBOOKING" ||
-            s.status === "OPEN_TUESDAY")
+            s.status === "OPEN_TUESDAY"),
       );
       setGroupSlots(slots);
     } catch (error) {
@@ -53,7 +53,7 @@ function GroupSlotManager() {
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors de la validation",
-        "error"
+        "error",
       );
     }
   };
@@ -66,7 +66,7 @@ function GroupSlotManager() {
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors du blocage",
-        "error"
+        "error",
       );
     }
   };
@@ -108,7 +108,7 @@ function GroupSlotManager() {
                             year: "numeric",
                             month: "long",
                             day: "numeric",
-                          }
+                          },
                         )}
                       </p>
                       <p className="text-sm text-gray-600">
@@ -120,15 +120,15 @@ function GroupSlotManager() {
                             slot.status === "BLOCKED_FOR_GROUP"
                               ? "bg-blue-100 text-blue-700"
                               : slot.status === "GROUP_PREBOOKING"
-                              ? "bg-green-100 text-green-700"
-                              : "bg-gray-100 text-gray-700"
+                                ? "bg-green-100 text-green-700"
+                                : "bg-gray-100 text-gray-700"
                           }`}
                         >
                           {slot.status === "BLOCKED_FOR_GROUP"
                             ? "Réservé groupe"
                             : slot.status === "GROUP_PREBOOKING"
-                            ? "Pré-réservations"
-                            : "Ouvert"}
+                              ? "Pré-réservations"
+                              : "Ouvert"}
                         </span>
                         {slot.group_prebooking_count > 0 && (
                           <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-700">
@@ -145,22 +145,37 @@ function GroupSlotManager() {
                   {slot.group_prebooking_count > 0 && (
                     <button
                       onClick={() => loadParticipants(slot.id)}
-                      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-semibold"
+                      className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                        color: "white",
+                      }}
                     >
-                      👥 Voir participants
+                      👥 Voir ({slot.group_prebooking_count})
                     </button>
                   )}
                   {slot.group_prebooking_count >= 3 && (
                     <button
                       onClick={() => handleValidateSlot(slot.id)}
-                      className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-semibold"
+                      className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                        color: "white",
+                      }}
                     >
-                      ✓ Valider
+                      ✓ Valider groupe
                     </button>
                   )}
                   <button
                     onClick={() => handleBlockSlot(slot.id)}
-                    className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm font-semibold"
+                    className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                      color: "white",
+                    }}
                   >
                     🚫 Bloquer
                   </button>
@@ -185,7 +200,9 @@ function GroupSlotManager() {
                           <p className="font-medium text-gray-800">
                             {p.user_name}
                           </p>
-                          <p className="text-xs text-gray-600">{p.user_email}</p>
+                          <p className="text-xs text-gray-600">
+                            {p.user_email}
+                          </p>
                         </div>
                       </div>
                     ))}

@@ -28,7 +28,7 @@ function BookingsTable() {
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors de la confirmation",
-        "error"
+        "error",
       );
     }
   };
@@ -41,7 +41,7 @@ function BookingsTable() {
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors de l'annulation",
-        "error"
+        "error",
       );
     }
   };
@@ -53,13 +53,23 @@ function BookingsTable() {
 
   const getStatusBadge = (status) => {
     const badges = {
-      REQUESTED: { bg: "bg-yellow-100", text: "text-yellow-700", label: "En attente" },
-      CONFIRMED: { bg: "bg-green-100", text: "text-green-700", label: "Confirmé" },
+      REQUESTED: {
+        bg: "bg-yellow-100",
+        text: "text-yellow-700",
+        label: "En attente",
+      },
+      CONFIRMED: {
+        bg: "bg-green-100",
+        text: "text-green-700",
+        label: "Confirmé",
+      },
       CANCELLED: { bg: "bg-red-100", text: "text-red-700", label: "Annulé" },
     };
     const badge = badges[status] || badges.REQUESTED;
     return (
-      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}>
+      <span
+        className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}
+      >
         {badge.label}
       </span>
     );
@@ -89,10 +99,10 @@ function BookingsTable() {
               {status === "ALL"
                 ? "Toutes"
                 : status === "REQUESTED"
-                ? "En attente"
-                : status === "CONFIRMED"
-                ? "Confirmées"
-                : "Annulées"}
+                  ? "En attente"
+                  : status === "CONFIRMED"
+                    ? "Confirmées"
+                    : "Annulées"}
             </button>
           ))}
         </div>
@@ -151,7 +161,7 @@ function BookingsTable() {
                   <td className="py-3 px-4">
                     <p className="text-gray-800">
                       {new Date(
-                        booking.slot_date + "T00:00:00"
+                        booking.slot_date + "T00:00:00",
                       ).toLocaleDateString("fr-FR", {
                         weekday: "short",
                         day: "numeric",
@@ -175,25 +185,87 @@ function BookingsTable() {
                       {booking.slot_type === "GROUP" ? "Groupe" : "Solo"}
                     </span>
                   </td>
-                  <td className="py-3 px-4">{getStatusBadge(booking.status)}</td>
+                  <td className="py-3 px-4">
+                    {getStatusBadge(booking.status)}
+                  </td>
                   <td className="py-3 px-4">
                     <div className="flex gap-2 justify-end">
                       {booking.status === "REQUESTED" && (
                         <>
                           <button
                             onClick={() => handleConfirm(booking.id)}
-                            className="px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-semibold"
+                            className="px-3 py-1 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                            style={{
+                              background:
+                                "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                              color: "white",
+                            }}
+                            title="Confirmer"
                           >
-                            ✓
+                            ✓ Confirmer
                           </button>
                           <button
                             onClick={() => handleCancel(booking.id)}
-                            className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm font-semibold"
+                            className="px-3 py-1 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                            style={{
+                              background:
+                                "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                              color: "white",
+                            }}
+                            title="Refuser"
                           >
-                            ✕
+                            ✕ Refuser
                           </button>
                         </>
                       )}
+                      {booking.status === "CONFIRMED" && (
+                        <button
+                          onClick={() => handleCancel(booking.id)}
+                          className="px-3 py-1 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                          style={{
+                            background:
+                              "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+                            color: "white",
+                          }}
+                          title="Annuler"
+                        >
+                          🚫 Annuler
+                        </button>
+                      )}
+                      <button
+                        onClick={() =>
+                          (window.location.href = `mailto:${booking.user_email}?subject=Réservation du ${new Date(booking.slot_date + "T00:00:00").toLocaleDateString("fr-FR")}`)
+                        }
+                        className="px-3 py-1 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                        style={{
+                          background:
+                            "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                          color: "white",
+                        }}
+                        title="Envoyer un email"
+                      >
+                        ✉️
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              `Supprimer définitivement la réservation de ${booking.user_name} ?`,
+                            )
+                          ) {
+                            handleCancel(booking.id);
+                          }
+                        }}
+                        className="px-3 py-1 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                        style={{
+                          background:
+                            "linear-gradient(135deg, #6b7280 0%, #4b5563 100%)",
+                          color: "white",
+                        }}
+                        title="Supprimer"
+                      >
+                        🗑️
+                      </button>
                     </div>
                   </td>
                 </tr>
