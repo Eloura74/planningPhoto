@@ -6,6 +6,7 @@ import { slotsAPI, bookingsAPI, availabilityAPI } from "../services/api";
 import CalendarView from "../components/Calendar";
 import BookingModal from "../components/BookingModal";
 import LoadingSpinner from "../components/LoadingSpinner";
+import SlotDetailsModal from "../components/SlotDetailsModal";
 
 function CalendarPage() {
   const [slots, setSlots] = useState([]);
@@ -14,6 +15,8 @@ function CalendarPage() {
   const [loading, setLoading] = useState(true);
   const [slotTypeFilter, setSlotTypeFilter] = useState("ALL");
   const [slotStatusFilter, setSlotStatusFilter] = useState("ALL");
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [detailsSlot, setDetailsSlot] = useState(null);
   const { user, logout } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -410,6 +413,22 @@ function CalendarPage() {
             onClose={() => setSelectedSlot(null)}
             onBookSolo={handleBookSolo}
             onBookGroup={handleBookGroup}
+            onViewDetails={(slot) => {
+              setDetailsSlot(slot);
+              setShowDetailsModal(true);
+              setSelectedSlot(null);
+            }}
+            user={user}
+          />
+        )}
+
+        {showDetailsModal && detailsSlot && (
+          <SlotDetailsModal
+            slot={detailsSlot}
+            onClose={() => {
+              setShowDetailsModal(false);
+              setDetailsSlot(null);
+            }}
             user={user}
           />
         )}

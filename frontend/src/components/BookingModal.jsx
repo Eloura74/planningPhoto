@@ -4,6 +4,7 @@ function BookingModal({
   onClose,
   onBookSolo,
   onBookGroup,
+  onViewDetails,
   user,
 }) {
   const canBookSolo = status === "OPEN_SOLO" && slot.type === "SOLO";
@@ -270,12 +271,24 @@ function BookingModal({
               )}
           </div>
 
-          <button
-            onClick={onClose}
-            className="w-full mt-4 py-3 rounded-xl font-semibold btn-chrome"
-          >
-            Fermer
-          </button>
+          <div className="flex gap-3 mt-4">
+            {(slot.type === "GROUP" || slot.type === "MIXED") &&
+              user?.isGroupMember &&
+              slot.group_prebooking_count > 0 && (
+                <button
+                  onClick={() => onViewDetails && onViewDetails(slot)}
+                  className="flex-1 py-3 rounded-xl font-semibold btn-gold"
+                >
+                  👥 Voir les participants ({slot.group_prebooking_count})
+                </button>
+              )}
+            <button
+              onClick={onClose}
+              className={`${(slot.type === "GROUP" || slot.type === "MIXED") && user?.isGroupMember && slot.group_prebooking_count > 0 ? "flex-1" : "w-full"} py-3 rounded-xl font-semibold btn-chrome`}
+            >
+              Fermer
+            </button>
+          </div>
         </div>
       </div>
     </div>
