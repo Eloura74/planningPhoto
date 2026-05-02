@@ -10,6 +10,7 @@ const userRoutes = require("./modules/users/routes");
 const slotRoutes = require("./modules/slots/routes");
 const bookingRoutes = require("./modules/bookings/routes");
 const adminRoutes = require("./modules/admin/routes");
+const availabilityRoutes = require("./modules/availability/routes");
 const availabilityPeriodRoutes = require("./modules/availabilityPeriods/routes");
 
 const app = express();
@@ -22,6 +23,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/slots", slotRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/availability", availabilityRoutes);
 app.use("/api/availability-periods", availabilityPeriodRoutes);
 
 const PORT = process.env.PORT || 5000;
