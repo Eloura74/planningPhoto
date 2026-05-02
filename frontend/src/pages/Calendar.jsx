@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useToast } from "../contexts/ToastContext";
-import { slotsAPI, bookingsAPI } from "../services/api";
+import { slotsAPI, bookingsAPI, availabilityAPI } from "../services/api";
 import CalendarView from "../components/Calendar";
 import BookingModal from "../components/BookingModal";
 import LoadingSpinner from "../components/LoadingSpinner";
@@ -45,7 +45,7 @@ function CalendarPage() {
 
   const loadSlots = async () => {
     try {
-      const response = await slotsAPI.getAll(startDate, endDate);
+      const response = await availabilityAPI.getSlots(startDate, endDate);
       let filteredSlots = response.data;
 
       console.log("🔍 Créneaux reçus:", filteredSlots.length, filteredSlots);
@@ -54,20 +54,24 @@ function CalendarPage() {
       // Filtre par rôle et type d'élève
       if (user?.role === "STUDENT") {
         if (user?.isGroupMember) {
-          // Membres du groupe : voir les créneaux GROUP disponibles
+          // Membres du groupe : voir les créneaux GROUP et MIXED (mardis)
           filteredSlots = filteredSlots.filter(
             (slot) =>
-              slot.type === "GROUP" &&
+              (slot.type === "GROUP" || slot.type === "MIXED") &&
               (slot.status === "BLOCKED_FOR_GROUP" ||
                 slot.status === "GROUP_PREBOOKING" ||
-                slot.status === "GROUP_CONFIRMED"),
+                slot.status === "GROUP_CONFIRMED" ||
+                slot.status === "OPEN_TUESDAY"),
           );
         } else {
-          // Élèves solo : voir les créneaux SOLO ouverts
+          // Élèves solo : voir les créneaux SOLO et MIXED (mardis sans groupe)
           filteredSlots = filteredSlots.filter(
             (slot) =>
-              slot.type === "SOLO" &&
-              (slot.status === "OPEN_SOLO" || slot.status === "SOLO_CONFIRMED"),
+              (slot.type === "SOLO" ||
+                (slot.type === "MIXED" && slot.group_prebooking_count === 0)) &&
+              (slot.status === "OPEN_SOLO" ||
+                slot.status === "SOLO_CONFIRMED" ||
+                slot.status === "OPEN_TUESDAY"),
           );
         }
       }

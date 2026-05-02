@@ -64,3 +64,16 @@ export const usersAPI = {
   update: (id, data) => api.put(`/users/${id}`, data),
   toggleStatus: (id) => api.post(`/users/${id}/toggle-status`),
 };
+
+export const availabilityAPI = {
+  getSlots: (startDate, endDate) =>
+    api.get("/availability/slots", { params: { startDate, endDate } }),
+  getUnavailabilities: (startDate, endDate) =>
+    api.get("/availability/unavailabilities", {
+      params: { startDate, endDate },
+    }),
+  markUnavailable: (date) =>
+    api.post("/availability/unavailabilities", { date }),
+  removeUnavailability: (date) =>
+    api.delete(`/availability/unavailabilities/${date}`),
+};
