@@ -222,7 +222,11 @@ async function initializeDefaultAdmin() {
       console.log("  Email: fabien.licata@gmail.com");
       console.log("  Mot de passe: admin1412");
     } else {
-      console.log("✓ Admin existe déjà");
+      // S'assurer que l'admin est toujours actif
+      await pool.query("UPDATE users SET is_active = true WHERE email = $1", [
+        adminEmail,
+      ]);
+      console.log("✓ Admin existe déjà et est maintenant actif");
     }
   } catch (error) {
     console.error("Erreur lors de l'initialisation de l'admin:", error.message);
