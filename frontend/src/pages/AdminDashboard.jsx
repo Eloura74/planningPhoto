@@ -5,6 +5,9 @@ import { useToast } from "../contexts/ToastContext";
 import { adminAPI, slotsAPI, bookingsAPI } from "../services/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import UnavailabilityManager from "../components/UnavailabilityManager";
+import AdminStats from "../components/AdminStats";
+import GroupSlotManager from "../components/GroupSlotManager";
+import BookingsTable from "../components/BookingsTable";
 
 function AdminDashboard() {
   const [dashboardData, setDashboardData] = useState(null);

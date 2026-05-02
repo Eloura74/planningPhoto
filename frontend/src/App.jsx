@@ -6,7 +6,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Calendar from "./pages/Calendar";
-import AdminDashboard from "./pages/AdminDashboard";
+import AdminDashboard from "./pages/AdminDashboardNew";
 import UsersManagement from "./pages/UsersManagement";
 import Profile from "./pages/Profile";
 
