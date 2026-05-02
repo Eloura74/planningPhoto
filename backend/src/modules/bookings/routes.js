@@ -19,7 +19,8 @@ const {
 // Route pour récupérer toutes les réservations (admin seulement)
 router.get("/", authenticate, requireAdmin, async (req, res) => {
   try {
-    const result = await pool.query(`
+    // Récupérer les bookings solo
+    const soloBookings = await pool.query(`
       SELECT 
         b.id,
         b.status,
@@ -31,14 +32,47 @@ router.get("/", authenticate, requireAdmin, async (req, res) => {
         s.date as slot_date,
         s.start_time as slot_start_time,
         s.end_time as slot_end_time,
-        s.type as slot_type
+        s.type as slot_type,
+        'SOLO' as booking_type
       FROM bookings b
       JOIN users u ON b.user_id = u.id
       JOIN slots s ON b.slot_id = s.id
       ORDER BY s.date DESC, s.start_time DESC
     `);
-    res.json(result.rows);
+
+    // Récupérer les pré-réservations groupe
+    const groupBookings = await pool.query(`
+      SELECT 
+        gp.id,
+        'GROUP_PREBOOKING' as status,
+        gp.created_at,
+        u.id as user_id,
+        u.name as user_name,
+        u.email as user_email,
+        s.id as slot_id,
+        s.date as slot_date,
+        s.start_time as slot_start_time,
+        s.end_time as slot_end_time,
+        s.type as slot_type,
+        'GROUP' as booking_type
+      FROM group_prebookings gp
+      JOIN users u ON gp.user_id = u.id
+      JOIN slots s ON gp.slot_id = s.id
+      ORDER BY s.date DESC, s.start_time DESC
+    `);
+
+    // Combiner les deux listes
+    const allBookings = [...soloBookings.rows, ...groupBookings.rows];
+    allBookings.sort((a, b) => {
+      const dateCompare = b.slot_date.localeCompare(a.slot_date);
+      if (dateCompare !== 0) return dateCompare;
+      return b.slot_start_time.localeCompare(a.slot_start_time);
+    });
+
+    console.log("🔍 Admin bookings loaded:", allBookings.length, "total");
+    res.json(allBookings);
   } catch (error) {
+    console.error("❌ Error loading admin bookings:", error);
     res.status(500).json({ error: error.message });
   }
 });
