@@ -16,6 +16,24 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Intercepteur pour gérer les erreurs 403 (utilisateur supprimé)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (
+      error.response?.status === 403 &&
+      (error.response?.data?.error === "User not found" ||
+        error.response?.data?.error === "Account is deactivated")
+    ) {
+      // Déconnecter automatiquement l'utilisateur
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+    }
+    return Promise.reject(error);
+  },
+);
+
 export const slotsAPI = {
   getAll: (startDate, endDate) =>
     api.get("/slots", { params: { startDate, endDate } }),
