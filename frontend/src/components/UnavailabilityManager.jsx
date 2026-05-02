@@ -40,6 +40,8 @@ function UnavailabilityManager() {
       showToast("Jour marqué comme indisponible", "success");
       setSelectedDate("");
       loadUnavailabilities();
+      // Rafraîchir la page pour mettre à jour le calendrier
+      setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors de la mise à jour",
@@ -53,6 +55,8 @@ function UnavailabilityManager() {
       await availabilityAPI.removeUnavailability(date);
       showToast("Jour retiré des indisponibilités", "success");
       loadUnavailabilities();
+      // Rafraîchir la page pour mettre à jour le calendrier
+      setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors de la suppression",

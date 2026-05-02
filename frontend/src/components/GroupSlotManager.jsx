@@ -63,6 +63,8 @@ function GroupSlotManager() {
       await slotsAPI.blockSlot(slotId);
       showToast("Créneau bloqué avec succès", "success");
       loadGroupSlots();
+      // Rafraîchir la page pour mettre à jour le calendrier
+      setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors du blocage",
