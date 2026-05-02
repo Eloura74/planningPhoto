@@ -130,30 +130,51 @@ function BookingsTable() {
       </div>
 
       {filteredBookings.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
+        <div
+          className="text-center py-12"
+          style={{ color: "var(--text-muted)" }}
+        >
           <p className="text-lg">Aucune réservation</p>
         </div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">
+              <tr style={{ borderBottom: "1px solid var(--border-secondary)" }}>
+                <th
+                  className="text-left py-3 px-4 font-semibold"
+                  style={{ color: "var(--gold-primary)" }}
+                >
                   Utilisateur
                 </th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">
+                <th
+                  className="text-left py-3 px-4 font-semibold"
+                  style={{ color: "var(--gold-primary)" }}
+                >
                   Date
                 </th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">
+                <th
+                  className="text-left py-3 px-4 font-semibold"
+                  style={{ color: "var(--gold-primary)" }}
+                >
                   Horaire
                 </th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">
+                <th
+                  className="text-left py-3 px-4 font-semibold"
+                  style={{ color: "var(--gold-primary)" }}
+                >
                   Type
                 </th>
-                <th className="text-left py-3 px-4 font-semibold text-gray-700">
+                <th
+                  className="text-left py-3 px-4 font-semibold"
+                  style={{ color: "var(--gold-primary)" }}
+                >
                   Statut
                 </th>
-                <th className="text-right py-3 px-4 font-semibold text-gray-700">
+                <th
+                  className="text-right py-3 px-4 font-semibold"
+                  style={{ color: "var(--gold-primary)" }}
+                >
                   Actions
                 </th>
               </tr>
@@ -162,7 +183,8 @@ function BookingsTable() {
               {filteredBookings.map((booking) => (
                 <tr
                   key={booking.id}
-                  className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                  style={{ borderBottom: "1px solid var(--border-secondary)" }}
+                  className="hover:bg-opacity-50 transition-colors"
                 >
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-2">

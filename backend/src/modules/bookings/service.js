@@ -505,7 +505,7 @@ const cancelBooking = async (bookingId, cancelledBy, reason = null) => {
 
 const getGroupPrebookingsBySlot = async (slotId, userId = null) => {
   let query =
-    "SELECT gp.*, u.name as user_name FROM group_prebookings gp JOIN users u ON gp.user_id = u.id WHERE gp.slot_id = $1";
+    "SELECT gp.*, u.name as user_name, u.email as user_email FROM group_prebookings gp JOIN users u ON gp.user_id = u.id WHERE gp.slot_id = $1";
   const params = [slotId];
 
   if (userId) {
