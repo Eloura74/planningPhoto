@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
 import { bookingsAPI } from "../services/api";
 import { useToast } from "../contexts/ToastContext";
+import EmailModal from "./EmailModal";
 
 function BookingsTable() {
   const [bookings, setBookings] = useState([]);
   const [filter, setFilter] = useState("ALL");
+  const [emailModalBooking, setEmailModalBooking] = useState(null);
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -213,14 +215,19 @@ function BookingsTable() {
                     </div>
                   </td>
                   <td className="py-3 px-4">
-                    <p className="text-gray-800">
-                      {new Date(
-                        booking.slot_date + "T00:00:00",
-                      ).toLocaleDateString("fr-FR", {
-                        weekday: "short",
-                        day: "numeric",
-                        month: "short",
-                      })}
+                    <p style={{ color: "var(--text-primary)" }}>
+                      {(() => {
+                        const date =
+                          booking.slot_date instanceof Date
+                            ? booking.slot_date
+                            : new Date(booking.slot_date + "T00:00:00");
+                        return date.toLocaleDateString("fr-FR", {
+                          weekday: "short",
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        });
+                      })()}
                     </p>
                   </td>
                   <td className="py-3 px-4">
@@ -287,9 +294,7 @@ function BookingsTable() {
                         </button>
                       )}
                       <button
-                        onClick={() =>
-                          (window.location.href = `mailto:${booking.user_email}?subject=Réservation du ${new Date(booking.slot_date + "T00:00:00").toLocaleDateString("fr-FR")}`)
-                        }
+                        onClick={() => setEmailModalBooking(booking)}
                         className="px-3 py-1 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
                         style={{
                           background:
@@ -327,6 +332,13 @@ function BookingsTable() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {emailModalBooking && (
+        <EmailModal
+          booking={emailModalBooking}
+          onClose={() => setEmailModalBooking(null)}
+        />
       )}
     </div>
   );

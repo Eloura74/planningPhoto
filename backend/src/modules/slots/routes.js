@@ -53,6 +53,15 @@ router.patch("/:id", authenticate, requireAdmin, async (req, res) => {
   }
 });
 
+router.patch("/:id/block", authenticate, requireAdmin, async (req, res) => {
+  try {
+    const slot = await blockSlot(req.params.id, req.userId);
+    res.json(slot);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 router.patch("/:id/release", authenticate, requireAdmin, async (req, res) => {
   try {
     const slot = await releaseSlot(req.params.id);

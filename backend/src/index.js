@@ -46,13 +46,15 @@ async function runMigrations() {
     `);
 
     // Unavailabilities table (nouvelle table pour les indisponibilités)
-    await pool.query("DROP TABLE IF EXISTS unavailabilities CASCADE");
+    // Ne plus supprimer pour préserver les données
+    // await pool.query("DROP TABLE IF EXISTS unavailabilities CASCADE");
 
     // Slots table
-    await pool.query("DROP TABLE IF EXISTS slots CASCADE");
+    // Ne plus supprimer pour préserver les données
+    // await pool.query("DROP TABLE IF EXISTS slots CASCADE");
 
     await pool.query(`
-      CREATE TABLE slots (
+      CREATE TABLE IF NOT EXISTS slots (
         id TEXT PRIMARY KEY,
         date DATE NOT NULL,
         start_time TEXT NOT NULL,
@@ -71,7 +73,7 @@ async function runMigrations() {
 
     // Unavailabilities table
     await pool.query(`
-      CREATE TABLE unavailabilities (
+      CREATE TABLE IF NOT EXISTS unavailabilities (
         id TEXT PRIMARY KEY,
         date DATE NOT NULL UNIQUE,
         created_by TEXT REFERENCES users(id),
@@ -129,10 +131,11 @@ async function runMigrations() {
     `);
 
     // History table
-    await pool.query("DROP TABLE IF EXISTS history");
+    // Ne plus supprimer pour préserver les données
+    // await pool.query("DROP TABLE IF EXISTS history");
 
     await pool.query(`
-      CREATE TABLE history (
+      CREATE TABLE IF NOT EXISTS history (
         id TEXT PRIMARY KEY,
         entity TEXT NOT NULL,
         entity_id TEXT NOT NULL,
