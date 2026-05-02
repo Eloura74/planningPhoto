@@ -1,15 +1,25 @@
 import { useState } from "react";
 
 function EmailModal({ booking, onClose, onSend }) {
+  const formatDate = (dateStr) => {
+    try {
+      const date = dateStr instanceof Date ? dateStr : new Date(dateStr);
+      return date.toLocaleDateString("fr-FR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+    } catch (e) {
+      return "date à définir";
+    }
+  };
+
   const [subject, setSubject] = useState(
-    `Réservation du ${booking.slot_date instanceof Date 
-      ? booking.slot_date.toLocaleDateString("fr-FR") 
-      : new Date(booking.slot_date + "T00:00:00").toLocaleDateString("fr-FR")}`
+    `Réservation du ${formatDate(booking.slot_date)}`,
   );
   const [message, setMessage] = useState(
-    `Bonjour ${booking.user_name},\n\nConcernant votre réservation du ${booking.slot_date instanceof Date 
-      ? booking.slot_date.toLocaleDateString("fr-FR") 
-      : new Date(booking.slot_date + "T00:00:00").toLocaleDateString("fr-FR")} de ${booking.slot_start_time} à ${booking.slot_end_time}.\n\nCordialement,\nFabien Licata`
+    `Bonjour ${booking.user_name},\n\nConcernant votre réservation du ${formatDate(booking.slot_date)} de ${booking.slot_start_time} à ${booking.slot_end_time}.\n\nCordialement,\nFabien Licata`,
   );
   const [sending, setSending] = useState(false);
 
@@ -19,7 +29,7 @@ function EmailModal({ booking, onClose, onSend }) {
       // Créer un mailto link et l'ouvrir
       const mailtoLink = `mailto:${booking.user_email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
       window.location.href = mailtoLink;
-      
+
       // Fermer le modal après un court délai
       setTimeout(() => {
         onClose();
@@ -142,7 +152,10 @@ function EmailModal({ booking, onClose, onSend }) {
 
         {/* Footer */}
         <div className="mt-6 flex gap-3 justify-end">
-          <button onClick={onClose} className="px-6 py-2 rounded-lg font-semibold btn-chrome">
+          <button
+            onClick={onClose}
+            className="px-6 py-2 rounded-lg font-semibold btn-chrome"
+          >
             Annuler
           </button>
           <button
