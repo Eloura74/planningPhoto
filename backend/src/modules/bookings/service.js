@@ -24,8 +24,8 @@ const getUserWeeklyBookings = async (userId, startDate, endDate) => {
   const result = await pool.query(
     `SELECT COUNT(*) as count FROM bookings 
      WHERE user_id = $1 AND slot_id IN (
-       SELECT id FROM slots WHERE date >= $1 AND date <= $2
-     ) AND status != $1`,
+       SELECT id FROM slots WHERE date >= $2 AND date <= $3
+     ) AND status != $4`,
     [userId, startDate, endDate, "CANCELLED"],
   );
   return parseInt(result.rows[0].count);
@@ -35,8 +35,8 @@ const getUserMonthlyBookings = async (userId, startDate, endDate) => {
   const result = await pool.query(
     `SELECT COUNT(*) as count FROM bookings 
      WHERE user_id = $1 AND slot_id IN (
-       SELECT id FROM slots WHERE date >= $1 AND date <= $2
-     ) AND status != $1`,
+       SELECT id FROM slots WHERE date >= $2 AND date <= $3
+     ) AND status != $4`,
     [userId, startDate, endDate, "CANCELLED"],
   );
   return parseInt(result.rows[0].count);
@@ -46,7 +46,9 @@ const createSoloBooking = async (userId, slotId) => {
   try {
     console.log("createSoloBooking appelé avec:", { userId, slotId });
 
-    const slot = await pool.query("SELECT * FROM slots WHERE id = $1", [slotId]);
+    const slot = await pool.query("SELECT * FROM slots WHERE id = $1", [
+      slotId,
+    ]);
     if (slot.rows.length === 0) {
       throw new Error("Slot not found");
     }
@@ -148,7 +150,9 @@ const createSoloBooking = async (userId, slotId) => {
     );
 
     // Envoyer notification à l'étudiant
-    const user = await pool.query("SELECT * FROM users WHERE id = $1", [userId]);
+    const user = await pool.query("SELECT * FROM users WHERE id = $1", [
+      userId,
+    ]);
     if (user.rows.length > 0) {
       await sendSoloRequestEmail(
         user.rows[0].email,
@@ -428,7 +432,7 @@ const getGroupPrebookingsBySlot = async (slotId, userId = null) => {
   const params = [slotId];
 
   if (userId) {
-    query += " AND gp.user_id = $1";
+    query += " AND gp.user_id = $2";
     params.push(userId);
   }
 
