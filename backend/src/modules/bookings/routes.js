@@ -19,6 +19,8 @@ const {
 // Route pour récupérer toutes les réservations (admin seulement)
 router.get("/", authenticate, requireAdmin, async (req, res) => {
   try {
+    console.log("🔍 Loading admin bookings...");
+
     // Récupérer les bookings solo
     const soloBookings = await pool.query(`
       SELECT 
@@ -39,6 +41,7 @@ router.get("/", authenticate, requireAdmin, async (req, res) => {
       JOIN slots s ON b.slot_id = s.id
       ORDER BY s.date DESC, s.start_time DESC
     `);
+    console.log("🔍 Solo bookings found:", soloBookings.rows.length);
 
     // Récupérer les pré-réservations groupe
     const groupBookings = await pool.query(`
@@ -60,6 +63,7 @@ router.get("/", authenticate, requireAdmin, async (req, res) => {
       JOIN slots s ON gp.slot_id = s.id
       ORDER BY s.date DESC, s.start_time DESC
     `);
+    console.log("🔍 Group prebookings found:", groupBookings.rows.length);
 
     // Combiner les deux listes
     const allBookings = [...soloBookings.rows, ...groupBookings.rows];
