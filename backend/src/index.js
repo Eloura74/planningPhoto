@@ -45,6 +45,9 @@ async function runMigrations() {
       );
     `);
 
+    // Unavailabilities table (nouvelle table pour les indisponibilités)
+    await pool.query("DROP TABLE IF EXISTS unavailabilities");
+
     // Slots table
     await pool.query("DROP TABLE IF EXISTS slots");
 
