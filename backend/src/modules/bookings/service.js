@@ -213,12 +213,31 @@ const createSoloBooking = async (userId, slotId) => {
 };
 
 const createGroupPrebooking = async (userId, slotId) => {
-  const slot = await pool.query("SELECT * FROM slots WHERE id = $1", [slotId]);
-  if (slot.rows.length === 0) {
-    throw new Error("Slot not found");
-  }
+  // Vérifier si le slot existe, sinon le créer (slot virtuel)
+  let slot = await pool.query("SELECT * FROM slots WHERE id = $1", [slotId]);
 
-  const slotData = slot.rows[0];
+  let slotData;
+  if (slot.rows.length === 0) {
+    // Slot virtuel - extraire date et heure de l'ID (format: YYYY-MM-DD_HH:MM)
+    const [date, startTime] = slotId.split("_");
+    const endTime = startTime === "09:00" ? "12:00" : "17:00";
+
+    // Créer le slot
+    const newSlotId = uuidv4();
+    await pool.query(
+      "INSERT INTO slots (id, date, start_time, end_time, type, status, capacity_min, capacity_max) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+      [newSlotId, date, startTime, endTime, "GROUP", "BLOCKED_FOR_GROUP", 3, 5],
+    );
+
+    // Récupérer le slot créé
+    const newSlot = await pool.query("SELECT * FROM slots WHERE id = $1", [
+      newSlotId,
+    ]);
+    slotData = newSlot.rows[0];
+    slotId = newSlotId; // Utiliser le vrai ID maintenant
+  } else {
+    slotData = slot.rows[0];
+  }
 
   // Vérifier que la fenêtre de pré-réservation est ouverte
   const { isGroupPrebookingOpen } = require("../availabilityPeriods/service");
