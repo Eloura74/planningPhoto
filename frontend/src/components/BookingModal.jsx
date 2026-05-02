@@ -12,7 +12,7 @@ function BookingModal({
       status === "MIXED" ||
       status === "BLOCKED_FOR_GROUP" ||
       status === "GROUP_PREBOOKING") &&
-    user?.is_group_member;
+    user?.isGroupMember;
 
   const getStatusBadge = (status) => {
     const styles = {
