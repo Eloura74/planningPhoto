@@ -123,31 +123,48 @@ const getHistory = async (entity, limit = 50) => {
   return result.rows;
 };
 
+const getPendingBookings = async () => {
+  const result = await pool.query(
+    `SELECT b.*, u.name as user_name, u.email as user_email, u.phone as user_phone,
+            s.date, s.start_time, s.end_time, s.type as slot_type
+     FROM bookings b
+     JOIN users u ON b.user_id = u.id
+     JOIN slots s ON b.slot_id = s.id
+     WHERE b.status = 'REQUESTED'
+     ORDER BY s.date ASC, s.start_time ASC`,
+    [],
+  );
+  return result.rows;
+};
+
 const getDashboardData = async () => {
   const [
     totalUsers,
     totalSlots,
-    pendingBookings,
+    pendingBookingsCount,
     groupPrebookings,
     upcomingSlots,
+    pendingBookings,
   ] = await Promise.all([
     pool.query("SELECT COUNT(*) as count FROM users"),
     pool.query("SELECT COUNT(*) as count FROM slots"),
     pool.query(
-      "SELECT COUNT(*) as count FROM bookings WHERE status = 'PENDING'",
+      "SELECT COUNT(*) as count FROM bookings WHERE status = 'REQUESTED'",
     ),
     pool.query("SELECT COUNT(*) as count FROM group_prebookings"),
     pool.query(
       "SELECT COUNT(*) as count FROM slots WHERE date >= CURRENT_DATE AND status != 'CANCELLED'",
     ),
+    getPendingBookings(),
   ]);
 
   return {
     totalUsers: parseInt(totalUsers.rows[0].count),
     totalSlots: parseInt(totalSlots.rows[0].count),
-    pendingBookings: parseInt(pendingBookings.rows[0].count),
+    pendingBookings: parseInt(pendingBookingsCount.rows[0].count),
     groupPrebookings: parseInt(groupPrebookings.rows[0].count),
     upcomingSlots: parseInt(upcomingSlots.rows[0].count),
+    pendingBookingsList: pendingBookings,
   };
 };
 
@@ -159,4 +176,5 @@ module.exports = {
   getAvailability,
   getHistory,
   getDashboardData,
+  getPendingBookings,
 };
