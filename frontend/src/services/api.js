@@ -20,15 +20,16 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (
-      error.response?.status === 403 &&
-      (error.response?.data?.error === "User not found" ||
-        error.response?.data?.error === "Account is deactivated")
-    ) {
-      // Déconnecter automatiquement l'utilisateur
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      window.location.href = "/login";
+    if (error.response?.status === 403) {
+      console.error(" Erreur 403:", error.response?.data);
+
+      // Déconnecter uniquement si l'utilisateur n'existe vraiment plus
+      if (error.response?.data?.error === "User not found") {
+        console.log(" Utilisateur supprimé, déconnexion automatique");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+      }
     }
     return Promise.reject(error);
   },
