@@ -225,10 +225,31 @@ const createGroupPrebooking = async (userId, slotId) => {
 
     // Créer le slot
     const newSlotId = uuidv4();
-    await pool.query(
-      "INSERT INTO slots (id, date, start_time, end_time, type, status, capacity_min, capacity_max) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-      [newSlotId, date, startTime, endTime, "GROUP", "BLOCKED_FOR_GROUP", 3, 5],
-    );
+    try {
+      console.log("🔍 Création slot virtuel:", {
+        newSlotId,
+        date,
+        startTime,
+        endTime,
+      });
+      await pool.query(
+        "INSERT INTO slots (id, date, start_time, end_time, type, status, capacity_min, capacity_max) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+        [
+          newSlotId,
+          date,
+          startTime,
+          endTime,
+          "GROUP",
+          "BLOCKED_FOR_GROUP",
+          3,
+          5,
+        ],
+      );
+    } catch (error) {
+      console.error("❌ Erreur INSERT slot:", error.message);
+      console.error("Paramètres:", { newSlotId, date, startTime, endTime });
+      throw error;
+    }
 
     // Récupérer le slot créé
     const newSlot = await pool.query("SELECT * FROM slots WHERE id = $1", [
