@@ -79,11 +79,8 @@ const getAvailableSlots = async (startDate, endDate) => {
 
     let timeSlots;
     if (isTuesdayOrThursday) {
-      // Mardi/Jeudi : groupe toute la journée (9h-12h et 14h-17h)
-      timeSlots = [
-        { start: "09:00", end: "12:00" },
-        { start: "14:00", end: "17:00" },
-      ];
+      // Mardi/Jeudi : groupe toute la journée (9h-17h en un seul créneau)
+      timeSlots = [{ start: "09:00", end: "17:00" }];
     } else {
       // Autres jours : solo uniquement l'après-midi (14h-17h)
       timeSlots = [{ start: "14:00", end: "17:00" }];

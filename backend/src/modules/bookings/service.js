@@ -220,7 +220,8 @@ const createGroupPrebooking = async (userId, slotId) => {
   if (slot.rows.length === 0) {
     // Slot virtuel - extraire date et heure de l'ID (format: YYYY-MM-DD_HH:MM)
     const [date, startTime] = slotId.split("_");
-    const endTime = startTime === "09:00" ? "12:00" : "17:00";
+    // Créneaux groupe toute la journée : 9h-17h
+    const endTime = "17:00";
 
     // Créer le slot
     const newSlotId = uuidv4();
