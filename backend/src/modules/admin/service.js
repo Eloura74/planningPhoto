@@ -131,7 +131,7 @@ const getPendingBookings = async () => {
      JOIN users u ON b.user_id = u.id
      JOIN slots s ON b.slot_id = s.id
      WHERE b.status IN ('REQUESTED', 'CONFIRMED')
-     AND s.date::date >= CURRENT_DATE
+     AND s.date >= CURRENT_DATE
      ORDER BY 
        CASE WHEN b.status = 'REQUESTED' THEN 0 ELSE 1 END,
        s.date ASC, 

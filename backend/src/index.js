@@ -54,7 +54,7 @@ async function runMigrations() {
     await pool.query(`
       CREATE TABLE slots (
         id TEXT PRIMARY KEY,
-        date TEXT NOT NULL,
+        date DATE NOT NULL,
         start_time TEXT NOT NULL,
         end_time TEXT NOT NULL,
         type TEXT CHECK (type IN ('SOLO', 'GROUP')) NOT NULL,
