@@ -15,15 +15,28 @@ function AdminDashboardNew() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div
+      className="min-h-screen fade-in"
+      style={{ backgroundColor: "var(--bg-primary)" }}
+    >
       {/* Header */}
-      <nav className="bg-white shadow-md border-b border-gray-200">
+      <nav
+        className="shadow-lg border-b"
+        style={{
+          backgroundColor: "var(--bg-secondary)",
+          borderColor: "var(--border-primary)",
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div
+                className="p-2 rounded-lg glow-gold"
+                style={{ background: "var(--chrome-gradient)" }}
+              >
                 <svg
-                  className="w-7 h-7 text-white"
+                  className="w-6 h-6"
+                  style={{ color: "var(--text-dark)" }}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -36,34 +49,41 @@ function AdminDashboardNew() {
                   />
                 </svg>
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-800">
-                  Dashboard Admin
-                </h1>
-                <p className="text-sm text-gray-600">
-                  Gestion des réservations photo
-                </p>
-              </div>
+              <h1
+                className="text-2xl font-bold"
+                style={{
+                  background: "var(--chrome-gradient)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Dashboard Admin
+              </h1>
             </div>
 
             <div className="flex items-center gap-3">
               <button
                 onClick={() => navigate("/admin/users")}
-                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all font-semibold text-sm"
+                className="px-4 py-2 rounded-lg font-semibold text-sm btn-gold"
               >
-                👥 Utilisateurs
+                Utilisateurs
               </button>
               <button
                 onClick={() => navigate("/calendar")}
-                className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:shadow-lg transition-all font-semibold text-sm"
+                className="px-4 py-2 rounded-lg font-semibold text-sm btn-chrome"
               >
-                📅 Calendrier
+                Calendrier
               </button>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:shadow-lg transition-all font-semibold text-sm"
+                className="px-4 py-2 rounded-lg font-semibold text-sm"
+                style={{
+                  backgroundColor: "rgba(239, 68, 68, 0.2)",
+                  color: "#ef4444",
+                  border: "1px solid rgba(239, 68, 68, 0.3)",
+                }}
               >
-                🚪 Déconnexion
+                Déconnexion
               </button>
             </div>
           </div>

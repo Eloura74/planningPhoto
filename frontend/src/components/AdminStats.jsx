@@ -51,14 +51,24 @@ function AdminStats() {
       {statCards.map((card, index) => (
         <div
           key={index}
-          className={`bg-gradient-to-br ${card.color} rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-shadow`}
+          className="rounded-xl p-6 shadow-lg hover:shadow-xl transition-all card-dark glow-gold"
         >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm opacity-90 mb-1">{card.title}</p>
-              <p className="text-3xl font-bold">{card.value}</p>
+              <p
+                className="text-sm mb-1"
+                style={{ color: "var(--text-muted)" }}
+              >
+                {card.title}
+              </p>
+              <p
+                className="text-3xl font-bold"
+                style={{ color: "var(--gold-primary)" }}
+              >
+                {card.value}
+              </p>
             </div>
-            <div className="text-4xl opacity-80">{card.icon}</div>
+            <div className="text-4xl">{card.icon}</div>
           </div>
         </div>
       ))}
