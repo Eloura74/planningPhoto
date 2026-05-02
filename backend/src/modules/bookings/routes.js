@@ -105,22 +105,27 @@ router.get("/slot/:slotId", authenticate, async (req, res) => {
 router.get("/group/:slotId", authenticate, async (req, res) => {
   try {
     const { slotId } = req.params;
+    console.log("🔍 GET /group/:slotId - slotId:", slotId);
+
     const userData = await pool.query(
       "SELECT role, is_group_member FROM users WHERE id = $1",
       [req.userId],
     );
     const { role, is_group_member } = userData.rows[0] || {};
+    console.log("🔍 User role:", role, "is_group_member:", is_group_member);
 
     let bookings;
     if (role === "ADMIN" || is_group_member) {
       // Admin et membres du groupe voient tous les participants (affinités)
       bookings = await getGroupPrebookingsBySlot(slotId);
+      console.log("🔍 Bookings found:", bookings.length, bookings);
     } else {
       // Les élèves solo ne voient que leurs propres pré-réservations
       bookings = await getGroupPrebookingsBySlot(slotId, req.userId);
     }
     res.json(bookings);
   } catch (error) {
+    console.error("❌ Error in GET /group/:slotId:", error);
     res.status(500).json({ error: error.message });
   }
 });
