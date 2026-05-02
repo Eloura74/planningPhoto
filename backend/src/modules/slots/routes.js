@@ -55,9 +55,12 @@ router.patch("/:id", authenticate, requireAdmin, async (req, res) => {
 
 router.patch("/:id/block", authenticate, requireAdmin, async (req, res) => {
   try {
+    console.log("🔍 Blocking slot:", req.params.id, "by user:", req.userId);
     const slot = await blockSlot(req.params.id, req.userId);
+    console.log("✅ Slot blocked successfully:", slot);
     res.json(slot);
   } catch (error) {
+    console.error("❌ Error blocking slot:", error.message);
     res.status(400).json({ error: error.message });
   }
 });
