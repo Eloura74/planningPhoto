@@ -7,8 +7,9 @@ function QuickEmailModal({ isOpen, onClose, recipientEmail, recipientName }) {
   if (!isOpen) return null;
 
   const handleSend = () => {
-    const mailtoLink = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
-    window.open(mailtoLink, "_blank");
+    // Utiliser Gmail directement au lieu de mailto
+    const gmailLink = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipientEmail}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+    window.open(gmailLink, "_blank");
     onClose();
   };
 
