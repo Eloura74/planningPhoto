@@ -72,7 +72,8 @@ const getAvailableSlots = async (startDate, endDate) => {
       slot.date instanceof Date
         ? slot.date.toISOString().split("T")[0]
         : slot.date;
-    const key = `${dateStr}_${slot.start_time}`;
+    // Utiliser uniquement la date comme clé (ignorer l'horaire)
+    const key = dateStr;
     existingSlotsMap.set(key, slot);
   });
 
@@ -140,7 +141,8 @@ const getAvailableSlots = async (startDate, endDate) => {
     }
 
     for (const timeSlot of timeSlots) {
-      const slotKey = `${dateStr}_${timeSlot.start}`;
+      // Utiliser uniquement la date comme clé (ignorer l'horaire)
+      const slotKey = dateStr;
 
       // Vérifier si un slot existe déjà dans la base
       const existingSlot = existingSlotsMap.get(slotKey);
