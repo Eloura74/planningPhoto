@@ -156,9 +156,7 @@ const getDashboardData = async () => {
     pool.query(
       "SELECT COUNT(*) as count FROM bookings WHERE status IN ('REQUESTED', 'PENDING')",
     ),
-    pool.query(
-      "SELECT COUNT(*) as count FROM group_prebookings WHERE status = 'PENDING'",
-    ),
+    pool.query("SELECT COUNT(*) as count FROM group_prebookings"),
     pool.query(
       "SELECT COUNT(*) as count FROM slots WHERE date >= CURRENT_DATE AND status != 'CANCELLED'",
     ),
