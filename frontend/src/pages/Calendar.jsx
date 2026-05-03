@@ -268,21 +268,21 @@ function CalendarPage() {
   const getSlotColor = (status) => {
     switch (status) {
       case "OPEN_SOLO":
-        return "#00ff00";
+        return "#10b981"; // Vert émeraude élégant
       case "OPEN_TUESDAY":
       case "GROUP_PREBOOKING":
-        return "#ff0000";
+        return "#f59e0b"; // Orange doré (groupe disponible)
       case "BLOCKED_FOR_GROUP":
       case "GROUP_CONFIRMED":
       case "SOLO_CONFIRMED":
-        return "#0000ff";
+        return "#8b5cf6"; // Violet élégant (confirmé)
       case "FULL":
       case "BOOKED":
         return "var(--chrome-dark)";
       case "PENDING":
         return "var(--gold-primary)";
       case "CANCELLED":
-        return "#ff6b6b";
+        return "#ef4444";
       default:
         return "var(--chrome-medium)";
     }
@@ -438,7 +438,7 @@ function CalendarPage() {
             <div className="flex items-center gap-2">
               <div
                 className="w-4 h-4 rounded"
-                style={{ backgroundColor: "#00ff00" }}
+                style={{ backgroundColor: "#10b981" }}
               ></div>
               <span
                 className="text-sm"
@@ -450,7 +450,7 @@ function CalendarPage() {
             <div className="flex items-center gap-2">
               <div
                 className="w-4 h-4 rounded"
-                style={{ backgroundColor: "#ff0000" }}
+                style={{ backgroundColor: "#f59e0b" }}
               ></div>
               <span
                 className="text-sm"
@@ -462,25 +462,13 @@ function CalendarPage() {
             <div className="flex items-center gap-2">
               <div
                 className="w-4 h-4 rounded"
-                style={{ backgroundColor: "#0000ff" }}
+                style={{ backgroundColor: "#8b5cf6" }}
               ></div>
               <span
                 className="text-sm"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Réservé / Confirmé
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div
-                className="w-4 h-4 rounded"
-                style={{ backgroundColor: "var(--gold-primary)" }}
-              ></div>
-              <span
-                className="text-sm"
-                style={{ color: "var(--text-secondary)" }}
-              >
-                En attente
+                Confirmé
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -492,7 +480,7 @@ function CalendarPage() {
                 className="text-sm"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Complet/Réservé
+                Complet
               </span>
             </div>
           </div>

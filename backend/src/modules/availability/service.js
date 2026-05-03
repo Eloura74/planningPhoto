@@ -118,8 +118,8 @@ const getAvailableSlots = async (startDate, endDate) => {
     const dateStr = d.toISOString().split("T")[0];
     const dayOfWeek = d.getUTCDay();
 
-    // Ignorer les dimanches et les jours indisponibles
-    if (dayOfWeek === 0 || unavailableDates.has(dateStr)) {
+    // Ignorer uniquement les jours indisponibles
+    if (unavailableDates.has(dateStr)) {
       continue;
     }
 
