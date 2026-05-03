@@ -35,11 +35,12 @@ const getAvailableSlots = async (startDate, endDate) => {
   );
 
   // Compter les créneaux groupe confirmés dans le mois
-  const start = new Date(startDate);
-  const monthStart = new Date(start.getFullYear(), start.getMonth(), 1)
+  // Utiliser la date de fin pour déterminer le mois (plus fiable)
+  const end = new Date(endDate);
+  const monthStart = new Date(end.getFullYear(), end.getMonth(), 1)
     .toISOString()
     .split("T")[0];
-  const monthEnd = new Date(start.getFullYear(), start.getMonth() + 1, 0)
+  const monthEnd = new Date(end.getFullYear(), end.getMonth() + 1, 0)
     .toISOString()
     .split("T")[0];
 
