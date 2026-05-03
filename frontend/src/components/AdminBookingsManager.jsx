@@ -279,18 +279,22 @@ function AdminBookingsManager() {
 
                         <div className="flex gap-2 ml-4">
                           <button
-                            onClick={() =>
-                              (window.location.href = `mailto:${booking.user_email}`)
-                            }
+                            onClick={() => {
+                              navigator.clipboard.writeText(booking.user_email);
+                              showToast(
+                                `📋 Email copié: ${booking.user_email}`,
+                                "success",
+                              );
+                            }}
                             className="px-3 py-1.5 rounded-lg text-sm font-semibold transition-all hover:shadow-md"
                             style={{
                               background:
                                 "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
                               color: "white",
                             }}
-                            title="Envoyer un email"
+                            title="Copier l'email"
                           >
-                            ✉️
+                            📋 Email
                           </button>
 
                           {booking.status !== "CONFIRMED" && (
