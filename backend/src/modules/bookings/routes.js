@@ -199,12 +199,15 @@ router.get("/group/:slotId", authenticate, async (req, res) => {
 
 router.patch("/:id/confirm", authenticate, requireAdmin, async (req, res) => {
   try {
+    console.log("🔍 PATCH /confirm - bookingId:", req.params.id);
     const booking = await confirmBooking(req.params.id, {
       id: req.userId,
       role: "ADMIN",
     });
+    console.log("✅ Booking confirmé:", booking);
     res.json(booking);
   } catch (error) {
+    console.error("❌ Erreur confirmation:", error.message);
     res.status(400).json({ error: error.message });
   }
 });
