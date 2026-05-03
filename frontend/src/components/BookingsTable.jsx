@@ -38,9 +38,15 @@ function BookingsTable() {
     }
   };
 
-  const handleCancel = async (bookingId) => {
+  const handleCancel = async (bookingId, bookingType) => {
     try {
-      await bookingsAPI.cancel(bookingId);
+      if (bookingType === "GROUP") {
+        // Pour les pré-réservations groupe, utiliser la route spécifique
+        await bookingsAPI.cancelGroupPrebooking(bookingId);
+      } else {
+        // Pour les bookings solo
+        await bookingsAPI.cancel(bookingId);
+      }
       showToast("Réservation annulée", "success");
       loadBookings();
     } catch (error) {
@@ -266,7 +272,9 @@ function BookingsTable() {
                             ✓ Confirmer
                           </button>
                           <button
-                            onClick={() => handleCancel(booking.id)}
+                            onClick={() =>
+                              handleCancel(booking.id, booking.booking_type)
+                            }
                             className="px-3 py-1 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
                             style={{
                               background:
@@ -281,7 +289,9 @@ function BookingsTable() {
                       )}
                       {booking.status === "CONFIRMED" && (
                         <button
-                          onClick={() => handleCancel(booking.id)}
+                          onClick={() =>
+                            handleCancel(booking.id, booking.booking_type)
+                          }
                           className="px-3 py-1 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
                           style={{
                             background:
@@ -312,7 +322,7 @@ function BookingsTable() {
                               `Supprimer définitivement la réservation de ${booking.user_name} ?`,
                             )
                           ) {
-                            handleCancel(booking.id);
+                            handleCancel(booking.id, booking.booking_type);
                           }
                         }}
                         className="px-3 py-1 rounded-lg font-semibold text-sm transition-all hover:shadow-md"

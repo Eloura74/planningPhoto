@@ -124,15 +124,18 @@ function GroupSlotManager() {
                     <div className="text-2xl">📅</div>
                     <div>
                       <p className="font-semibold text-gray-800">
-                        {new Date(slot.date + "T00:00:00").toLocaleDateString(
-                          "fr-FR",
-                          {
+                        {(() => {
+                          const date =
+                            slot.date instanceof Date
+                              ? slot.date
+                              : new Date(slot.date);
+                          return date.toLocaleDateString("fr-FR", {
                             weekday: "long",
                             year: "numeric",
                             month: "long",
                             day: "numeric",
-                          },
-                        )}
+                          });
+                        })()}
                       </p>
                       <p className="text-sm text-gray-600">
                         {slot.start_time} - {slot.end_time}
