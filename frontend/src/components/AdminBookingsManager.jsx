@@ -59,10 +59,15 @@ function AdminBookingsManager() {
     try {
       await bookingsAPI.confirm(bookingId);
       showToast(
-        "✅ Réservation validée ! Rafraîchissez le calendrier (F5) pour voir le changement",
+        "✅ Réservation validée ! Allez sur le Calendrier et appuyez sur F5 pour voir le créneau en bleu",
         "success",
       );
       loadAllBookings();
+
+      // Recharger la page après 2 secondes pour voir le changement
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (error) {
       showToast(error.response?.data?.error || "Erreur", "error");
     }
