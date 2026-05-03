@@ -48,7 +48,7 @@ router.get("/", authenticate, requireAdmin, async (req, res) => {
     const groupBookings = await pool.query(`
       SELECT 
         gp.id,
-        'GROUP_PREBOOKING' as status,
+        COALESCE(gp.status, 'GROUP_PREBOOKING') as status,
         gp.created_at,
         u.id as user_id,
         u.name as user_name,
