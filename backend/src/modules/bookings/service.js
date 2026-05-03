@@ -51,10 +51,21 @@ const createSoloBooking = async (userId, slotId) => {
 
     let slotData;
     if (slot.rows.length === 0) {
-      // Slot virtuel - extraire date et heure de l'ID (format: YYYY-MM-DD_HH:MM)
+      // Slot virtuel - extraire date et heure de l'ID
       console.log("🔍 Slot virtuel détecté, slotId:", slotId);
-      const [date, startTime] = slotId.split("_");
-      const endTime = startTime === "09:00" ? "12:00" : "17:00";
+
+      let date, startTime, endTime;
+      if (slotId.includes("_")) {
+        // Format ancien: YYYY-MM-DD_HH:MM
+        [date, startTime] = slotId.split("_");
+        endTime = startTime === "09:00" ? "12:00" : "17:00";
+      } else {
+        // Format nouveau: YYYY-MM-DD (solo uniquement)
+        date = slotId;
+        startTime = "14:00";
+        endTime = "17:00";
+      }
+
       console.log(
         "🔍 Date extraite:",
         date,
@@ -129,9 +140,9 @@ const createSoloBooking = async (userId, slotId) => {
       throw new Error("Vous avez déjà réservé ce créneau");
     }
 
-    // Règle 2 : Anti-concurrence - Vérifier que l'utilisateur n'a pas déjà une réservation solo le même jour
+    // Règle 2 : Anti-concurrence - Vérifier que l'utilisateur n'a pas déjà une réservation SOLO le même jour
     const sameDayBookings = await pool.query(
-      "SELECT b.*, s.date FROM bookings b JOIN slots s ON b.slot_id = s.id WHERE b.user_id = $1 AND b.status NOT IN ('CANCELLED', 'CANCELLED_BY_STUDENT', 'CANCELLED_BY_ADMIN') AND s.date = $2",
+      "SELECT b.*, s.date, s.type FROM bookings b JOIN slots s ON b.slot_id = s.id WHERE b.user_id = $1 AND b.status NOT IN ('CANCELLED', 'CANCELLED_BY_STUDENT', 'CANCELLED_BY_ADMIN') AND s.date = $2 AND s.type = 'SOLO'",
       [userId, slotData.date],
     );
 
