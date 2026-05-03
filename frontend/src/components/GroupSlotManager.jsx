@@ -73,6 +73,21 @@ function GroupSlotManager() {
     }
   };
 
+  const handleReleaseSlot = async (slotId) => {
+    try {
+      await slotsAPI.releaseSlot(slotId);
+      showToast("Créneau débloqué avec succès", "success");
+      loadGroupSlots();
+      // Rafraîchir la page pour mettre à jour le calendrier
+      setTimeout(() => window.location.reload(), 1000);
+    } catch (error) {
+      showToast(
+        error.response?.data?.error || "Erreur lors du déblocage",
+        "error",
+      );
+    }
+  };
+
   return (
     <div className="rounded-xl shadow-lg p-6 card-dark">
       <div className="flex items-center gap-3 mb-6">
@@ -144,14 +159,14 @@ function GroupSlotManager() {
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-semibold ${
                             slot.status === "BLOCKED_FOR_GROUP"
-                              ? "bg-blue-100 text-blue-700"
+                              ? "bg-red-100 text-red-700"
                               : slot.status === "GROUP_PREBOOKING"
                                 ? "bg-green-100 text-green-700"
                                 : "bg-gray-100 text-gray-700"
                           }`}
                         >
                           {slot.status === "BLOCKED_FOR_GROUP"
-                            ? "Réservé groupe"
+                            ? "🚫 Bloqué par admin"
                             : slot.status === "GROUP_PREBOOKING"
                               ? "Pré-réservations"
                               : "Ouvert"}
@@ -194,17 +209,31 @@ function GroupSlotManager() {
                       ✓ Valider groupe
                     </button>
                   )}
-                  <button
-                    onClick={() => handleBlockSlot(slot.id)}
-                    className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
-                      color: "white",
-                    }}
-                  >
-                    🚫 Bloquer
-                  </button>
+                  {slot.status === "BLOCKED_FOR_GROUP" ? (
+                    <button
+                      onClick={() => handleReleaseSlot(slot.id)}
+                      className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                        color: "white",
+                      }}
+                    >
+                      ✓ Débloquer
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleBlockSlot(slot.id)}
+                      className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                        color: "white",
+                      }}
+                    >
+                      🚫 Bloquer
+                    </button>
+                  )}
                 </div>
               </div>
 

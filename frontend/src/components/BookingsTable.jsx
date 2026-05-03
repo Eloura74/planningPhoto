@@ -223,16 +223,22 @@ function BookingsTable() {
                   <td className="py-3 px-4">
                     <p style={{ color: "var(--text-primary)" }}>
                       {(() => {
-                        const date =
-                          booking.slot_date instanceof Date
-                            ? booking.slot_date
-                            : new Date(booking.slot_date + "T00:00:00");
-                        return date.toLocaleDateString("fr-FR", {
-                          weekday: "short",
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        });
+                        try {
+                          if (!booking.slot_date) return "Date non disponible";
+                          const date =
+                            booking.slot_date instanceof Date
+                              ? booking.slot_date
+                              : new Date(booking.slot_date);
+                          if (isNaN(date.getTime())) return "Date invalide";
+                          return date.toLocaleDateString("fr-FR", {
+                            weekday: "short",
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          });
+                        } catch (e) {
+                          return "Erreur date";
+                        }
                       })()}
                     </p>
                   </td>
