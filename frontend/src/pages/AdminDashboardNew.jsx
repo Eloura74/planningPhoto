@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import AdminStats from "../components/AdminStats";
-import UnifiedBookingsManager from "../components/UnifiedBookingsManager";
+import AdminBookingsManager from "../components/AdminBookingsManager";
 import UnavailabilityManager from "../components/UnavailabilityManager";
 
 function AdminDashboardNew() {
@@ -94,8 +94,8 @@ function AdminDashboardNew() {
         {/* Statistics Cards */}
         <AdminStats />
 
-        {/* Unified Bookings Management */}
-        <UnifiedBookingsManager />
+        {/* Admin Bookings Management */}
+        <AdminBookingsManager />
 
         {/* Unavailability Manager */}
         <UnavailabilityManager />
