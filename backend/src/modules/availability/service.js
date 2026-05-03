@@ -164,9 +164,38 @@ const getAvailableSlots = async (startDate, endDate) => {
         let status, type;
 
         if (isTuesdayOrThursday) {
-          // Mardi/Jeudi : TOUJOURS groupe (sauf si 2+ jours groupe confirmés dans le mois)
-          if (shouldReleaseForSolo) {
-            // Exception : 2+ jours groupe confirmés → libérer en solo
+          // Mardi/Jeudi : Vérifier si ce mois a 2+ jours groupe confirmés
+          // Calculer le mois de CE slot
+          const slotMonth = new Date(dateStr + "T00:00:00Z");
+          const slotMonthStart = new Date(
+            slotMonth.getUTCFullYear(),
+            slotMonth.getUTCMonth(),
+            1,
+          )
+            .toISOString()
+            .split("T")[0];
+          const slotMonthEnd = new Date(
+            slotMonth.getUTCFullYear(),
+            slotMonth.getUTCMonth() + 1,
+            0,
+          )
+            .toISOString()
+            .split("T")[0];
+
+          // Compter les slots bloqués dans CE mois
+          const monthConfirmedSlots = await pool.query(
+            `SELECT COUNT(DISTINCT date) as count FROM slots 
+             WHERE type = 'GROUP' 
+             AND (status = 'GROUP_CONFIRMED' OR status = 'BLOCKED_FOR_GROUP')
+             AND date >= $1 AND date <= $2`,
+            [slotMonthStart, slotMonthEnd],
+          );
+          const monthConfirmedCount = parseInt(
+            monthConfirmedSlots.rows[0].count,
+          );
+
+          if (monthConfirmedCount >= 2) {
+            // Exception : 2+ jours groupe confirmés dans CE mois → libérer en solo
             status = "OPEN_SOLO";
             type = "SOLO";
           } else {
