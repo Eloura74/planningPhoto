@@ -10,7 +10,9 @@ function BookingModal({
   const canBookSolo =
     status === "OPEN_SOLO" &&
     slot.type === "SOLO" &&
-    status !== "SOLO_CONFIRMED";
+    status !== "SOLO_CONFIRMED" &&
+    status !== "BOOKED" &&
+    status !== "PENDING";
   const canBookGroup =
     (status === "OPEN_TUESDAY" ||
       status === "MIXED" ||
@@ -18,7 +20,9 @@ function BookingModal({
       status === "GROUP_PREBOOKING") &&
     user?.isGroupMember &&
     status !== "GROUP_CONFIRMED" &&
-    status !== "SOLO_CONFIRMED";
+    status !== "SOLO_CONFIRMED" &&
+    status !== "BOOKED" &&
+    status !== "PENDING";
 
   const getStatusBadge = (status) => {
     const styles = {

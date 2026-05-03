@@ -193,12 +193,25 @@ function CalendarPage() {
   };
 
   const getSlotStatus = (slot) => {
+    // Vérifier les bookings solo
     const booking = myBookings.find(
-      (b) => b.slot_id === slot.id && b.status !== "CANCELLED",
+      (b) =>
+        b.slot_id === slot.id &&
+        b.status !== "CANCELLED" &&
+        b.status !== "GROUP_PREBOOKING",
     );
     if (booking) {
       return booking.status === "CONFIRMED" ? "BOOKED" : "PENDING";
     }
+
+    // Vérifier les pré-réservations groupe
+    const groupPrebooking = myBookings.find(
+      (b) => b.slot_id === slot.id && b.status === "GROUP_PREBOOKING",
+    );
+    if (groupPrebooking) {
+      return "BOOKED"; // Déjà pré-réservé
+    }
+
     return slot.status;
   };
 
