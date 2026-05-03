@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { authenticate, requireAdmin } = require("../common/authMiddleware");
+const pool = require("../../config/database");
 const {
   getAllSlots,
   getSlotById,
