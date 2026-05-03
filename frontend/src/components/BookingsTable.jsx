@@ -41,7 +41,7 @@ function BookingsTable() {
   const handleCancel = async (bookingId, bookingType) => {
     try {
       if (bookingType === "GROUP") {
-        // Pour les pré-réservations groupe, utiliser la route admin par ID et
+        // Pour les pré-réservations groupe, utiliser la route admin par ID
         await bookingsAPI.deleteGroupPrebookingById(bookingId);
       } else {
         // Pour les bookings solo
