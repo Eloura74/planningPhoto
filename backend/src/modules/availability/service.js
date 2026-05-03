@@ -63,6 +63,8 @@ const getAvailableSlots = async (startDate, endDate) => {
     );
   }
 
+  console.log(`📅 Période: ${startDate} → ${endDate}`);
+
   const existingSlotsMap = new Map();
   existingSlots.rows.forEach((slot) => {
     // Normaliser la date au format YYYY-MM-DD
@@ -104,6 +106,9 @@ const getAvailableSlots = async (startDate, endDate) => {
   const endLoop = new Date(endDate + "T00:00:00Z");
 
   // Générer tous les jours de la période
+  let totalDaysGenerated = 0;
+  let tuesdaysThursdaysGenerated = 0;
+
   for (
     let d = new Date(startLoop);
     d <= endLoop;
@@ -119,6 +124,11 @@ const getAvailableSlots = async (startDate, endDate) => {
 
     // Créneaux selon le jour
     const isTuesdayOrThursday = dayOfWeek === 2 || dayOfWeek === 4; // Mardi ou Jeudi
+
+    if (isTuesdayOrThursday) {
+      tuesdaysThursdaysGenerated++;
+    }
+    totalDaysGenerated++;
 
     let timeSlots;
     if (isTuesdayOrThursday) {
@@ -184,6 +194,10 @@ const getAvailableSlots = async (startDate, endDate) => {
       }
     }
   }
+
+  console.log(
+    `✅ Génération terminée: ${slots.length} créneaux (${tuesdaysThursdaysGenerated} mardis/jeudis sur ${totalDaysGenerated} jours)`,
+  );
 
   return slots;
 };
