@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { bookingsAPI, slotsAPI } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -6,6 +7,7 @@ function MyAccount() {
   const [myBookings, setMyBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadMyBookings();
@@ -135,6 +137,12 @@ function MyAccount() {
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
+          <button
+            onClick={() => navigate("/calendar")}
+            className="mb-4 px-4 py-2 rounded-lg btn-chrome flex items-center gap-2"
+          >
+            ← Retour au calendrier
+          </button>
           <div className="flex items-center gap-4 mb-4">
             <div
               className="w-16 h-16 rounded-full flex items-center justify-center text-3xl"
