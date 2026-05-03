@@ -182,6 +182,7 @@ function CalendarPage() {
       case "GROUP_PREBOOKING":
         return "#ff0000";
       case "GROUP_CONFIRMED":
+      case "SOLO_CONFIRMED":
         return "#0000ff";
       case "FULL":
       case "BOOKED":

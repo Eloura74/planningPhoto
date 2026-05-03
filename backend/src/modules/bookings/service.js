@@ -100,7 +100,17 @@ const createSoloBooking = async (userId, slotId) => {
       throw new Error("Slot is not available for solo booking");
     }
 
-    // Règle : Anti-concurrence - Vérifier que l'utilisateur n'a pas déjà une réservation solo le même jour
+    // Règle 1 : Vérifier que l'utilisateur n'a pas déjà réservé CE slot précis
+    const existingSoloBooking = await pool.query(
+      "SELECT * FROM bookings WHERE user_id = $1 AND slot_id = $2 AND status NOT IN ('CANCELLED', 'CANCELLED_BY_STUDENT', 'CANCELLED_BY_ADMIN')",
+      [userId, slotId],
+    );
+
+    if (existingSoloBooking.rows.length > 0) {
+      throw new Error("Vous avez déjà réservé ce créneau");
+    }
+
+    // Règle 2 : Anti-concurrence - Vérifier que l'utilisateur n'a pas déjà une réservation solo le même jour
     const sameDayBookings = await pool.query(
       "SELECT b.*, s.date FROM bookings b JOIN slots s ON b.slot_id = s.id WHERE b.user_id = $1 AND b.status NOT IN ('CANCELLED', 'CANCELLED_BY_STUDENT', 'CANCELLED_BY_ADMIN') AND s.date = $2",
       [userId, slotData.date],

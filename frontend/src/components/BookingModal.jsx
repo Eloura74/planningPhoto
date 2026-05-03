@@ -7,13 +7,18 @@ function BookingModal({
   onViewDetails,
   user,
 }) {
-  const canBookSolo = status === "OPEN_SOLO" && slot.type === "SOLO";
+  const canBookSolo =
+    status === "OPEN_SOLO" &&
+    slot.type === "SOLO" &&
+    status !== "SOLO_CONFIRMED";
   const canBookGroup =
     (status === "OPEN_TUESDAY" ||
       status === "MIXED" ||
       status === "BLOCKED_FOR_GROUP" ||
       status === "GROUP_PREBOOKING") &&
-    user?.isGroupMember;
+    user?.isGroupMember &&
+    status !== "GROUP_CONFIRMED" &&
+    status !== "SOLO_CONFIRMED";
 
   const getStatusBadge = (status) => {
     const styles = {
@@ -32,6 +37,7 @@ function BookingModal({
       BLOCKED_FOR_GROUP: "Réservé groupe",
       GROUP_PREBOOKING: "Pré-réservation",
       GROUP_CONFIRMED: "Confirmé",
+      SOLO_CONFIRMED: "Réservé",
       BOOKED: "Réservé",
       PENDING: "En attente",
     };
