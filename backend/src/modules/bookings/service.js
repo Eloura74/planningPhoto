@@ -395,21 +395,41 @@ const getBookingsBySlot = async (slotId) => {
 };
 
 const confirmBooking = async (bookingId, adminId) => {
-  // Récupérer la réservation avant de la modifier
-  const bookingResult = await pool.query(
-    "SELECT * FROM bookings WHERE id = $1",
-    [bookingId],
-  );
+  // Chercher d'abord dans bookings (réservations solo)
+  let bookingResult = await pool.query("SELECT * FROM bookings WHERE id = $1", [
+    bookingId,
+  ]);
+
+  let isGroupPrebooking = false;
+
+  // Si pas trouvé, chercher dans group_prebookings
+  if (bookingResult.rows.length === 0) {
+    bookingResult = await pool.query(
+      "SELECT * FROM group_prebookings WHERE id = $1",
+      [bookingId],
+    );
+    isGroupPrebooking = true;
+  }
+
   if (bookingResult.rows.length === 0) {
     throw new Error("Booking not found");
   }
+
   const booking = bookingResult.rows[0];
 
-  // Mettre à jour le statut
-  await pool.query(
-    "UPDATE bookings SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2",
-    ["CONFIRMED", bookingId],
-  );
+  if (isGroupPrebooking) {
+    // Confirmer une pré-réservation groupe
+    await pool.query(
+      "UPDATE group_prebookings SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2",
+      ["CONFIRMED", bookingId],
+    );
+  } else {
+    // Confirmer une réservation solo
+    await pool.query(
+      "UPDATE bookings SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2",
+      ["CONFIRMED", bookingId],
+    );
+  }
 
   await createHistory(
     "BOOKING",
@@ -417,7 +437,9 @@ const confirmBooking = async (bookingId, adminId) => {
     "CONFIRM",
     {},
     null,
-    "Réservation confirmée par admin",
+    isGroupPrebooking
+      ? "Pré-réservation groupe confirmée par admin"
+      : "Réservation confirmée par admin",
   );
 
   // Send confirmation email
@@ -432,11 +454,14 @@ const confirmBooking = async (bookingId, adminId) => {
     const userData = user.rows[0];
     const slotData = slot.rows[0];
 
-    // Mettre à jour le statut du créneau
-    await pool.query("UPDATE slots SET status = $1 WHERE id = $2", [
-      slotData.type === "SOLO" ? "SOLO_CONFIRMED" : "GROUP_CONFIRMED",
-      booking.slot_id,
-    ]);
+    // Ne pas mettre à jour le statut du slot si c'est une pré-réservation groupe individuelle
+    // Le slot sera mis à jour quand l'admin bloquera tout le créneau
+    if (!isGroupPrebooking) {
+      await pool.query("UPDATE slots SET status = $1 WHERE id = $2", [
+        slotData.type === "SOLO" ? "SOLO_CONFIRMED" : "GROUP_CONFIRMED",
+        booking.slot_id,
+      ]);
+    }
 
     await sendBookingConfirmationEmail(
       userData.email,
@@ -447,10 +472,12 @@ const confirmBooking = async (bookingId, adminId) => {
   }
 
   // Récupérer la réservation mise à jour
-  const updatedBooking = await pool.query(
-    "SELECT * FROM bookings WHERE id = $1",
-    [bookingId],
-  );
+  const updatedBooking = isGroupPrebooking
+    ? await pool.query("SELECT * FROM group_prebookings WHERE id = $1", [
+        bookingId,
+      ])
+    : await pool.query("SELECT * FROM bookings WHERE id = $1", [bookingId]);
+
   return updatedBooking.rows[0];
 };
 
