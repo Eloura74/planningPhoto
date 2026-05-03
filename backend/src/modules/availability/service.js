@@ -9,12 +9,22 @@ const getAvailableSlots = async (startDate, endDate) => {
     [startDate, endDate],
   );
 
-  // Récupérer les pré-réservations groupe
+  // Récupérer les pré-réservations groupe ET les bookings confirmés
   const groupPrebookings = await pool.query(
     `SELECT gp.*, s.date, s.start_time 
      FROM group_prebookings gp 
      JOIN slots s ON gp.slot_id = s.id 
      WHERE s.date >= $1 AND s.date <= $2`,
+    [startDate, endDate],
+  );
+
+  // Récupérer aussi les bookings (solo et groupe confirmés)
+  const confirmedBookings = await pool.query(
+    `SELECT b.*, s.date, s.start_time, s.type as slot_type
+     FROM bookings b
+     JOIN slots s ON b.slot_id = s.id
+     WHERE s.date >= $1 AND s.date <= $2
+     AND b.status = 'CONFIRMED'`,
     [startDate, endDate],
   );
 
@@ -58,6 +68,15 @@ const getAvailableSlots = async (startDate, endDate) => {
     groupPrebookingsBySlot.get(gp.slot_id).push(gp);
   });
 
+  // Ajouter aussi les bookings confirmés au compteur
+  const confirmedBookingsBySlot = new Map();
+  confirmedBookings.rows.forEach((b) => {
+    if (!confirmedBookingsBySlot.has(b.slot_id)) {
+      confirmedBookingsBySlot.set(b.slot_id, []);
+    }
+    confirmedBookingsBySlot.get(b.slot_id).push(b);
+  });
+
   const unavailableDates = new Set(
     unavailabilities.rows.map((u) => {
       const date =
@@ -99,12 +118,16 @@ const getAvailableSlots = async (startDate, endDate) => {
       const existingSlot = existingSlotsMap.get(slotKey);
 
       if (existingSlot) {
-        // Utiliser le slot existant avec ses pré-réservations
+        // Utiliser le slot existant avec ses pré-réservations ET bookings confirmés
         const prebookingCount =
           groupPrebookingsBySlot.get(existingSlot.id)?.length || 0;
+        const confirmedCount =
+          confirmedBookingsBySlot.get(existingSlot.id)?.length || 0;
+        const totalParticipants = prebookingCount + confirmedCount;
+
         slots.push({
           ...existingSlot,
-          group_prebooking_count: prebookingCount,
+          group_prebooking_count: totalParticipants,
         });
       } else {
         // Créer un slot virtuel
