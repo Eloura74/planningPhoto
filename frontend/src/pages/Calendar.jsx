@@ -193,7 +193,12 @@ function CalendarPage() {
   };
 
   const getSlotStatus = (slot) => {
-    // Vérifier les bookings solo
+    // Si le slot est déjà confirmé (SOLO_CONFIRMED ou GROUP_CONFIRMED), garder ce statut
+    if (slot.status === "SOLO_CONFIRMED" || slot.status === "GROUP_CONFIRMED") {
+      return slot.status;
+    }
+
+    // Vérifier les bookings solo de l'utilisateur
     const booking = myBookings.find(
       (b) =>
         b.slot_id === slot.id &&
@@ -204,7 +209,7 @@ function CalendarPage() {
       return booking.status === "CONFIRMED" ? "BOOKED" : "PENDING";
     }
 
-    // Vérifier les pré-réservations groupe
+    // Vérifier les pré-réservations groupe de l'utilisateur
     const groupPrebooking = myBookings.find(
       (b) => b.slot_id === slot.id && b.status === "GROUP_PREBOOKING",
     );
