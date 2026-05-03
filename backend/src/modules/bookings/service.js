@@ -221,10 +221,18 @@ const createGroupPrebooking = async (userId, slotId) => {
 
   let slotData;
   if (slot.rows.length === 0) {
-    // Slot virtuel - extraire date et heure de l'ID (format: YYYY-MM-DD_HH:MM)
-    const [date, startTime] = slotId.split("_");
-    // Créneaux groupe toute la journée : 9h-17h
-    const endTime = "17:00";
+    // Slot virtuel - extraire date et heure de l'ID
+    let date, startTime, endTime;
+    if (slotId.includes("_")) {
+      // Format ancien: YYYY-MM-DD_HH:MM
+      [date, startTime] = slotId.split("_");
+      endTime = "17:00";
+    } else {
+      // Format nouveau: YYYY-MM-DD (groupe uniquement)
+      date = slotId;
+      startTime = "09:00"; // Créneaux groupe : 9h-17h
+      endTime = "17:00";
+    }
 
     // IMPORTANT : Chercher d'abord si un slot groupe existe déjà avec cette date
     const existingGroupSlot = await pool.query(
