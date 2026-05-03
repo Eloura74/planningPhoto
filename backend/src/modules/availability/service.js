@@ -48,7 +48,7 @@ const getAvailableSlots = async (startDate, endDate) => {
   const confirmedGroupSlots = await pool.query(
     `SELECT COUNT(DISTINCT date) as count FROM slots 
      WHERE type = 'GROUP' 
-     AND status = 'GROUP_CONFIRMED' 
+     AND (status = 'GROUP_CONFIRMED' OR status = 'BLOCKED_FOR_GROUP')
      AND date >= $1 AND date <= $2`,
     [monthStart, monthEnd],
   );
