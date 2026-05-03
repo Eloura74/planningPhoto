@@ -453,7 +453,7 @@ function CalendarPage() {
                 className="text-sm"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Réservé groupe
+                Groupe (mardi/jeudi)
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -465,7 +465,7 @@ function CalendarPage() {
                 className="text-sm"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Groupe confirmé
+                Réservé / Confirmé
               </span>
             </div>
             <div className="flex items-center gap-2">
