@@ -241,6 +241,32 @@ router.delete("/group/:slotId", authenticate, async (req, res) => {
   }
 });
 
+// Route pour supprimer une pré-réservation groupe par ID (admin)
+router.delete(
+  "/group-prebooking/:id",
+  authenticate,
+  requireAdmin,
+  async (req, res) => {
+    try {
+      console.log("🗑️ Admin deleting group prebooking:", req.params.id);
+      const result = await pool.query(
+        "DELETE FROM group_prebookings WHERE id = $1 RETURNING *",
+        [req.params.id],
+      );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: "Pré-réservation non trouvée" });
+      }
+
+      console.log("✅ Group prebooking deleted:", result.rows[0]);
+      res.json({ success: true, prebooking: result.rows[0] });
+    } catch (error) {
+      console.error("❌ Error deleting group prebooking:", error);
+      res.status(400).json({ error: error.message });
+    }
+  },
+);
+
 router.get(
   "/low-participation",
   authenticate,

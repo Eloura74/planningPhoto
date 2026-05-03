@@ -59,6 +59,8 @@ export const bookingsAPI = {
   getAllPending: (status) =>
     api.get("/bookings/pending", { params: { status } }),
   cancelGroupPrebooking: (slotId) => api.delete(`/bookings/group/${slotId}`),
+  deleteGroupPrebookingById: (id) =>
+    api.delete(`/bookings/group-prebooking/${id}`),
   getLowGroupParticipation: () => api.get("/bookings/low-participation"),
 };
 
