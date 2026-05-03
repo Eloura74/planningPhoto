@@ -30,6 +30,7 @@ function AdminBookingsManager() {
             end_time: booking.slot_end_time,
             slot_id: booking.slot_id,
             slot_type: booking.slot_type,
+            slot_status: booking.slot_status,
             bookings: [],
           };
         }
@@ -202,20 +203,33 @@ function AdminBookingsManager() {
                       {isExpanded ? "▼ Masquer" : "▶ Voir détails"}
                     </button>
 
-                    {slot.slot_type === "GROUP" && (
-                      <button
-                        onClick={() => handleBlockSlot(slot.slot_id)}
-                        className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
-                        style={{
-                          background:
-                            "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
-                          color: "white",
-                        }}
-                        title="Bloquer et valider tous les participants"
-                      >
-                        🚫 Bloquer & Valider
-                      </button>
-                    )}
+                    {slot.slot_type === "GROUP" &&
+                      (slot.slot_status === "BLOCKED_FOR_GROUP" ? (
+                        <button
+                          disabled
+                          className="px-4 py-2 rounded-lg font-semibold text-sm cursor-not-allowed opacity-60"
+                          style={{
+                            background: "var(--chrome-medium)",
+                            color: "var(--text-secondary)",
+                          }}
+                          title="Créneau bloqué et validé"
+                        >
+                          ✅ Créneau Bloqué
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleBlockSlot(slot.slot_id)}
+                          className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                          style={{
+                            background:
+                              "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                            color: "white",
+                          }}
+                          title="Bloquer et valider tous les participants"
+                        >
+                          🚫 Bloquer & Valider
+                        </button>
+                      ))}
                   </div>
                 </div>
               </div>
