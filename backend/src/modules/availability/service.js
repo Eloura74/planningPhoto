@@ -44,8 +44,9 @@ const getAvailableSlots = async (startDate, endDate) => {
     .toISOString()
     .split("T")[0];
 
+  // Compter les JOURS UNIQUES avec des créneaux groupe confirmés (pas le nombre de créneaux)
   const confirmedGroupSlots = await pool.query(
-    `SELECT COUNT(*) as count FROM slots 
+    `SELECT COUNT(DISTINCT date) as count FROM slots 
      WHERE type = 'GROUP' 
      AND status = 'GROUP_CONFIRMED' 
      AND date >= $1 AND date <= $2`,

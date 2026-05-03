@@ -514,17 +514,32 @@ const cancelBooking = async (bookingId, cancelledBy, reason = null) => {
 };
 
 const getGroupPrebookingsBySlot = async (slotId, userId = null) => {
-  let query =
-    "SELECT gp.*, u.name as user_name, u.email as user_email FROM group_prebookings gp JOIN users u ON gp.user_id = u.id WHERE gp.slot_id = $1";
-  const params = [slotId];
+  // Récupérer les pré-réservations groupe
+  let prebookingsQuery =
+    "SELECT gp.id, gp.user_id, gp.slot_id, gp.created_at, u.name as user_name, u.email as user_email, 'GROUP_PREBOOKING' as status FROM group_prebookings gp JOIN users u ON gp.user_id = u.id WHERE gp.slot_id = $1";
+  const prebookingsParams = [slotId];
 
   if (userId) {
-    query += " AND gp.user_id = $2";
-    params.push(userId);
+    prebookingsQuery += " AND gp.user_id = $2";
+    prebookingsParams.push(userId);
   }
 
-  const result = await pool.query(query, params);
-  return result.rows;
+  const prebookings = await pool.query(prebookingsQuery, prebookingsParams);
+
+  // Récupérer aussi les bookings confirmés pour ce slot (groupe)
+  let bookingsQuery =
+    "SELECT b.id, b.user_id, b.slot_id, b.created_at, u.name as user_name, u.email as user_email, b.status FROM bookings b JOIN users u ON b.user_id = u.id WHERE b.slot_id = $1 AND b.status = 'CONFIRMED'";
+  const bookingsParams = [slotId];
+
+  if (userId) {
+    bookingsQuery += " AND b.user_id = $2";
+    bookingsParams.push(userId);
+  }
+
+  const bookings = await pool.query(bookingsQuery, bookingsParams);
+
+  // Combiner les deux listes
+  return [...prebookings.rows, ...bookings.rows];
 };
 
 const deleteGroupPrebooking = async (userId, slotId) => {
