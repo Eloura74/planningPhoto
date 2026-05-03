@@ -56,7 +56,12 @@ const getAvailableSlots = async (startDate, endDate) => {
 
   const existingSlotsMap = new Map();
   existingSlots.rows.forEach((slot) => {
-    const key = `${slot.date}_${slot.start_time}`;
+    // Normaliser la date au format YYYY-MM-DD
+    const dateStr =
+      slot.date instanceof Date
+        ? slot.date.toISOString().split("T")[0]
+        : slot.date;
+    const key = `${dateStr}_${slot.start_time}`;
     existingSlotsMap.set(key, slot);
   });
 
