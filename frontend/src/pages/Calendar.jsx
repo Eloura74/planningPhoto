@@ -54,6 +54,19 @@ function CalendarPage() {
       console.log("🔍 Créneaux reçus:", filteredSlots.length, filteredSlots);
       console.log("🔍 User:", user);
 
+      // DEBUG: Afficher le statut du 6 mai
+      const slot6mai = filteredSlots.find(
+        (s) => s.date === "2026-05-06" && s.start_time === "14:00",
+      );
+      if (slot6mai) {
+        console.log("🔍 SLOT 6 MAI 14:00:", {
+          id: slot6mai.id,
+          status: slot6mai.status,
+          type: slot6mai.type,
+          is_virtual: slot6mai.is_virtual,
+        });
+      }
+
       // Filtre par rôle et type d'élève
       if (user?.role === "STUDENT") {
         if (user?.isGroupMember) {
@@ -195,6 +208,10 @@ function CalendarPage() {
   const getSlotStatus = (slot) => {
     // Si le slot est déjà confirmé (SOLO_CONFIRMED ou GROUP_CONFIRMED), garder ce statut
     if (slot.status === "SOLO_CONFIRMED" || slot.status === "GROUP_CONFIRMED") {
+      // DEBUG
+      if (slot.date === "2026-05-06" && slot.start_time === "14:00") {
+        console.log("✅ 6 MAI: Statut confirmé détecté:", slot.status);
+      }
       return slot.status;
     }
 
