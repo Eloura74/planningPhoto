@@ -13,8 +13,35 @@ function SlotDetailsModal({ slot, onClose, user }) {
     try {
       setLoading(true);
       if (slot.type === "GROUP" || slot.type === "MIXED") {
-        // Utiliser slot_id s'il existe (slot réel), sinon slot.id (slot virtuel)
-        const slotId = slot.slot_id || slot.id;
+        // Si l'ID est un ID virtuel (format: YYYY-MM-DD_HH:MM), chercher le vrai slot
+        let slotId = slot.id;
+
+        if (slotId.includes("_")) {
+          // ID virtuel - chercher le vrai slot par date
+          const [date, startTime] = slotId.split("_");
+          console.log(
+            "🔍 ID virtuel détecté, recherche du vrai slot pour date:",
+            date,
+          );
+
+          try {
+            const slotsAPI = await import("../services/api").then(
+              (m) => m.slotsAPI,
+            );
+            const slotsResponse = await slotsAPI.getAll(date, date);
+            const realSlot = slotsResponse.data.find(
+              (s) => s.date === date && s.type === "GROUP",
+            );
+
+            if (realSlot) {
+              slotId = realSlot.id;
+              console.log("✅ Vrai slot trouvé:", slotId);
+            }
+          } catch (e) {
+            console.error("❌ Erreur recherche vrai slot:", e);
+          }
+        }
+
         console.log("🔍 Loading participants for slot:", slotId);
         const response = await bookingsAPI.getGroupPrebookings(slotId);
         console.log("🔍 Participants loaded:", response.data);

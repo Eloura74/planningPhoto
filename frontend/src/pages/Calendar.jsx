@@ -54,25 +54,27 @@ function CalendarPage() {
       console.log("🔍 Créneaux reçus:", filteredSlots.length, filteredSlots);
       console.log("🔍 User:", user);
 
-      // Charger TOUS les bookings pour savoir quels créneaux sont réservés
-      try {
-        const allBookingsResponse = await bookingsAPI.getAll();
-        const allBookings = allBookingsResponse.data;
+      // Charger TOUS les bookings pour savoir quels créneaux sont réservés (admin seulement)
+      if (user?.role === "ADMIN") {
+        try {
+          const allBookingsResponse = await bookingsAPI.getAll();
+          const allBookings = allBookingsResponse.data;
 
-        // Mettre à jour le statut des slots en fonction des bookings
-        filteredSlots = filteredSlots.map((slot) => {
-          const slotBookings = allBookings.filter(
-            (b) => b.slot_id === slot.id && b.status === "CONFIRMED",
-          );
+          // Mettre à jour le statut des slots en fonction des bookings
+          filteredSlots = filteredSlots.map((slot) => {
+            const slotBookings = allBookings.filter(
+              (b) => b.slot_id === slot.id && b.status === "CONFIRMED",
+            );
 
-          if (slotBookings.length > 0 && slot.type === "SOLO") {
-            return { ...slot, status: "SOLO_CONFIRMED" };
-          }
+            if (slotBookings.length > 0 && slot.type === "SOLO") {
+              return { ...slot, status: "SOLO_CONFIRMED" };
+            }
 
-          return slot;
-        });
-      } catch (e) {
-        console.error("Erreur chargement bookings:", e);
+            return slot;
+          });
+        } catch (e) {
+          console.error("Erreur chargement bookings:", e);
+        }
       }
 
       // Filtre par rôle et type d'élève
