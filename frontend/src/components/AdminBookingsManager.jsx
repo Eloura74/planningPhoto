@@ -302,7 +302,7 @@ function AdminBookingsManager() {
                           {booking.status !== "CONFIRMED" && (
                             <button
                               onClick={() => handleConfirmBooking(booking.id)}
-                              className="px-3 py-1.5 rounded-lg text-sm font-semibold transition-all hover:shadow-md"
+                              className="px-3 py-1.5 rounded-lg text-sm font-semibold transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                               style={{
                                 background:
                                   "linear-gradient(135deg, #10b981 0%, #059669 100%)",
