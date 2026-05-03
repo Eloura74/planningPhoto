@@ -29,9 +29,10 @@ function CalendarPage() {
   )
     .toISOString()
     .split("T")[0];
+  // Charger 3 mois à l'avance
   const endDate = new Date(
     currentMonth.getFullYear(),
-    currentMonth.getMonth() + 1,
+    currentMonth.getMonth() + 3,
     0,
   )
     .toISOString()
