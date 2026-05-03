@@ -309,6 +309,46 @@ const blockSlot = async (slotId, userId) => {
   console.log(
     `✅ Slot blocked and ${prebookings.rows.length} bookings confirmed`,
   );
+
+  // 3. Règle des 2 créneaux groupe : Si 2 créneaux groupe validés dans le mois, les autres passent en solo
+  const slotData = result.rows[0];
+  const slotDate = new Date(slotData.date);
+  const monthStart = new Date(slotDate.getFullYear(), slotDate.getMonth(), 1);
+  const monthEnd = new Date(slotDate.getFullYear(), slotDate.getMonth() + 1, 0);
+
+  // Compter les créneaux groupe bloqués ce mois
+  const blockedGroupSlots = await pool.query(
+    `SELECT COUNT(*) as count FROM slots 
+     WHERE type = 'GROUP' 
+     AND status = 'BLOCKED_FOR_GROUP' 
+     AND date >= $1 
+     AND date <= $2`,
+    [
+      monthStart.toISOString().split("T")[0],
+      monthEnd.toISOString().split("T")[0],
+    ],
+  );
+
+  const blockedCount = parseInt(blockedGroupSlots.rows[0].count);
+  console.log(`📊 ${blockedCount} créneaux groupe bloqués ce mois`);
+
+  if (blockedCount >= 2) {
+    // Passer tous les autres créneaux groupe du mois en SOLO
+    await pool.query(
+      `UPDATE slots 
+       SET type = 'SOLO', status = 'OPEN_SOLO' 
+       WHERE type = 'GROUP' 
+       AND status != 'BLOCKED_FOR_GROUP' 
+       AND date >= $1 
+       AND date <= $2`,
+      [
+        monthStart.toISOString().split("T")[0],
+        monthEnd.toISOString().split("T")[0],
+      ],
+    );
+    console.log(`✅ Autres créneaux groupe du mois convertis en SOLO`);
+  }
+
   return result.rows[0];
 };
 

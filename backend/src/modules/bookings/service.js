@@ -100,10 +100,16 @@ const createSoloBooking = async (userId, slotId) => {
       throw new Error("Slot is not available for solo booking");
     }
 
-    // Règle 1 : Vérifier que l'utilisateur n'a pas déjà réservé CE slot précis
+    // Règle 1 : Vérifier que l'utilisateur n'a pas déjà réservé ce créneau (par date + heure)
     const existingSoloBooking = await pool.query(
-      "SELECT * FROM bookings WHERE user_id = $1 AND slot_id = $2 AND status NOT IN ('CANCELLED', 'CANCELLED_BY_STUDENT', 'CANCELLED_BY_ADMIN')",
-      [userId, slotId],
+      `SELECT b.* FROM bookings b 
+       JOIN slots s ON b.slot_id = s.id 
+       WHERE b.user_id = $1 
+       AND s.date = $2 
+       AND s.start_time = $3 
+       AND s.end_time = $4
+       AND b.status NOT IN ('CANCELLED', 'CANCELLED_BY_STUDENT', 'CANCELLED_BY_ADMIN')`,
+      [userId, slotData.date, slotData.start_time, slotData.end_time],
     );
 
     if (existingSoloBooking.rows.length > 0) {
@@ -295,9 +301,14 @@ const createGroupPrebooking = async (userId, slotId) => {
     throw new Error("Slot not available for group pre-booking");
   }
 
+  // Vérifier par date + heure pour éviter les doublons avec slots virtuels
   const existingPrebooking = await pool.query(
-    "SELECT * FROM group_prebookings WHERE user_id = $1 AND slot_id = $2",
-    [userId, slotId],
+    `SELECT gp.* FROM group_prebookings gp
+     JOIN slots s ON gp.slot_id = s.id
+     WHERE gp.user_id = $1 
+     AND s.date = $2 
+     AND s.start_time = $3`,
+    [userId, slotData.date, slotData.start_time],
   );
 
   if (existingPrebooking.rows.length > 0) {
