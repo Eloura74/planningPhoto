@@ -54,6 +54,32 @@ function CalendarPage() {
       console.log("🔍 Créneaux reçus:", filteredSlots.length, filteredSlots);
       console.log("🔍 User:", user);
 
+      // DEBUG: Compter les créneaux groupe confirmés
+      const groupConfirmed = filteredSlots.filter(
+        (s) => s.status === "GROUP_CONFIRMED",
+      );
+      console.log(
+        "🔍 Créneaux GROUPE CONFIRMÉS:",
+        groupConfirmed.length,
+        groupConfirmed.map((s) => s.date),
+      );
+
+      // DEBUG: Afficher les mardis/jeudis
+      const tuesdaysThursdays = filteredSlots.filter((s) => {
+        const d = new Date(s.date + "T00:00:00");
+        return d.getDay() === 2 || d.getDay() === 4;
+      });
+      console.log(
+        "🔍 Mardis/Jeudis:",
+        tuesdaysThursdays.length,
+        tuesdaysThursdays.map((s) => ({
+          date: s.date,
+          type: s.type,
+          status: s.status,
+          released_for_solo: s.released_for_solo,
+        })),
+      );
+
       // DEBUG: Afficher le statut du 6 mai
       const slot6mai = filteredSlots.find(
         (s) => s.date === "2026-05-06" && s.start_time === "14:00",
