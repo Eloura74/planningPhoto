@@ -56,7 +56,8 @@ function CalendarPage() {
 
       // DEBUG: Compter les créneaux groupe confirmés
       const groupConfirmed = filteredSlots.filter(
-        (s) => s.status === "GROUP_CONFIRMED",
+        (s) =>
+          s.status === "GROUP_CONFIRMED" || s.status === "BLOCKED_FOR_GROUP",
       );
       console.log(
         "🔍 Créneaux GROUPE CONFIRMÉS:",
@@ -268,9 +269,9 @@ function CalendarPage() {
       case "OPEN_SOLO":
         return "#00ff00";
       case "OPEN_TUESDAY":
-      case "BLOCKED_FOR_GROUP":
       case "GROUP_PREBOOKING":
         return "#ff0000";
+      case "BLOCKED_FOR_GROUP":
       case "GROUP_CONFIRMED":
       case "SOLO_CONFIRMED":
         return "#0000ff";
