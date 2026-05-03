@@ -102,13 +102,17 @@ const getAvailableSlots = async (startDate, endDate) => {
   );
 
   const slots = [];
-  const startLoop = new Date(startDate);
-  const endLoop = new Date(endDate);
+  const startLoop = new Date(startDate + "T00:00:00Z");
+  const endLoop = new Date(endDate + "T00:00:00Z");
 
   // Générer tous les jours de la période
-  for (let d = new Date(startLoop); d <= endLoop; d.setDate(d.getDate() + 1)) {
+  for (
+    let d = new Date(startLoop);
+    d <= endLoop;
+    d.setUTCDate(d.getUTCDate() + 1)
+  ) {
     const dateStr = d.toISOString().split("T")[0];
-    const dayOfWeek = d.getDay();
+    const dayOfWeek = d.getUTCDay();
 
     // Ignorer les dimanches et les jours indisponibles
     if (dayOfWeek === 0 || unavailableDates.has(dateStr)) {
@@ -117,6 +121,25 @@ const getAvailableSlots = async (startDate, endDate) => {
 
     // Créneaux selon le jour
     const isTuesdayOrThursday = dayOfWeek === 2 || dayOfWeek === 4; // Mardi ou Jeudi
+
+    // DEBUG: Log pour les premiers jours de mai
+    if (
+      dateStr.startsWith("2026-05") &&
+      parseInt(dateStr.split("-")[2]) <= 15
+    ) {
+      const dayNames = [
+        "Dimanche",
+        "Lundi",
+        "Mardi",
+        "Mercredi",
+        "Jeudi",
+        "Vendredi",
+        "Samedi",
+      ];
+      console.log(
+        `📅 ${dateStr} = ${dayNames[dayOfWeek]} (dayOfWeek=${dayOfWeek}) → ${isTuesdayOrThursday ? "GROUPE" : "SOLO"}`,
+      );
+    }
 
     let timeSlots;
     if (isTuesdayOrThursday) {
