@@ -4,8 +4,7 @@ import { useToast } from "../contexts/ToastContext";
 
 function GroupSlotManager() {
   const [groupSlots, setGroupSlots] = useState([]);
-  const [selectedSlot, setSelectedSlot] = useState(null);
-  const [participants, setParticipants] = useState([]);
+  const [openSlots, setOpenSlots] = useState({});
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -36,9 +35,28 @@ function GroupSlotManager() {
 
   const loadParticipants = async (slotId) => {
     try {
+      // Si déjà ouvert, fermer
+      if (openSlots[slotId]) {
+        setOpenSlots((prev) => {
+          const newState = { ...prev };
+          delete newState[slotId];
+          return newState;
+        });
+        return;
+      }
+
+      // Sinon, charger les participants
       const response = await bookingsAPI.getGroupPrebookings(slotId);
-      setParticipants(response.data);
-      setSelectedSlot(slotId);
+      console.log(
+        "📋 Participants loaded for slot",
+        slotId,
+        ":",
+        response.data,
+      );
+      setOpenSlots((prev) => ({
+        ...prev,
+        [slotId]: response.data,
+      }));
     } catch (error) {
       console.error("Error loading participants:", error);
     }
@@ -236,13 +254,13 @@ function GroupSlotManager() {
                 </div>
               </div>
 
-              {selectedSlot === slot.id && participants.length > 0 && (
+              {openSlots[slot.id] && openSlots[slot.id].length > 0 && (
                 <div className="mt-4 pt-4 border-t border-gray-200">
                   <p className="font-semibold text-gray-700 mb-3">
-                    👥 Participants inscrits ({participants.length}) :
+                    👥 Participants inscrits ({openSlots[slot.id].length}) :
                   </p>
                   <div className="space-y-2">
-                    {participants.map((p, index) => (
+                    {openSlots[slot.id].map((p, index) => (
                       <div
                         key={index}
                         className="flex items-center justify-between bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors"

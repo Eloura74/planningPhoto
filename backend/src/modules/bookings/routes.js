@@ -211,7 +211,7 @@ router.delete("/:id", authenticate, async (req, res) => {
   try {
     console.log("DELETE booking appelé avec ID:", req.params.id);
     const { reason } = req.body;
-    const user = await pool.query("SELECT * FROM users WHERE id = ?", [
+    const user = await pool.query("SELECT * FROM users WHERE id = $1", [
       req.userId,
     ]);
     const cancelledBy = {
