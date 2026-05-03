@@ -54,6 +54,15 @@ const getAvailableSlots = async (startDate, endDate) => {
   const groupSlotsConfirmedCount = parseInt(confirmedGroupSlots.rows[0].count);
   const shouldReleaseForSolo = groupSlotsConfirmedCount >= 2;
 
+  console.log("🔍 DEBUG getAvailableSlots:");
+  console.log("  - Période:", startDate, "à", endDate);
+  console.log("  - Mois:", monthStart, "à", monthEnd);
+  console.log(
+    "  - Créneaux groupe confirmés dans le mois:",
+    groupSlotsConfirmedCount,
+  );
+  console.log("  - Libérer pour solo?", shouldReleaseForSolo);
+
   const existingSlotsMap = new Map();
   existingSlots.rows.forEach((slot) => {
     // Normaliser la date au format YYYY-MM-DD
