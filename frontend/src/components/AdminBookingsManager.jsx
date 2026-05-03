@@ -1,10 +1,16 @@
 import { useState, useEffect } from "react";
 import { bookingsAPI, slotsAPI } from "../services/api";
 import { useToast } from "../contexts/ToastContext";
+import QuickEmailModal from "./QuickEmailModal";
 
 function AdminBookingsManager() {
   const [bookings, setBookings] = useState([]);
   const [expandedSlots, setExpandedSlots] = useState({});
+  const [emailModal, setEmailModal] = useState({
+    isOpen: false,
+    email: "",
+    name: "",
+  });
   const { showToast } = useToast();
 
   useEffect(() => {
@@ -279,22 +285,22 @@ function AdminBookingsManager() {
 
                         <div className="flex gap-2 ml-4">
                           <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(booking.user_email);
-                              showToast(
-                                `📋 Email copié: ${booking.user_email}`,
-                                "success",
-                              );
-                            }}
+                            onClick={() =>
+                              setEmailModal({
+                                isOpen: true,
+                                email: booking.user_email,
+                                name: booking.user_name,
+                              })
+                            }
                             className="px-3 py-1.5 rounded-lg text-sm font-semibold transition-all hover:shadow-md"
                             style={{
                               background:
                                 "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
                               color: "white",
                             }}
-                            title="Copier l'email"
+                            title="Envoyer un email"
                           >
-                            📋 Email
+                            ✉️ Email
                           </button>
 
                           {booking.status !== "CONFIRMED" && (
@@ -351,6 +357,13 @@ function AdminBookingsManager() {
           </p>
         </div>
       )}
+
+      <QuickEmailModal
+        isOpen={emailModal.isOpen}
+        onClose={() => setEmailModal({ isOpen: false, email: "", name: "" })}
+        recipientEmail={emailModal.email}
+        recipientName={emailModal.name}
+      />
     </div>
   );
 }

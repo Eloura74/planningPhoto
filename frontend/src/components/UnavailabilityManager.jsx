@@ -132,15 +132,16 @@ function UnavailabilityManager() {
                 <div className="flex items-center gap-2">
                   <span style={{ color: "var(--gold-primary)" }}>🚫</span>
                   <span style={{ color: "var(--text-primary)" }}>
-                    {new Date(unavail.date + "T00:00:00").toLocaleDateString(
-                      "fr-FR",
-                      {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      },
-                    )}
+                    {new Date(
+                      typeof unavail.date === "string"
+                        ? unavail.date + "T00:00:00"
+                        : unavail.date,
+                    ).toLocaleDateString("fr-FR", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
                   </span>
                 </div>
                 <button
