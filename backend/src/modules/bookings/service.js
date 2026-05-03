@@ -64,23 +64,36 @@ const createSoloBooking = async (userId, slotId) => {
         endTime,
       );
 
-      // Créer le slot
-      const newSlotId = uuidv4();
-      console.log("🔍 Création du slot avec ID:", newSlotId);
-      await pool.query(
-        "INSERT INTO slots (id, date, start_time, end_time, type, status, capacity_min, capacity_max) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-        [newSlotId, date, startTime, endTime, "SOLO", "OPEN_SOLO", 1, 1],
+      // IMPORTANT : Chercher d'abord si un slot existe déjà avec cette date/heure
+      const existingSlot = await pool.query(
+        "SELECT * FROM slots WHERE date = $1 AND start_time = $2 AND end_time = $3 AND type = 'SOLO'",
+        [date, startTime, endTime],
       );
-      console.log("🔍 Slot inséré, récupération...");
 
-      // Récupérer le slot créé
-      const newSlot = await pool.query("SELECT * FROM slots WHERE id = $1", [
-        newSlotId,
-      ]);
-      console.log("🔍 Résultat SELECT:", newSlot.rows);
-      slotData = newSlot.rows[0];
-      console.log("🔍 slotData après SELECT:", slotData);
-      slotId = newSlotId; // Utiliser le vrai ID maintenant
+      if (existingSlot.rows.length > 0) {
+        // Utiliser le slot existant
+        slotData = existingSlot.rows[0];
+        slotId = slotData.id;
+        console.log("🔍 Slot existant trouvé par date/heure:", slotData);
+      } else {
+        // Créer le slot
+        const newSlotId = uuidv4();
+        console.log("🔍 Création du slot avec ID:", newSlotId);
+        await pool.query(
+          "INSERT INTO slots (id, date, start_time, end_time, type, status, capacity_min, capacity_max) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+          [newSlotId, date, startTime, endTime, "SOLO", "OPEN_SOLO", 1, 1],
+        );
+        console.log("🔍 Slot inséré, récupération...");
+
+        // Récupérer le slot créé
+        const newSlot = await pool.query("SELECT * FROM slots WHERE id = $1", [
+          newSlotId,
+        ]);
+        console.log("🔍 Résultat SELECT:", newSlot.rows);
+        slotData = newSlot.rows[0];
+        console.log("🔍 slotData après SELECT:", slotData);
+        slotId = newSlotId; // Utiliser le vrai ID maintenant
+      }
     } else {
       slotData = slot.rows[0];
       console.log("🔍 Slot existant trouvé:", slotData);
@@ -124,43 +137,6 @@ const createSoloBooking = async (userId, slotId) => {
 
     if (sameDayBookings.rows.length > 0) {
       throw new Error("Vous avez déjà une réservation solo pour cette date");
-    }
-
-    // Règle : Vérifier quota hebdomadaire (max 1 par semaine)
-    const slotDate = new Date(slotData.date);
-    const weekStart = new Date(slotDate);
-    weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1); // Lundi de la semaine
-    const weekEnd = new Date(weekStart);
-    weekEnd.setDate(weekEnd.getDate() + 6); // Dimanche de la semaine
-
-    const weeklyBookings = await getUserWeeklyBookings(
-      userId,
-      weekStart.toISOString().split("T")[0],
-      weekEnd.toISOString().split("T")[0],
-    );
-    if (weeklyBookings >= 1) {
-      throw new Error(
-        "Vous avez déjà atteint votre quota de 1 réservation solo cette semaine",
-      );
-    }
-
-    // Règle : Vérifier quota mensuel (max 4 par mois)
-    const monthStart = new Date(slotDate.getFullYear(), slotDate.getMonth(), 1);
-    const monthEnd = new Date(
-      slotDate.getFullYear(),
-      slotDate.getMonth() + 1,
-      0,
-    );
-
-    const monthlyBookings = await getUserMonthlyBookings(
-      userId,
-      monthStart.toISOString().split("T")[0],
-      monthEnd.toISOString().split("T")[0],
-    );
-    if (monthlyBookings >= 4) {
-      throw new Error(
-        "Vous avez déjà atteint votre quota de 4 réservations solo ce mois",
-      );
     }
 
     const existingBooking = await pool.query(
@@ -239,40 +215,53 @@ const createGroupPrebooking = async (userId, slotId) => {
     // Créneaux groupe toute la journée : 9h-17h
     const endTime = "17:00";
 
-    // Créer le slot
-    const newSlotId = uuidv4();
-    try {
-      console.log("🔍 Création slot virtuel:", {
-        newSlotId,
-        date,
-        startTime,
-        endTime,
-      });
-      await pool.query(
-        "INSERT INTO slots (id, date, start_time, end_time, type, status, capacity_min, capacity_max) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-        [
+    // IMPORTANT : Chercher d'abord si un slot groupe existe déjà avec cette date
+    const existingGroupSlot = await pool.query(
+      "SELECT * FROM slots WHERE date = $1 AND type = 'GROUP'",
+      [date],
+    );
+
+    if (existingGroupSlot.rows.length > 0) {
+      // Utiliser le slot existant
+      slotData = existingGroupSlot.rows[0];
+      slotId = slotData.id;
+      console.log("🔍 Slot groupe existant trouvé par date:", slotData);
+    } else {
+      // Créer le slot
+      const newSlotId = uuidv4();
+      try {
+        console.log("🔍 Création slot virtuel:", {
           newSlotId,
           date,
           startTime,
           endTime,
-          "GROUP",
-          "BLOCKED_FOR_GROUP",
-          3,
-          5,
-        ],
-      );
-    } catch (error) {
-      console.error("❌ Erreur INSERT slot:", error.message);
-      console.error("Paramètres:", { newSlotId, date, startTime, endTime });
-      throw error;
-    }
+        });
+        await pool.query(
+          "INSERT INTO slots (id, date, start_time, end_time, type, status, capacity_min, capacity_max) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+          [
+            newSlotId,
+            date,
+            startTime,
+            endTime,
+            "GROUP",
+            "BLOCKED_FOR_GROUP",
+            3,
+            5,
+          ],
+        );
+      } catch (error) {
+        console.error("❌ Erreur INSERT slot:", error.message);
+        console.error("Paramètres:", { newSlotId, date, startTime, endTime });
+        throw error;
+      }
 
-    // Récupérer le slot créé
-    const newSlot = await pool.query("SELECT * FROM slots WHERE id = $1", [
-      newSlotId,
-    ]);
-    slotData = newSlot.rows[0];
-    slotId = newSlotId; // Utiliser le vrai ID maintenant
+      // Récupérer le slot créé
+      const newSlot = await pool.query("SELECT * FROM slots WHERE id = $1", [
+        newSlotId,
+      ]);
+      slotData = newSlot.rows[0];
+      slotId = newSlotId; // Utiliser le vrai ID maintenant
+    }
   } else {
     slotData = slot.rows[0];
   }
