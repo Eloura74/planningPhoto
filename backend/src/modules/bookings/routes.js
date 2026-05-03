@@ -35,6 +35,7 @@ router.get("/", authenticate, requireAdmin, async (req, res) => {
         s.start_time as slot_start_time,
         s.end_time as slot_end_time,
         s.type as slot_type,
+        s.status as slot_status,
         'SOLO' as booking_type
       FROM bookings b
       JOIN users u ON b.user_id = u.id
@@ -57,6 +58,7 @@ router.get("/", authenticate, requireAdmin, async (req, res) => {
         s.start_time as slot_start_time,
         s.end_time as slot_end_time,
         s.type as slot_type,
+        s.status as slot_status,
         'GROUP' as booking_type
       FROM group_prebookings gp
       JOIN users u ON gp.user_id = u.id
