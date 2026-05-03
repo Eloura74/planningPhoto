@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import AdminStats from "../components/AdminStats";
-import GroupSlotManager from "../components/GroupSlotManager";
-import BookingsTable from "../components/BookingsTable";
+import UnifiedBookingsManager from "../components/UnifiedBookingsManager";
 import UnavailabilityManager from "../components/UnavailabilityManager";
 
 function AdminDashboardNew() {
@@ -95,11 +94,8 @@ function AdminDashboardNew() {
         {/* Statistics Cards */}
         <AdminStats />
 
-        {/* Group Slots Management */}
-        <GroupSlotManager />
-
-        {/* Bookings Table */}
-        <BookingsTable />
+        {/* Unified Bookings Management */}
+        <UnifiedBookingsManager />
 
         {/* Unavailability Manager */}
         <UnavailabilityManager />
