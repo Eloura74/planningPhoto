@@ -64,10 +64,25 @@ function AdminBookingsManager() {
 
   const handleConfirmBooking = async (bookingId) => {
     try {
-      await bookingsAPI.confirm(bookingId);
+      const result = await bookingsAPI.confirm(bookingId);
+      console.log("✅ Confirmation result:", result.data);
+
+      // Mettre à jour le statut localement pour un feedback immédiat
+      setBookings((prevBookings) =>
+        prevBookings.map((slot) => ({
+          ...slot,
+          bookings: slot.bookings.map((booking) =>
+            booking.id === bookingId
+              ? { ...booking, status: "CONFIRMED" }
+              : booking,
+          ),
+        })),
+      );
+
       showToast("✅ Membre confirmé avec succès !", "success");
-      // Recharger immédiatement les réservations pour voir le changement
-      loadAllBookings();
+
+      // Recharger depuis l'API après 500ms pour être sûr
+      setTimeout(() => loadAllBookings(), 500);
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors de la confirmation",
