@@ -65,18 +65,14 @@ function AdminBookingsManager() {
   const handleConfirmBooking = async (bookingId) => {
     try {
       await bookingsAPI.confirm(bookingId);
-      showToast(
-        "✅ Réservation validée ! Allez sur le Calendrier et appuyez sur F5 pour voir le créneau en bleu",
-        "success",
-      );
+      showToast("✅ Membre confirmé avec succès !", "success");
+      // Recharger immédiatement les réservations pour voir le changement
       loadAllBookings();
-
-      // Recharger la page après 2 secondes pour voir le changement
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
     } catch (error) {
-      showToast(error.response?.data?.error || "Erreur", "error");
+      showToast(
+        error.response?.data?.error || "Erreur lors de la confirmation",
+        "error",
+      );
     }
   };
 
