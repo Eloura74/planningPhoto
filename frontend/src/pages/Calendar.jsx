@@ -267,6 +267,7 @@ function CalendarPage() {
     switch (status) {
       case "OPEN_SOLO":
         return "#00ff00";
+      case "OPEN_TUESDAY":
       case "BLOCKED_FOR_GROUP":
       case "GROUP_PREBOOKING":
         return "#ff0000";
