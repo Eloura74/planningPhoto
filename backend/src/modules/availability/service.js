@@ -164,35 +164,8 @@ const getAvailableSlots = async (startDate, endDate) => {
           confirmedBookingsBySlot.get(existingSlot.id)?.length || 0;
         const totalParticipants = prebookingCount + confirmedCount;
 
-        // IMPORTANT: Forcer le type/statut selon le jour de la semaine
-        let slotType = existingSlot.type;
-        let slotStatus = existingSlot.status;
-
-        // Si c'est un mardi/jeudi ET qu'on n'a pas encore 2 jours groupe confirmés
-        if (isTuesdayOrThursday && !shouldReleaseForSolo) {
-          // Forcer en GROUPE sauf si déjà confirmé
-          if (
-            slotStatus !== "SOLO_CONFIRMED" &&
-            slotStatus !== "GROUP_CONFIRMED"
-          ) {
-            slotType = "MIXED";
-            slotStatus = "OPEN_TUESDAY";
-          }
-        } else if (!isTuesdayOrThursday) {
-          // Autres jours : forcer en SOLO sauf si déjà confirmé
-          if (
-            slotStatus !== "SOLO_CONFIRMED" &&
-            slotStatus !== "GROUP_CONFIRMED"
-          ) {
-            slotType = "SOLO";
-            slotStatus = "OPEN_SOLO";
-          }
-        }
-
         slots.push({
           ...existingSlot,
-          type: slotType,
-          status: slotStatus,
           group_prebooking_count: totalParticipants,
         });
       } else {
