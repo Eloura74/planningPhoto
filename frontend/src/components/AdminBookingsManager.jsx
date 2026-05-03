@@ -107,12 +107,42 @@ function AdminBookingsManager() {
   };
 
   const handleBlockSlot = async (slotId) => {
+    if (
+      !window.confirm(
+        "Bloquer ce créneau groupe et valider tous les participants ?",
+      )
+    )
+      return;
+
     try {
       await slotsAPI.blockSlot(slotId);
-      showToast("Créneau bloqué et participants validés", "success");
-      setTimeout(() => window.location.reload(), 1000);
+      showToast("✅ Créneau bloqué et participants validés !", "success");
+      loadAllBookings();
     } catch (error) {
-      showToast(error.response?.data?.error || "Erreur", "error");
+      showToast(
+        error.response?.data?.error || "Erreur lors du blocage",
+        "error",
+      );
+    }
+  };
+
+  const handleReopenSlot = async (slotId) => {
+    if (
+      !window.confirm(
+        "Rouvrir ce créneau groupe pour de nouvelles inscriptions ?",
+      )
+    )
+      return;
+
+    try {
+      await slotsAPI.reopenSlot(slotId);
+      showToast("✅ Créneau rouvert avec succès !", "success");
+      loadAllBookings();
+    } catch (error) {
+      showToast(
+        error.response?.data?.error || "Erreur lors de la réouverture",
+        "error",
+      );
     }
   };
 
@@ -221,17 +251,31 @@ function AdminBookingsManager() {
 
                     {slot.slot_type === "GROUP" &&
                       (slot.slot_status === "BLOCKED_FOR_GROUP" ? (
-                        <button
-                          disabled
-                          className="px-4 py-2 rounded-lg font-semibold text-sm cursor-not-allowed opacity-60"
-                          style={{
-                            background: "var(--chrome-medium)",
-                            color: "var(--text-secondary)",
-                          }}
-                          title="Créneau bloqué et validé"
-                        >
-                          ✅ Créneau Bloqué
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            disabled
+                            className="px-4 py-2 rounded-lg font-semibold text-sm cursor-not-allowed opacity-60"
+                            style={{
+                              background: "var(--chrome-medium)",
+                              color: "var(--text-secondary)",
+                            }}
+                            title="Créneau bloqué et validé"
+                          >
+                            ✅ Créneau Bloqué
+                          </button>
+                          <button
+                            onClick={() => handleReopenSlot(slot.slot_id)}
+                            className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                            style={{
+                              background:
+                                "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                              color: "white",
+                            }}
+                            title="Rouvrir le créneau pour de nouvelles inscriptions"
+                          >
+                            🔓 Rouvrir
+                          </button>
+                        </div>
                       ) : (
                         <button
                           onClick={() => handleBlockSlot(slot.slot_id)}

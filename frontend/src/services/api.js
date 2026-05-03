@@ -44,6 +44,7 @@ export const slotsAPI = {
   delete: (id) => api.delete(`/slots/${id}`),
   blockSlot: (id) => api.patch(`/slots/${id}/block`),
   releaseSlot: (id) => api.patch(`/slots/${id}/release`),
+  reopenSlot: (id) => api.patch(`/slots/${id}/reopen`),
   confirmGroup: (slotIds) => api.post("/slots/confirm-group", { slotIds }),
 };
 

@@ -74,6 +74,26 @@ router.patch("/:id/release", authenticate, requireAdmin, async (req, res) => {
   }
 });
 
+router.patch("/:id/reopen", authenticate, requireAdmin, async (req, res) => {
+  try {
+    console.log("🔓 Reopening slot:", req.params.id);
+    const slot = await pool.query(
+      "UPDATE slots SET status = $1 WHERE id = $2 RETURNING *",
+      ["OPEN_TUESDAY", req.params.id],
+    );
+
+    if (slot.rows.length === 0) {
+      return res.status(404).json({ error: "Créneau non trouvé" });
+    }
+
+    console.log("✅ Slot reopened successfully:", slot.rows[0]);
+    res.json(slot.rows[0]);
+  } catch (error) {
+    console.error("❌ Error reopening slot:", error.message);
+    res.status(400).json({ error: error.message });
+  }
+});
+
 router.patch(
   "/:id/confirm-group",
   authenticate,
