@@ -56,14 +56,12 @@ const getAvailableSlots = async (startDate, endDate) => {
   const groupSlotsConfirmedCount = parseInt(confirmedGroupSlots.rows[0].count);
   const shouldReleaseForSolo = groupSlotsConfirmedCount >= 2;
 
-  console.log("🔍 DEBUG getAvailableSlots:");
-  console.log("  - Période:", startDate, "à", endDate);
-  console.log("  - Mois:", monthStart, "à", monthEnd);
-  console.log(
-    "  - Créneaux groupe confirmés dans le mois:",
-    groupSlotsConfirmedCount,
-  );
-  console.log("  - Libérer pour solo?", shouldReleaseForSolo);
+  // Log pour debug
+  if (groupSlotsConfirmedCount > 0) {
+    console.log(
+      `📊 ${groupSlotsConfirmedCount} jour(s) groupe confirmé(s) dans le mois ${monthStart} → ${shouldReleaseForSolo ? "Libération mardis/jeudis en solo" : "Mardis/jeudis restent en groupe"}`,
+    );
+  }
 
   const existingSlotsMap = new Map();
   existingSlots.rows.forEach((slot) => {
@@ -122,25 +120,6 @@ const getAvailableSlots = async (startDate, endDate) => {
     // Créneaux selon le jour
     const isTuesdayOrThursday = dayOfWeek === 2 || dayOfWeek === 4; // Mardi ou Jeudi
 
-    // DEBUG: Log pour les premiers jours de mai
-    if (
-      dateStr.startsWith("2026-05") &&
-      parseInt(dateStr.split("-")[2]) <= 15
-    ) {
-      const dayNames = [
-        "Dimanche",
-        "Lundi",
-        "Mardi",
-        "Mercredi",
-        "Jeudi",
-        "Vendredi",
-        "Samedi",
-      ];
-      console.log(
-        `📅 ${dateStr} = ${dayNames[dayOfWeek]} (dayOfWeek=${dayOfWeek}) → ${isTuesdayOrThursday ? "GROUPE" : "SOLO"}`,
-      );
-    }
-
     let timeSlots;
     if (isTuesdayOrThursday) {
       // Mardi/Jeudi : groupe toute la journée (9h-17h en un seul créneau)
@@ -169,15 +148,22 @@ const getAvailableSlots = async (startDate, endDate) => {
           group_prebooking_count: totalParticipants,
         });
       } else {
-        // Créer un slot virtuel
+        // Créer un slot virtuel selon le jour de la semaine
         let status, type;
 
-        if (isTuesdayOrThursday && !shouldReleaseForSolo) {
-          // Mardi/Jeudi : disponible pour groupe en priorité (si moins de 2 confirmés)
-          status = "OPEN_TUESDAY";
-          type = "MIXED";
+        if (isTuesdayOrThursday) {
+          // Mardi/Jeudi : TOUJOURS groupe (sauf si 2+ jours groupe confirmés dans le mois)
+          if (shouldReleaseForSolo) {
+            // Exception : 2+ jours groupe confirmés → libérer en solo
+            status = "OPEN_SOLO";
+            type = "SOLO";
+          } else {
+            // Normal : réservé au groupe
+            status = "OPEN_TUESDAY";
+            type = "MIXED";
+          }
         } else {
-          // Autres jours OU mardis/jeudis libérés : solo uniquement
+          // Autres jours : TOUJOURS solo
           status = "OPEN_SOLO";
           type = "SOLO";
         }
