@@ -259,6 +259,7 @@ const confirmGroupSlotsAdmin = async (slotIds, adminId) => {
 };
 
 const blockSlot = async (slotId, userId) => {
+  // 1. Bloquer le slot
   const result = await pool.query(
     "UPDATE slots SET status = $1, modified_by = $2, modification_reason = $3 WHERE id = $4 RETURNING *",
     ["BLOCKED_FOR_GROUP", userId, "Blocked by admin", slotId],
@@ -268,12 +269,45 @@ const blockSlot = async (slotId, userId) => {
     throw new Error("Slot not found");
   }
 
+  // 2. Valider automatiquement toutes les pré-réservations de ce créneau
+  // Créer des bookings confirmés pour chaque pré-réservation
+  const prebookings = await pool.query(
+    "SELECT * FROM group_prebookings WHERE slot_id = $1",
+    [slotId],
+  );
+
+  console.log(
+    `🔄 Converting ${prebookings.rows.length} prebookings to confirmed bookings`,
+  );
+
+  for (const prebooking of prebookings.rows) {
+    // Créer un booking confirmé
+    await pool.query(
+      `INSERT INTO bookings (id, user_id, slot_id, status, created_at)
+       VALUES (gen_random_uuid(), $1, $2, 'CONFIRMED', NOW())
+       ON CONFLICT DO NOTHING`,
+      [prebooking.user_id, slotId],
+    );
+
+    // Supprimer la pré-réservation
+    await pool.query("DELETE FROM group_prebookings WHERE id = $1", [
+      prebooking.id,
+    ]);
+  }
+
   await createHistory(
     "SLOT",
     slotId,
     "BLOCK",
-    { status: "BLOCKED_FOR_GROUP" },
+    {
+      status: "BLOCKED_FOR_GROUP",
+      confirmed_bookings: prebookings.rows.length,
+    },
     userId,
+  );
+
+  console.log(
+    `✅ Slot blocked and ${prebookings.rows.length} bookings confirmed`,
   );
   return result.rows[0];
 };

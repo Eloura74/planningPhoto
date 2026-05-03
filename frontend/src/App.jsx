@@ -9,6 +9,7 @@ import Calendar from "./pages/Calendar";
 import AdminDashboard from "./pages/AdminDashboardNew";
 import UsersManagement from "./pages/UsersManagement";
 import Profile from "./pages/Profile";
+import MyAccount from "./pages/MyAccount";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/users" element={<UsersManagement />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/my-account" element={<MyAccount />} />
               <Route path="/" element={<Navigate to="/calendar" />} />
             </Routes>
           </BrowserRouter>

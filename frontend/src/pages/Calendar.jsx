@@ -313,6 +313,12 @@ function CalendarPage() {
               Calendrier
             </button>
             <button
+              onClick={() => navigate("/my-account")}
+              className="px-3 py-2 rounded-lg text-sm btn-gold"
+            >
+              Mon Compte
+            </button>
+            <button
               onClick={logout}
               className="px-3 py-2 rounded-lg text-sm"
               style={{
