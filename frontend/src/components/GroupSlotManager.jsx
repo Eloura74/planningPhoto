@@ -182,33 +182,32 @@ function GroupSlotManager() {
                   </div>
                 </div>
 
-                <div className="flex gap-2">
-                  {slot.group_prebooking_count > 0 && (
-                    <button
-                      onClick={() => loadParticipants(slot.id)}
-                      className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
-                      style={{
-                        background:
-                          "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
-                        color: "white",
-                      }}
-                    >
-                      👥 Voir ({slot.group_prebooking_count})
-                    </button>
-                  )}
-                  {slot.group_prebooking_count >= 3 && (
-                    <button
-                      onClick={() => handleValidateSlot(slot.id)}
-                      className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
-                      style={{
-                        background:
-                          "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-                        color: "white",
-                      }}
-                    >
-                      ✓ Valider groupe
-                    </button>
-                  )}
+                <div className="flex gap-2 flex-wrap">
+                  <button
+                    onClick={() => loadParticipants(slot.id)}
+                    className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                      color: "white",
+                    }}
+                  >
+                    👥 Voir participants ({slot.group_prebooking_count || 0})
+                  </button>
+                  {slot.group_prebooking_count > 0 &&
+                    slot.status !== "BLOCKED_FOR_GROUP" && (
+                      <button
+                        onClick={() => handleValidateSlot(slot.id)}
+                        className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                        style={{
+                          background:
+                            "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                          color: "white",
+                        }}
+                      >
+                        ✓ Valider groupe
+                      </button>
+                    )}
                   {slot.status === "BLOCKED_FOR_GROUP" ? (
                     <button
                       onClick={() => handleReleaseSlot(slot.id)}
@@ -240,24 +239,42 @@ function GroupSlotManager() {
               {selectedSlot === slot.id && participants.length > 0 && (
                 <div className="mt-4 pt-4 border-t border-gray-200">
                   <p className="font-semibold text-gray-700 mb-3">
-                    Participants inscrits :
+                    👥 Participants inscrits ({participants.length}) :
                   </p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <div className="space-y-2">
                     {participants.map((p, index) => (
                       <div
                         key={index}
-                        className="flex items-center gap-2 bg-gray-50 rounded-lg p-3"
+                        className="flex items-center justify-between bg-gray-50 rounded-lg p-3 hover:bg-gray-100 transition-colors"
                       >
-                        <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                          {p.user_name?.charAt(0) || "?"}
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                            {p.user_name?.charAt(0).toUpperCase() || "?"}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-800">
+                              {p.user_name}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {p.user_email}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium text-gray-800">
-                            {p.user_name}
-                          </p>
-                          <p className="text-xs text-gray-600">
-                            {p.user_email}
-                          </p>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() =>
+                              (window.location.href = `mailto:${p.user_email}`)
+                            }
+                            className="px-3 py-1.5 rounded-lg text-sm font-semibold transition-all hover:shadow-md"
+                            style={{
+                              background:
+                                "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                              color: "white",
+                            }}
+                            title="Envoyer un email"
+                          >
+                            ✉️
+                          </button>
                         </div>
                       </div>
                     ))}
