@@ -258,7 +258,15 @@ const getUnavailabilities = async (startDate, endDate) => {
     "SELECT * FROM unavailabilities WHERE date >= $1 AND date <= $2 ORDER BY date",
     [startDate, endDate],
   );
-  return result.rows;
+
+  // Formater les dates en string YYYY-MM-DD
+  return result.rows.map((row) => ({
+    ...row,
+    date:
+      row.date instanceof Date
+        ? row.date.toISOString().split("T")[0]
+        : row.date,
+  }));
 };
 
 module.exports = {
