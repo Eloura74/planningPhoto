@@ -54,6 +54,27 @@ function CalendarPage() {
       console.log("🔍 Créneaux reçus:", filteredSlots.length, filteredSlots);
       console.log("🔍 User:", user);
 
+      // Charger TOUS les bookings pour savoir quels créneaux sont réservés
+      try {
+        const allBookingsResponse = await bookingsAPI.getAll();
+        const allBookings = allBookingsResponse.data;
+
+        // Mettre à jour le statut des slots en fonction des bookings
+        filteredSlots = filteredSlots.map((slot) => {
+          const slotBookings = allBookings.filter(
+            (b) => b.slot_id === slot.id && b.status === "CONFIRMED",
+          );
+
+          if (slotBookings.length > 0 && slot.type === "SOLO") {
+            return { ...slot, status: "SOLO_CONFIRMED" };
+          }
+
+          return slot;
+        });
+      } catch (e) {
+        console.error("Erreur chargement bookings:", e);
+      }
+
       // Filtre par rôle et type d'élève
       if (user?.role === "STUDENT") {
         if (user?.isGroupMember) {
@@ -110,7 +131,35 @@ function CalendarPage() {
   const loadMyBookings = async () => {
     try {
       const response = await bookingsAPI.getMyBookings();
-      setMyBookings(response.data);
+      const myBookingsData = response.data;
+
+      // Charger aussi les pré-réservations groupe
+      const now = new Date();
+      const start = now.toISOString().split("T")[0];
+      const end = new Date(now.getFullYear(), now.getMonth() + 3, 0)
+        .toISOString()
+        .split("T")[0];
+      const slotsResponse = await slotsAPI.getAll(start, end);
+
+      const groupPrebookings = [];
+      for (const slot of slotsResponse.data.filter((s) => s.type === "GROUP")) {
+        try {
+          const participants = await bookingsAPI.getGroupPrebookings(slot.id);
+          const myPrebooking = participants.data.find(
+            (p) => p.user_id === user?.id,
+          );
+          if (myPrebooking) {
+            groupPrebookings.push({
+              slot_id: slot.id,
+              status: "GROUP_PREBOOKING",
+            });
+          }
+        } catch (e) {
+          // Slot sans participants
+        }
+      }
+
+      setMyBookings([...myBookingsData, ...groupPrebookings]);
     } catch (error) {
       console.error("Error loading bookings:", error);
     }

@@ -148,67 +148,101 @@ function SlotDetailsModal({ slot, onClose, user }) {
 
         {/* Participants List */}
         <div>
-          <h3
-            className="text-lg font-semibold mb-4"
-            style={{ color: "var(--text-primary)" }}
-          >
-            👥 Participants inscrits ({participants.length})
-          </h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3
+              className="text-lg font-semibold"
+              style={{ color: "var(--text-primary)" }}
+            >
+              👥 Participants pré-inscrits
+            </h3>
+            <span
+              className="px-3 py-1 rounded-full text-sm font-bold"
+              style={{
+                background: "var(--chrome-gradient)",
+                color: "var(--text-dark)",
+              }}
+            >
+              {participants.length} / 5
+            </span>
+          </div>
 
           {loading ? (
             <div
-              className="text-center py-8"
-              style={{ color: "var(--text-muted)" }}
+              className="text-center py-12 rounded-lg"
+              style={{ backgroundColor: "var(--bg-tertiary)" }}
             >
-              Chargement...
+              <div className="animate-pulse">
+                <div className="text-4xl mb-2">⏳</div>
+                <p style={{ color: "var(--text-muted)" }}>
+                  Chargement des participants...
+                </p>
+              </div>
             </div>
           ) : participants.length === 0 ? (
             <div
-              className="text-center py-8"
-              style={{ color: "var(--text-muted)" }}
+              className="text-center py-12 rounded-lg"
+              style={{ backgroundColor: "var(--bg-tertiary)" }}
             >
-              Aucun participant pour le moment
+              <div className="text-6xl mb-4">📭</div>
+              <p
+                className="text-lg font-semibold mb-2"
+                style={{ color: "var(--text-primary)" }}
+              >
+                Aucun participant pour le moment
+              </p>
+              <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+                Soyez le premier à vous pré-inscrire !
+              </p>
             </div>
           ) : (
-            <div className="space-y-3 max-h-96 overflow-y-auto">
+            <div className="space-y-2 max-h-96 overflow-y-auto pr-2">
               {participants.map((participant, index) => (
                 <div
-                  key={index}
-                  className="flex items-center gap-3 p-3 rounded-lg"
-                  style={{ backgroundColor: "var(--bg-tertiary)" }}
+                  key={participant.id || index}
+                  className="flex items-center gap-4 p-4 rounded-lg transition-all hover:shadow-lg"
+                  style={{
+                    backgroundColor: "var(--bg-tertiary)",
+                    border: "1px solid var(--chrome-medium)",
+                  }}
                 >
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg"
-                    style={{
-                      background: "var(--chrome-gradient)",
-                      color: "var(--text-dark)",
-                    }}
-                  >
-                    {participant.user_name?.charAt(0).toUpperCase() || "?"}
-                  </div>
-                  <div className="flex-1">
-                    <p
-                      className="font-semibold"
-                      style={{ color: "var(--text-primary)" }}
-                    >
-                      {participant.user_name}
-                    </p>
-                    <p
-                      className="text-sm"
-                      style={{ color: "var(--text-muted)" }}
-                    >
-                      {participant.user_email}
-                    </p>
-                  </div>
-                  {participant.user_id === user?.id && (
-                    <span
-                      className="px-3 py-1 rounded-full text-xs font-semibold"
+                  <div className="flex items-center gap-3 flex-1">
+                    <div
+                      className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl shadow-lg"
                       style={{
-                        backgroundColor: "var(--gold-primary)",
+                        background:
+                          participant.user_id === user?.id
+                            ? "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)"
+                            : "var(--chrome-gradient)",
                         color: "var(--text-dark)",
                       }}
                     >
-                      Vous
+                      {participant.user_name?.charAt(0).toUpperCase() || "?"}
+                    </div>
+                    <div className="flex-1">
+                      <p
+                        className="font-bold text-base"
+                        style={{ color: "var(--text-primary)" }}
+                      >
+                        {participant.user_name || "Utilisateur inconnu"}
+                      </p>
+                      <p
+                        className="text-sm"
+                        style={{ color: "var(--text-muted)" }}
+                      >
+                        {participant.user_email || "Email non disponible"}
+                      </p>
+                    </div>
+                  </div>
+                  {participant.user_id === user?.id && (
+                    <span
+                      className="px-4 py-1.5 rounded-full text-xs font-bold shadow-md"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #FFD700 0%, #FFA500 100%)",
+                        color: "var(--text-dark)",
+                      }}
+                    >
+                      ✓ Vous
                     </span>
                   )}
                 </div>
