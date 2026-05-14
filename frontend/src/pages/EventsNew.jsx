@@ -30,12 +30,8 @@ function Events() {
   const loadMyVotes = async (eventId) => {
     try {
       const response = await eventsAPI.getMyVotes(eventId);
-      setMyVotes(
-        response.data.map((d) => new Date(d).toISOString().split("T")[0]),
-      );
-      setSelectedDates(
-        response.data.map((d) => new Date(d).toISOString().split("T")[0]),
-      );
+      setMyVotes(response.data.map(d => new Date(d).toISOString().split('T')[0]));
+      setSelectedDates(response.data.map(d => new Date(d).toISOString().split('T')[0]));
     } catch (error) {
       console.error("Error loading votes:", error);
     }
@@ -49,11 +45,11 @@ function Events() {
 
     try {
       await eventsAPI.vote(selectedEvent.id, selectedDates);
-      showToast("✅ Vos disponibilités ont été enregistrées !", "success");
+      showToast("✅ Vos dates ont été proposées !", "success");
       setSelectedEvent(null);
       loadEvents();
     } catch (error) {
-      showToast(error.response?.data?.error || "Erreur lors du vote", "error");
+      showToast(error.response?.data?.error || "Erreur lors de la proposition", "error");
     }
   };
 
@@ -64,7 +60,7 @@ function Events() {
 
   const toggleDate = (date) => {
     if (selectedDates.includes(date)) {
-      setSelectedDates(selectedDates.filter((d) => d !== date));
+      setSelectedDates(selectedDates.filter(d => d !== date));
     } else {
       setSelectedDates([...selectedDates, date]);
     }
@@ -73,13 +69,13 @@ function Events() {
   const generateNext90Days = () => {
     const dates = [];
     const today = new Date();
-
+    
     for (let i = 0; i < 90; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
-      dates.push(date.toISOString().split("T")[0]);
+      dates.push(date.toISOString().split('T')[0]);
     }
-
+    
     return dates;
   };
 
@@ -103,10 +99,7 @@ function Events() {
   };
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ backgroundColor: "var(--bg-primary)" }}
-    >
+    <div className="min-h-screen" style={{ backgroundColor: "var(--bg-primary)" }}>
       <nav
         className="border-b sticky top-0 z-10"
         style={{
@@ -157,8 +150,7 @@ function Events() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-6">
           <p style={{ color: "var(--text-secondary)" }}>
-            Votez pour vos disponibilités sur les événements proposés. L'admin
-            choisira les dates avec le plus de participants.
+            Proposez vos dates disponibles pour les événements. L'admin choisira les dates avec le plus de participants.
           </p>
         </div>
 
@@ -175,59 +167,15 @@ function Events() {
             >
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <h3
-                    className="text-xl font-bold mb-2"
-                    style={{ color: "var(--text-primary)" }}
-                  >
+                  <h3 className="text-xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>
                     {event.name}
                   </h3>
-                  <p
-                    className="text-sm mb-3"
-                    style={{ color: "var(--text-muted)" }}
-                  >
+                  <p className="text-sm mb-3" style={{ color: "var(--text-muted)" }}>
                     {event.description}
                   </p>
-                  <div className="mb-6">
-                    <h4
-                      className="font-bold mb-3"
-                      style={{ color: "var(--text-primary)" }}
-                    >
-                      Proposez vos dates disponibles
-                    </h4>
-                    <p
-                      className="text-sm mb-4"
-                      style={{ color: "var(--text-muted)" }}
-                    >
-                      Cochez toutes les dates où vous seriez disponible pour cet
-                      événement (90 prochains jours)
-                    </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-96 overflow-y-auto">
-                      {generateNext90Days().map((date) => (
-                        <label
-                          key={date}
-                          className="flex items-center gap-2 p-2 rounded-lg cursor-pointer"
-                          style={{
-                            backgroundColor: selectedDates.includes(date)
-                              ? "rgba(168, 85, 247, 0.1)"
-                              : "var(--bg-secondary)",
-                            border: selectedDates.includes(date)
-                              ? "2px solid var(--gold-primary)"
-                              : "2px solid transparent",
-                          }}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={selectedDates.includes(date)}
-                            onChange={() => toggleDate(date)}
-                            className="w-5 h-5"
-                          />
-                          <span style={{ color: "var(--text-primary)" }}>
-                            {formatDate(date)}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
+                  <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+                    📅 Proposez vos dates disponibles
+                  </p>
                   {event.status === "CONFIRMED" && event.confirmed_dates && (
                     <div className="mt-3">
                       <span
@@ -235,14 +183,8 @@ function Events() {
                       >
                         ✅ Confirmé
                       </span>
-                      <p
-                        className="text-sm mt-2"
-                        style={{ color: "var(--text-secondary)" }}
-                      >
-                        Dates confirmées :{" "}
-                        {JSON.parse(event.confirmed_dates)
-                          .map((d) => formatDate(d))
-                          .join(", ")}
+                      <p className="text-sm mt-2" style={{ color: "var(--text-secondary)" }}>
+                        Dates confirmées : {JSON.parse(event.confirmed_dates).map(d => formatDate(d)).join(", ")}
                       </p>
                     </div>
                   )}
@@ -254,23 +196,16 @@ function Events() {
                   }}
                   className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md btn-gold"
                 >
-                  {event.status === "CONFIRMED" ? "Voir" : "Voter"}
+                  {event.status === "CONFIRMED" ? "Voir" : "Proposer dates"}
                 </button>
               </div>
             </div>
           ))}
 
           {events.length === 0 && (
-            <div
-              className="text-center py-12"
-              style={{ color: "var(--text-muted)" }}
-            >
-              <p className="text-lg">
-                Aucun événement disponible pour le moment
-              </p>
-              <p className="text-sm mt-2">
-                Les événements apparaîtront ici quand l'admin les créera
-              </p>
+            <div className="text-center py-12" style={{ color: "var(--text-muted)" }}>
+              <p className="text-lg">Aucun événement disponible pour le moment</p>
+              <p className="text-sm mt-2">Les événements apparaîtront ici quand l'admin les créera</p>
             </div>
           )}
         </div>
@@ -284,16 +219,10 @@ function Events() {
           >
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h3
-                  className="text-2xl font-bold"
-                  style={{ color: "var(--gold-primary)" }}
-                >
+                <h3 className="text-2xl font-bold" style={{ color: "var(--gold-primary)" }}>
                   {selectedEvent.name}
                 </h3>
-                <p
-                  className="text-sm mt-2"
-                  style={{ color: "var(--text-secondary)" }}
-                >
+                <p className="text-sm mt-2" style={{ color: "var(--text-secondary)" }}>
                   {selectedEvent.description}
                 </p>
               </div>
@@ -308,29 +237,39 @@ function Events() {
 
             {selectedEvent.status === "CONFIRMED" ? (
               <div>
-                <p
-                  className="mb-4"
-                  style={{ color: "var(--text-primary)" }}
-                >
+                <p className="mb-4" style={{ color: "var(--text-primary)" }}>
                   Cet événement a été confirmé pour les dates suivantes :
                 </p>
                 <div className="space-y-2">
-                  {JSON.parse(selectedEvent.confirmed_dates || "[]").map(
-                    (date, index) => (
-                      <div
-                        key={index}
-                        className="p-3 rounded-lg"
-                        style={{ backgroundColor: "var(--bg-secondary)" }}
-                      >
-                        <p
-                          className="font-semibold"
-                          style={{ color: "var(--text-primary)" }}
-                        >
-                          {formatDate(date)}
-                        </p>
-                      </div>
-                    ),
-                  )}
+                  {JSON.parse(selectedEvent.confirmed_dates || "[]").map((date, index) => (
+                    <div
+                      key={index}
+                      className="p-3 rounded-lg"
+                      style={{ backgroundColor: "var(--bg-secondary)" }}
+                    >
+                      <p className="font-semibold" style={{ color: "var(--text-primary)" }}>
+                        {formatDate(date)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="mb-6">
+                  <h4 className="font-bold mb-3" style={{ color: "var(--text-primary)" }}>
+                    Proposez vos dates disponibles
+                  </h4>
+                  <p className="text-sm mb-4" style={{ color: "var(--text-muted)" }}>
+                    Cochez toutes les dates où vous seriez disponible pour cet événement (90 prochains jours)
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-96 overflow-y-auto p-2">
+                    {generateNext90Days().map((date) => (
+                      <label
+                        key={date}
+                        className="flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all hover:shadow-md"
+                        style={{
+                          backgroundColor: selectedDates.includes(date)
                             ? "rgba(168, 85, 247, 0.1)"
                             : "var(--bg-secondary)",
                           border: selectedDates.includes(date)

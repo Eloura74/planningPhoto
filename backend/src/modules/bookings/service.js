@@ -491,6 +491,12 @@ const cancelBooking = async (bookingId, cancelledBy, reason = null) => {
 
   const bookingData = booking.rows[0];
   const isCancelledByAdmin = cancelledBy.role === "ADMIN";
+
+  // Vérifier que l'utilisateur annule SA PROPRE réservation (sauf si admin)
+  if (!isCancelledByAdmin && bookingData.user_id !== cancelledBy.id) {
+    throw new Error("You can only cancel your own bookings");
+  }
+
   const status = isCancelledByAdmin
     ? "CANCELLED_BY_ADMIN"
     : "CANCELLED_BY_STUDENT";

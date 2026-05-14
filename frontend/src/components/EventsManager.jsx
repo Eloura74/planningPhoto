@@ -13,8 +13,6 @@ function EventsManager() {
   const [newEvent, setNewEvent] = useState({
     name: "",
     description: "",
-    start_date: "",
-    end_date: "",
   });
 
   useEffect(() => {
@@ -45,9 +43,12 @@ function EventsManager() {
     e.preventDefault();
     try {
       await eventsAPI.create(newEvent);
-      showToast("✅ Événement créé avec succès !", "success");
+      showToast(
+        "✅ Événement créé ! Les membres peuvent maintenant proposer des dates.",
+        "success",
+      );
       setShowCreateForm(false);
-      setNewEvent({ name: "", description: "", start_date: "", end_date: "" });
+      setNewEvent({ name: "", description: "" });
       loadEvents();
     } catch (error) {
       showToast(
@@ -210,42 +211,14 @@ function EventsManager() {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label
-                  className="block text-sm font-semibold mb-2"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  Date de début
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={newEvent.start_date}
-                  onChange={(e) =>
-                    setNewEvent({ ...newEvent, start_date: e.target.value })
-                  }
-                  className="w-full px-3 py-2 rounded-lg input-dark"
-                />
-              </div>
-
-              <div>
-                <label
-                  className="block text-sm font-semibold mb-2"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  Date de fin
-                </label>
-                <input
-                  type="date"
-                  required
-                  value={newEvent.end_date}
-                  onChange={(e) =>
-                    setNewEvent({ ...newEvent, end_date: e.target.value })
-                  }
-                  className="w-full px-3 py-2 rounded-lg input-dark"
-                />
-              </div>
+            <div
+              className="p-3 rounded-lg"
+              style={{ backgroundColor: "rgba(168, 85, 247, 0.1)" }}
+            >
+              <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
+                💡 Les membres groupe pourront proposer des dates depuis leur
+                calendrier après la création de l'événement.
+              </p>
             </div>
 
             <button
@@ -287,8 +260,7 @@ function EventsManager() {
                   className="text-sm mt-2"
                   style={{ color: "var(--text-secondary)" }}
                 >
-                  📅 {formatDate(event.start_date)} →{" "}
-                  {formatDate(event.end_date)}
+                  📅 En attente des propositions des membres
                 </p>
               </div>
               <div className="flex flex-col items-end gap-2">

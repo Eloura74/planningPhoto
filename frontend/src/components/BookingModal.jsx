@@ -4,9 +4,18 @@ function BookingModal({
   onClose,
   onBookSolo,
   onBookGroup,
+  onCancelBooking,
+  myBookings = [],
   onViewDetails,
   user,
 }) {
+  // Trouver la réservation de l'utilisateur pour ce créneau
+  const myBooking = myBookings.find(
+    (b) =>
+      b.slot_id === slot.id &&
+      b.status !== "CANCELLED_BY_STUDENT" &&
+      b.status !== "CANCELLED_BY_ADMIN",
+  );
   const canBookSolo =
     status === "OPEN_SOLO" &&
     slot.type === "SOLO" &&
@@ -238,31 +247,75 @@ function BookingModal({
               </button>
             )}
 
-            {status === "BOOKED" && (
-              <div
-                className="text-center py-3 rounded-xl"
-                style={{ backgroundColor: "rgba(168, 168, 168, 0.1)" }}
-              >
+            {status === "BOOKED" && myBooking && (
+              <div className="space-y-3">
                 <div
-                  className="font-medium"
-                  style={{ color: "var(--chrome-light)" }}
+                  className="text-center py-3 rounded-xl"
+                  style={{ backgroundColor: "rgba(168, 168, 168, 0.1)" }}
                 >
-                  ✓ Vous avez déjà réservé ce créneau
+                  <div
+                    className="font-medium"
+                    style={{ color: "var(--chrome-light)" }}
+                  >
+                    ✓ Vous avez déjà réservé ce créneau
+                  </div>
                 </div>
+                <button
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        "Êtes-vous sûr de vouloir annuler cette réservation ?",
+                      )
+                    ) {
+                      onCancelBooking(myBooking.id);
+                      onClose();
+                    }
+                  }}
+                  className="w-full py-3 rounded-xl font-semibold transition-all hover:shadow-md"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                    color: "white",
+                  }}
+                >
+                  ❌ Annuler ma réservation
+                </button>
               </div>
             )}
 
-            {status === "PENDING" && (
-              <div
-                className="text-center py-3 rounded-xl"
-                style={{ backgroundColor: "rgba(255, 215, 0, 0.1)" }}
-              >
+            {status === "PENDING" && myBooking && (
+              <div className="space-y-3">
                 <div
-                  className="font-medium"
-                  style={{ color: "var(--gold-primary)" }}
+                  className="text-center py-3 rounded-xl"
+                  style={{ backgroundColor: "rgba(255, 215, 0, 0.1)" }}
                 >
-                  ⏳ Votre réservation est en attente de validation
+                  <div
+                    className="font-medium"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    ⏳ Votre pré-réservation groupe est en attente
+                  </div>
                 </div>
+                <button
+                  onClick={() => {
+                    if (
+                      window.confirm(
+                        "Êtes-vous sûr de vouloir annuler cette pré-réservation ?",
+                      )
+                    ) {
+                      onCancelBooking(myBooking.id);
+                      onClose();
+                    }
+                  }}
+                  className="w-full py-3 rounded-xl font-semibold transition-all hover:shadow-md"
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                    color: "white",
+                  }}
+                >
+                  ❌ Annuler ma pré-réservation
+                </button>
               </div>
             )}
 

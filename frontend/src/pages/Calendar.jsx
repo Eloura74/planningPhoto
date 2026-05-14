@@ -508,6 +508,8 @@ function CalendarPage() {
             onClose={() => setSelectedSlot(null)}
             onBookSolo={handleBookSolo}
             onBookGroup={handleBookGroup}
+            onCancelBooking={handleCancelBooking}
+            myBookings={myBookings}
             onViewDetails={(slot) => {
               setDetailsSlot(slot);
               setShowDetailsModal(true);
