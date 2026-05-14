@@ -196,6 +196,20 @@ async function runMigrations() {
       );
     `);
 
+    // Modifier les colonnes start_date et end_date pour les rendre optionnelles
+    await pool
+      .query(
+        `
+      ALTER TABLE events 
+      ALTER COLUMN start_date DROP NOT NULL,
+      ALTER COLUMN end_date DROP NOT NULL;
+    `,
+      )
+      .catch(() => {
+        // Ignore l'erreur si les colonnes sont déjà NULL
+        console.log("⚠️ Colonnes start_date/end_date déjà optionnelles");
+      });
+
     // Event availabilities table (votes des membres)
     await pool.query(`
       CREATE TABLE IF NOT EXISTS event_availabilities (
