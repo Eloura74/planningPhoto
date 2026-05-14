@@ -68,6 +68,12 @@ function AdminDashboardNew() {
                 Utilisateurs
               </button>
               <button
+                onClick={() => navigate("/admin/events")}
+                className="px-4 py-2 rounded-lg font-semibold text-sm btn-gold"
+              >
+                🎉 Événements
+              </button>
+              <button
                 onClick={() => navigate("/calendar")}
                 className="px-4 py-2 rounded-lg font-semibold text-sm btn-chrome"
               >
