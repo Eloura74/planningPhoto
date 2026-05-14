@@ -405,6 +405,14 @@ function CalendarPage() {
             >
               Calendrier
             </button>
+            {user?.isGroupMember && (
+              <button
+                onClick={() => navigate("/events")}
+                className="px-3 py-2 rounded-lg text-sm btn-gold"
+              >
+                🎉 Événements
+              </button>
+            )}
             <button
               onClick={() => navigate("/my-account")}
               className="px-3 py-2 rounded-lg text-sm btn-gold"

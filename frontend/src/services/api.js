@@ -89,14 +89,25 @@ export const usersAPI = {
 };
 
 export const availabilityAPI = {
-  getSlots: (startDate, endDate) =>
-    api.get("/availability/slots", { params: { startDate, endDate } }),
-  getUnavailabilities: (startDate, endDate) =>
-    api.get("/availability/unavailabilities", {
-      params: { startDate, endDate },
-    }),
-  markUnavailable: (date) =>
-    api.post("/availability/unavailabilities", { date }),
-  removeUnavailability: (date) =>
-    api.delete(`/availability/unavailabilities/${date}`),
+  getAll: (startDate, endDate) =>
+    api.get("/availability", { params: { startDate, endDate } }),
+  create: (date) => api.post("/availability", { date }),
+  delete: (date) => api.delete(`/availability/${date}`),
+};
+
+export const eventsAPI = {
+  // Admin
+  create: (data) => api.post("/events", data),
+  getAllAdmin: () => api.get("/events/admin/all"),
+  getStats: (id) => api.get(`/events/${id}/stats`),
+  confirm: (id, confirmedDates) =>
+    api.post(`/events/${id}/confirm`, { confirmedDates }),
+  updateStatus: (id, status) => api.patch(`/events/${id}/status`, { status }),
+  delete: (id) => api.delete(`/events/${id}`),
+
+  // Membres
+  getOpen: () => api.get("/events/open"),
+  getById: (id) => api.get(`/events/${id}`),
+  vote: (id, dates) => api.post(`/events/${id}/vote`, { dates }),
+  getMyVotes: (id) => api.get(`/events/${id}/my-votes`),
 };

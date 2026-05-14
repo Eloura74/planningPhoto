@@ -34,6 +34,24 @@ const getAvailableSlots = async (startDate, endDate) => {
     [startDate, endDate],
   );
 
+  // Récupérer les dates d'événements confirmés
+  const confirmedEvents = await pool.query(
+    `SELECT confirmed_dates FROM events 
+     WHERE status = 'CONFIRMED' 
+     AND confirmed_dates IS NOT NULL`,
+  );
+
+  // Extraire toutes les dates confirmées des événements
+  const eventBlockedDates = new Set();
+  confirmedEvents.rows.forEach((event) => {
+    if (event.confirmed_dates) {
+      const dates = JSON.parse(event.confirmed_dates);
+      dates.forEach((date) => {
+        eventBlockedDates.add(new Date(date).toISOString().split("T")[0]);
+      });
+    }
+  });
+
   // Compter les créneaux groupe confirmés dans le mois ACTUEL
   // Utiliser la date de début pour déterminer le mois actuel
   const start = new Date(startDate);
@@ -118,8 +136,8 @@ const getAvailableSlots = async (startDate, endDate) => {
     const dateStr = d.toISOString().split("T")[0];
     const dayOfWeek = d.getUTCDay();
 
-    // Ignorer uniquement les jours indisponibles
-    if (unavailableDates.has(dateStr)) {
+    // Ignorer les jours indisponibles ET les dates d'événements confirmés
+    if (unavailableDates.has(dateStr) || eventBlockedDates.has(dateStr)) {
       continue;
     }
 

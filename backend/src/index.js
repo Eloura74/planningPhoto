@@ -11,6 +11,7 @@ const slotRoutes = require("./modules/slots/routes");
 const bookingRoutes = require("./modules/bookings/routes");
 const adminRoutes = require("./modules/admin/routes");
 const availabilityRoutes = require("./modules/availability/routes");
+const eventRoutes = require("./modules/events/routes");
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use("/api/slots", slotRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/availability", availabilityRoutes);
+app.use("/api/events", eventRoutes);
 
 const PORT = process.env.PORT || 5000;
 
@@ -175,6 +177,34 @@ async function runMigrations() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(user_id)
+      );
+    `);
+
+    // Events table (sorties groupe)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS events (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        description TEXT,
+        start_date DATE NOT NULL,
+        end_date DATE NOT NULL,
+        status TEXT DEFAULT 'DRAFT',
+        created_by TEXT REFERENCES users(id),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        confirmed_dates JSONB
+      );
+    `);
+
+    // Event availabilities table (votes des membres)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS event_availabilities (
+        id TEXT PRIMARY KEY,
+        event_id TEXT REFERENCES events(id) ON DELETE CASCADE,
+        user_id TEXT REFERENCES users(id) ON DELETE CASCADE,
+        available_date DATE NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(event_id, user_id, available_date)
       );
     `);
 

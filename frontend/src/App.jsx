@@ -8,6 +8,8 @@ import Dashboard from "./pages/Dashboard";
 import Calendar from "./pages/Calendar";
 import AdminDashboard from "./pages/AdminDashboardNew";
 import UsersManagement from "./pages/UsersManagement";
+import AdminEvents from "./pages/AdminEvents";
+import Events from "./pages/Events";
 import Profile from "./pages/Profile";
 import MyAccount from "./pages/MyAccount";
 
@@ -24,6 +26,8 @@ function App() {
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/users" element={<UsersManagement />} />
+              <Route path="/admin/events" element={<AdminEvents />} />
+              <Route path="/events" element={<Events />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/my-account" element={<MyAccount />} />
               <Route path="/" element={<Navigate to="/calendar" />} />

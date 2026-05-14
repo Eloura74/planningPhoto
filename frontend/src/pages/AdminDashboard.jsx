@@ -8,6 +8,7 @@ import UnavailabilityManager from "../components/UnavailabilityManager";
 import AdminStats from "../components/AdminStats";
 import GroupSlotManager from "../components/GroupSlotManager";
 import BookingsTable from "../components/BookingsTable";
+import EventsManager from "../components/EventsManager";
 
 function AdminDashboard() {
   const [dashboardData, setDashboardData] = useState(null);
@@ -359,6 +360,12 @@ function AdminDashboard() {
               className="px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold text-sm btn-gold"
             >
               Utilisateurs
+            </button>
+            <button
+              onClick={() => navigate("/admin/events")}
+              className="px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold text-sm btn-gold"
+            >
+              Événements
             </button>
             <button
               onClick={() => navigate("/calendar")}
