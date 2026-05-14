@@ -45,11 +45,11 @@ function Events() {
 
     try {
       await eventsAPI.vote(selectedEvent.id, selectedDates);
-      showToast("✅ Vos disponibilités ont été enregistrées !", "success");
+      showToast("✅ Vos dates ont été proposées !", "success");
       setSelectedEvent(null);
       loadEvents();
     } catch (error) {
-      showToast(error.response?.data?.error || "Erreur lors du vote", "error");
+      showToast(error.response?.data?.error || "Erreur lors de la proposition", "error");
     }
   };
 
@@ -66,16 +66,16 @@ function Events() {
     }
   };
 
-  const generateDateRange = (startDate, endDate) => {
+  const generateNext90Days = () => {
     const dates = [];
-    const current = new Date(startDate);
-    const end = new Date(endDate);
-
-    while (current <= end) {
-      dates.push(current.toISOString().split('T')[0]);
-      current.setDate(current.getDate() + 1);
+    const today = new Date();
+    
+    for (let i = 0; i < 90; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      dates.push(date.toISOString().split('T')[0]);
     }
-
+    
     return dates;
   };
 
@@ -150,7 +150,7 @@ function Events() {
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-6">
           <p style={{ color: "var(--text-secondary)" }}>
-            Votez pour vos disponibilités sur les événements proposés. L'admin choisira les dates avec le plus de participants.
+            Proposez vos dates disponibles pour les événements. L'admin choisira les dates avec le plus de participants.
           </p>
         </div>
 
@@ -174,7 +174,7 @@ function Events() {
                     {event.description}
                   </p>
                   <p className="text-sm" style={{ color: "var(--text-secondary)" }}>
-                    📅 Période : {formatDate(event.start_date)} → {formatDate(event.end_date)}
+                    📅 Proposez vos dates disponibles
                   </p>
                   {event.status === "CONFIRMED" && event.confirmed_dates && (
                     <div className="mt-3">
@@ -196,7 +196,7 @@ function Events() {
                   }}
                   className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md btn-gold"
                 >
-                  {event.status === "CONFIRMED" ? "Voir" : "Voter"}
+                  {event.status === "CONFIRMED" ? "Voir" : "Proposer dates"}
                 </button>
               </div>
             </div>
@@ -258,13 +258,13 @@ function Events() {
               <>
                 <div className="mb-6">
                   <h4 className="font-bold mb-3" style={{ color: "var(--text-primary)" }}>
-                    Sélectionnez vos disponibilités
+                    Proposez vos dates disponibles
                   </h4>
                   <p className="text-sm mb-4" style={{ color: "var(--text-muted)" }}>
-                    Cochez toutes les dates où vous êtes disponible
+                    Cochez toutes les dates où vous seriez disponible pour cet événement (90 prochains jours)
                   </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {generateDateRange(selectedEvent.start_date, selectedEvent.end_date).map((date) => (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-96 overflow-y-auto p-2">
+                    {generateNext90Days().map((date) => (
                       <label
                         key={date}
                         className="flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all hover:shadow-md"
@@ -296,7 +296,7 @@ function Events() {
                     onClick={handleVote}
                     className="flex-1 px-4 py-2 rounded-lg font-semibold transition-all hover:shadow-md btn-gold"
                   >
-                    ✅ Enregistrer mes disponibilités ({selectedDates.length})
+                    ✅ Proposer ces dates ({selectedDates.length})
                   </button>
                   <button
                     onClick={() => setSelectedEvent(null)}
