@@ -91,6 +91,8 @@ export const usersAPI = {
 export const availabilityAPI = {
   getAll: (startDate, endDate) =>
     api.get("/availability", { params: { startDate, endDate } }),
+  getSlots: (startDate, endDate) =>
+    api.get("/availability", { params: { startDate, endDate } }),
   create: (date) => api.post("/availability", { date }),
   delete: (date) => api.delete(`/availability/${date}`),
 };

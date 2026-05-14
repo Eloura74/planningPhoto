@@ -7,6 +7,7 @@ function EventsManager() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [stats, setStats] = useState([]);
+  const [selectedDatesToConfirm, setSelectedDatesToConfirm] = useState([]);
   const { showToast } = useToast();
 
   const [newEvent, setNewEvent] = useState({
@@ -49,7 +50,10 @@ function EventsManager() {
       setNewEvent({ name: "", description: "", start_date: "", end_date: "" });
       loadEvents();
     } catch (error) {
-      showToast(error.response?.data?.error || "Erreur lors de la création", "error");
+      showToast(
+        error.response?.data?.error || "Erreur lors de la création",
+        "error",
+      );
     }
   };
 
@@ -65,7 +69,10 @@ function EventsManager() {
       loadEvents();
       setSelectedEvent(null);
     } catch (error) {
-      showToast(error.response?.data?.error || "Erreur lors de la confirmation", "error");
+      showToast(
+        error.response?.data?.error || "Erreur lors de la confirmation",
+        "error",
+      );
     }
   };
 
@@ -84,7 +91,18 @@ function EventsManager() {
 
   const viewEventDetails = async (event) => {
     setSelectedEvent(event);
+    setSelectedDatesToConfirm([]);
     await loadStats(event.id);
+  };
+
+  const toggleDateSelection = (date) => {
+    if (selectedDatesToConfirm.includes(date)) {
+      setSelectedDatesToConfirm(
+        selectedDatesToConfirm.filter((d) => d !== date),
+      );
+    } else {
+      setSelectedDatesToConfirm([...selectedDatesToConfirm, date]);
+    }
   };
 
   const formatDate = (dateStr) => {
@@ -105,13 +123,19 @@ function EventsManager() {
     const badges = {
       DRAFT: { bg: "bg-gray-100", text: "text-gray-700", label: "Brouillon" },
       OPEN: { bg: "bg-blue-100", text: "text-blue-700", label: "Ouvert" },
-      CONFIRMED: { bg: "bg-green-100", text: "text-green-700", label: "Confirmé" },
+      CONFIRMED: {
+        bg: "bg-green-100",
+        text: "text-green-700",
+        label: "Confirmé",
+      },
       CLOSED: { bg: "bg-red-100", text: "text-red-700", label: "Fermé" },
     };
 
     const badge = badges[status] || badges.DRAFT;
     return (
-      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}>
+      <span
+        className={`px-3 py-1 rounded-full text-xs font-semibold ${badge.bg} ${badge.text}`}
+      >
         {badge.label}
       </span>
     );
@@ -120,7 +144,10 @@ function EventsManager() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold" style={{ color: "var(--gold-primary)" }}>
+        <h2
+          className="text-2xl font-bold"
+          style={{ color: "var(--gold-primary)" }}
+        >
           🎉 Gestion des Événements Groupe
         </h2>
         <button
@@ -139,31 +166,44 @@ function EventsManager() {
             backgroundColor: "var(--bg-secondary)",
           }}
         >
-          <h3 className="text-lg font-bold mb-4" style={{ color: "var(--text-primary)" }}>
+          <h3
+            className="text-lg font-bold mb-4"
+            style={{ color: "var(--text-primary)" }}
+          >
             Créer un événement
           </h3>
           <form onSubmit={handleCreateEvent} className="space-y-4">
             <div>
-              <label className="block text-sm font-semibold mb-2" style={{ color: "var(--text-secondary)" }}>
+              <label
+                className="block text-sm font-semibold mb-2"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 Nom de l'événement
               </label>
               <input
                 type="text"
                 required
                 value={newEvent.name}
-                onChange={(e) => setNewEvent({ ...newEvent, name: e.target.value })}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, name: e.target.value })
+                }
                 className="w-full px-3 py-2 rounded-lg input-dark"
                 placeholder="Ex: Sortie photo forêt"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold mb-2" style={{ color: "var(--text-secondary)" }}>
+              <label
+                className="block text-sm font-semibold mb-2"
+                style={{ color: "var(--text-secondary)" }}
+              >
                 Description
               </label>
               <textarea
                 value={newEvent.description}
-                onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, description: e.target.value })
+                }
                 className="w-full px-3 py-2 rounded-lg input-dark"
                 rows="3"
                 placeholder="Détails de l'événement..."
@@ -172,27 +212,37 @@ function EventsManager() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold mb-2" style={{ color: "var(--text-secondary)" }}>
+                <label
+                  className="block text-sm font-semibold mb-2"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   Date de début
                 </label>
                 <input
                   type="date"
                   required
                   value={newEvent.start_date}
-                  onChange={(e) => setNewEvent({ ...newEvent, start_date: e.target.value })}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, start_date: e.target.value })
+                  }
                   className="w-full px-3 py-2 rounded-lg input-dark"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold mb-2" style={{ color: "var(--text-secondary)" }}>
+                <label
+                  className="block text-sm font-semibold mb-2"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   Date de fin
                 </label>
                 <input
                   type="date"
                   required
                   value={newEvent.end_date}
-                  onChange={(e) => setNewEvent({ ...newEvent, end_date: e.target.value })}
+                  onChange={(e) =>
+                    setNewEvent({ ...newEvent, end_date: e.target.value })
+                  }
                   className="w-full px-3 py-2 rounded-lg input-dark"
                 />
               </div>
@@ -221,14 +271,24 @@ function EventsManager() {
           >
             <div className="flex justify-between items-start">
               <div className="flex-1">
-                <h3 className="text-lg font-bold" style={{ color: "var(--text-primary)" }}>
+                <h3
+                  className="text-lg font-bold"
+                  style={{ color: "var(--text-primary)" }}
+                >
                   {event.name}
                 </h3>
-                <p className="text-sm mt-1" style={{ color: "var(--text-muted)" }}>
+                <p
+                  className="text-sm mt-1"
+                  style={{ color: "var(--text-muted)" }}
+                >
                   {event.description}
                 </p>
-                <p className="text-sm mt-2" style={{ color: "var(--text-secondary)" }}>
-                  📅 {formatDate(event.start_date)} → {formatDate(event.end_date)}
+                <p
+                  className="text-sm mt-2"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  📅 {formatDate(event.start_date)} →{" "}
+                  {formatDate(event.end_date)}
                 </p>
               </div>
               <div className="flex flex-col items-end gap-2">
@@ -248,9 +308,14 @@ function EventsManager() {
         ))}
 
         {events.length === 0 && (
-          <div className="text-center py-12" style={{ color: "var(--text-muted)" }}>
+          <div
+            className="text-center py-12"
+            style={{ color: "var(--text-muted)" }}
+          >
             <p>Aucun événement créé</p>
-            <p className="text-sm mt-2">Créez votre premier événement pour commencer !</p>
+            <p className="text-sm mt-2">
+              Créez votre premier événement pour commencer !
+            </p>
           </div>
         )}
       </div>
@@ -263,10 +328,16 @@ function EventsManager() {
           >
             <div className="flex justify-between items-start mb-6">
               <div>
-                <h3 className="text-2xl font-bold" style={{ color: "var(--gold-primary)" }}>
+                <h3
+                  className="text-2xl font-bold"
+                  style={{ color: "var(--gold-primary)" }}
+                >
                   {selectedEvent.name}
                 </h3>
-                <p className="text-sm mt-2" style={{ color: "var(--text-secondary)" }}>
+                <p
+                  className="text-sm mt-2"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   {selectedEvent.description}
                 </p>
               </div>
@@ -280,24 +351,58 @@ function EventsManager() {
             </div>
 
             <div className="mb-6">
-              <h4 className="font-bold mb-3" style={{ color: "var(--text-primary)" }}>
+              <h4
+                className="font-bold mb-3"
+                style={{ color: "var(--text-primary)" }}
+              >
                 📊 Résultats des votes
               </h4>
               {stats.length > 0 ? (
                 <div className="space-y-2">
                   {stats.map((stat, index) => (
-                    <div
+                    <label
                       key={index}
-                      className="p-3 rounded-lg flex justify-between items-center"
-                      style={{ backgroundColor: "var(--bg-secondary)" }}
+                      className="p-3 rounded-lg flex justify-between items-center cursor-pointer transition-all hover:shadow-md"
+                      style={{
+                        backgroundColor: selectedDatesToConfirm.includes(
+                          stat.available_date,
+                        )
+                          ? "rgba(168, 85, 247, 0.1)"
+                          : "var(--bg-secondary)",
+                        border: selectedDatesToConfirm.includes(
+                          stat.available_date,
+                        )
+                          ? "2px solid var(--gold-primary)"
+                          : "2px solid transparent",
+                      }}
                     >
-                      <div>
-                        <p className="font-semibold" style={{ color: "var(--text-primary)" }}>
-                          {formatDate(stat.available_date)}
-                        </p>
-                        <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-                          {stat.voters.join(", ")}
-                        </p>
+                      <div className="flex items-center gap-3 flex-1">
+                        {selectedEvent.status === "OPEN" && (
+                          <input
+                            type="checkbox"
+                            checked={selectedDatesToConfirm.includes(
+                              stat.available_date,
+                            )}
+                            onChange={() =>
+                              toggleDateSelection(stat.available_date)
+                            }
+                            className="w-5 h-5"
+                          />
+                        )}
+                        <div>
+                          <p
+                            className="font-semibold"
+                            style={{ color: "var(--text-primary)" }}
+                          >
+                            {formatDate(stat.available_date)}
+                          </p>
+                          <p
+                            className="text-sm"
+                            style={{ color: "var(--text-muted)" }}
+                          >
+                            {stat.voters.join(", ")}
+                          </p>
+                        </div>
                       </div>
                       <span
                         className="px-3 py-1 rounded-full text-sm font-bold"
@@ -308,35 +413,42 @@ function EventsManager() {
                       >
                         {stat.vote_count} vote{stat.vote_count > 1 ? "s" : ""}
                       </span>
-                    </div>
+                    </label>
                   ))}
                 </div>
               ) : (
-                <p style={{ color: "var(--text-muted)" }}>Aucun vote pour le moment</p>
+                <p style={{ color: "var(--text-muted)" }}>
+                  Aucun vote pour le moment
+                </p>
               )}
             </div>
 
             <div className="flex gap-3">
               {selectedEvent.status === "OPEN" && stats.length > 0 && (
                 <button
-                  onClick={() => {
-                    const topDates = stats.slice(0, 3).map((s) => s.available_date);
-                    handleConfirmEvent(selectedEvent.id, topDates);
-                  }}
-                  className="flex-1 px-4 py-2 rounded-lg font-semibold transition-all hover:shadow-md"
+                  onClick={() =>
+                    handleConfirmEvent(selectedEvent.id, selectedDatesToConfirm)
+                  }
+                  disabled={selectedDatesToConfirm.length === 0}
+                  className="flex-1 px-4 py-2 rounded-lg font-semibold transition-all hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{
-                    background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                    background:
+                      selectedDatesToConfirm.length > 0
+                        ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
+                        : "gray",
                     color: "white",
                   }}
                 >
-                  ✅ Confirmer (top 3 dates)
+                  ✅ Confirmer ({selectedDatesToConfirm.length} date
+                  {selectedDatesToConfirm.length > 1 ? "s" : ""})
                 </button>
               )}
               <button
                 onClick={() => handleDeleteEvent(selectedEvent.id)}
                 className="px-4 py-2 rounded-lg font-semibold transition-all hover:shadow-md"
                 style={{
-                  background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                  background:
+                    "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
                   color: "white",
                 }}
               >
