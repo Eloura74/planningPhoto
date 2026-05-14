@@ -192,7 +192,7 @@ function Events() {
                       className="font-bold mb-3"
                       style={{ color: "var(--text-primary)" }}
                     >
-                      Proposez vos dates disponibles
+                      📅 Proposez vos dates disponibles
                     </h4>
                     <p
                       className="text-sm mb-4"
