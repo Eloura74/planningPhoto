@@ -6,6 +6,11 @@ function AdminStats() {
 
   useEffect(() => {
     loadStats();
+
+    // Rafraîchir automatiquement toutes les 10 secondes
+    const interval = setInterval(loadStats, 10000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const loadStats = async () => {

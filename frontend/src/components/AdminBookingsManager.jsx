@@ -15,6 +15,11 @@ function AdminBookingsManager() {
 
   useEffect(() => {
     loadAllBookings();
+
+    // Rafraîchir automatiquement toutes les 10 secondes
+    const interval = setInterval(loadAllBookings, 10000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const loadAllBookings = async () => {
@@ -65,23 +70,10 @@ function AdminBookingsManager() {
   const handleConfirmBooking = async (bookingId) => {
     try {
       await bookingsAPI.confirm(bookingId);
-
-      // Mettre à jour le statut localement pour un feedback immédiat
-      setBookings((prevBookings) =>
-        prevBookings.map((slot) => ({
-          ...slot,
-          bookings: slot.bookings.map((booking) =>
-            booking.id === bookingId
-              ? { ...booking, status: "CONFIRMED" }
-              : booking,
-          ),
-        })),
-      );
-
       showToast("✅ Membre confirmé avec succès !", "success");
 
-      // Recharger depuis l'API pour synchroniser
-      loadAllBookings();
+      // Recharger immédiatement depuis l'API
+      await loadAllBookings();
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors de la confirmation",
@@ -100,7 +92,9 @@ function AdminBookingsManager() {
         await bookingsAPI.cancel(bookingId);
       }
       showToast("Réservation supprimée", "success");
-      loadAllBookings();
+
+      // Recharger immédiatement depuis l'API
+      await loadAllBookings();
     } catch (error) {
       showToast(error.response?.data?.error || "Erreur", "error");
     }
@@ -117,7 +111,9 @@ function AdminBookingsManager() {
     try {
       await slotsAPI.blockSlot(slotId);
       showToast("✅ Créneau bloqué et participants validés !", "success");
-      loadAllBookings();
+
+      // Recharger immédiatement depuis l'API
+      await loadAllBookings();
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors du blocage",
@@ -137,7 +133,9 @@ function AdminBookingsManager() {
     try {
       await slotsAPI.reopenSlot(slotId);
       showToast("✅ Créneau rouvert avec succès !", "success");
-      loadAllBookings();
+
+      // Recharger immédiatement depuis l'API
+      await loadAllBookings();
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors de la réouverture",
