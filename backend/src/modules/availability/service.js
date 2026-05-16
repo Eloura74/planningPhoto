@@ -128,6 +128,9 @@ const getAvailableSlots = async (startDate, endDate) => {
   const startLoop = new Date(startDate + "T00:00:00Z");
   const endLoop = new Date(endDate + "T00:00:00Z");
 
+  // Pré-calculer le nombre de jours groupe confirmés PAR MOIS
+  const monthConfirmedCounts = new Map();
+
   // Générer tous les jours de la période
   let totalDaysGenerated = 0;
   let tuesdaysThursdaysGenerated = 0;
@@ -187,34 +190,40 @@ const getAvailableSlots = async (startDate, endDate) => {
 
         if (isTuesdayOrThursday) {
           // Mardi/Jeudi : Vérifier si ce mois a 2+ jours groupe confirmés
-          // Calculer le mois de CE slot
           const slotMonth = new Date(dateStr + "T00:00:00Z");
-          const slotMonthStart = new Date(
-            slotMonth.getUTCFullYear(),
-            slotMonth.getUTCMonth(),
-            1,
-          )
-            .toISOString()
-            .split("T")[0];
-          const slotMonthEnd = new Date(
-            slotMonth.getUTCFullYear(),
-            slotMonth.getUTCMonth() + 1,
-            0,
-          )
-            .toISOString()
-            .split("T")[0];
+          const monthKey = `${slotMonth.getUTCFullYear()}-${String(slotMonth.getUTCMonth() + 1).padStart(2, "0")}`;
 
-          // Compter les slots bloqués dans CE mois
-          const monthConfirmedSlots = await pool.query(
-            `SELECT COUNT(DISTINCT date) as count FROM slots 
-             WHERE type = 'GROUP' 
-             AND (status = 'GROUP_CONFIRMED' OR status = 'BLOCKED_FOR_GROUP')
-             AND date >= $1 AND date <= $2`,
-            [slotMonthStart, slotMonthEnd],
-          );
-          const monthConfirmedCount = parseInt(
-            monthConfirmedSlots.rows[0].count,
-          );
+          // Calculer une seule fois par mois
+          if (!monthConfirmedCounts.has(monthKey)) {
+            const slotMonthStart = new Date(
+              slotMonth.getUTCFullYear(),
+              slotMonth.getUTCMonth(),
+              1,
+            )
+              .toISOString()
+              .split("T")[0];
+            const slotMonthEnd = new Date(
+              slotMonth.getUTCFullYear(),
+              slotMonth.getUTCMonth() + 1,
+              0,
+            )
+              .toISOString()
+              .split("T")[0];
+
+            const monthConfirmedSlots = await pool.query(
+              `SELECT COUNT(DISTINCT date) as count FROM slots 
+               WHERE type = 'GROUP' 
+               AND (status = 'GROUP_CONFIRMED' OR status = 'BLOCKED_FOR_GROUP')
+               AND date >= $1 AND date <= $2`,
+              [slotMonthStart, slotMonthEnd],
+            );
+            monthConfirmedCounts.set(
+              monthKey,
+              parseInt(monthConfirmedSlots.rows[0].count),
+            );
+          }
+
+          const monthConfirmedCount = monthConfirmedCounts.get(monthKey);
 
           if (monthConfirmedCount >= 2) {
             // Exception : 2+ jours groupe confirmés dans CE mois → libérer en solo
