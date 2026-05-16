@@ -99,7 +99,7 @@ function CalendarPage() {
         });
       }
 
-      // Filtre par rôle et type d'élève
+      // Filtre par rôle et type de membre
       if (user?.role === "STUDENT") {
         if (user?.isGroupMember) {
           // Membres du groupe : voir les créneaux groupe ET solo
@@ -114,7 +114,7 @@ function CalendarPage() {
               slot.status === "SOLO_CONFIRMED",
           );
         } else {
-          // Élèves solo : voir les créneaux SOLO et MIXED (mardis sans groupe)
+          // Membres solo : voir les créneaux SOLO et MIXED (mardis sans groupe)
           filteredSlots = filteredSlots.filter(
             (slot) =>
               (slot.type === "SOLO" ||
@@ -391,7 +391,7 @@ function CalendarPage() {
                   {user?.name}
                 </p>
                 <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-                  {user?.role === "ADMIN" ? "Administrateur" : "Élève"}
+                  {user?.role === "ADMIN" ? "Administrateur" : "Membre"}
                 </p>
               </div>
             </div>

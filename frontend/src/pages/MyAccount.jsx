@@ -185,7 +185,7 @@ function MyAccount() {
             <span
               className={`px-4 py-2 rounded-lg text-sm font-semibold ${user?.role === "ADMIN" ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"}`}
             >
-              {user?.role === "ADMIN" ? "👑 Administrateur" : "👤 Étudiant"}
+              {user?.role === "ADMIN" ? "👑 Administrateur" : "� Membre"}
             </span>
             {user?.isGroupMember && (
               <span className="px-4 py-2 rounded-lg text-sm font-semibold bg-green-100 text-green-700">

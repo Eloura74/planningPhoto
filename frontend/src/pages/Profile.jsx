@@ -123,7 +123,7 @@ function Profile() {
                 Rôle
               </label>
               <p style={{ color: "var(--text-primary)" }}>
-                {userData?.role === "ADMIN" ? "Administrateur" : "Élève"}
+                {userData?.role === "ADMIN" ? "Administrateur" : "Membre"}
               </p>
             </div>
             <div>

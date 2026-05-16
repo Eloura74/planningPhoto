@@ -642,7 +642,9 @@ function AdminDashboard() {
                   <option value="REQUESTED">En attente</option>
                   <option value="CONFIRMED">Confirmé</option>
                   <option value="CANCELLED_BY_ADMIN">Annulé par admin</option>
-                  <option value="CANCELLED_BY_STUDENT">Annulé par élève</option>
+                  <option value="CANCELLED_BY_STUDENT">
+                    Annulé par membre
+                  </option>
                 </select>
               </div>
             </div>
@@ -664,7 +666,7 @@ function AdminDashboard() {
                   PENDING_ADMIN_VALIDATION: "En attente",
                   CONFIRMED: "Confirmée",
                   REFUSED: "Refusée",
-                  CANCELLED_BY_STUDENT: "Annulée (élève)",
+                  CANCELLED_BY_STUDENT: "Annulée (membre)",
                   CANCELLED_BY_ADMIN: "Annulée (admin)",
                   MODIFIED: "Modifiée",
                   COMPLETED: "Terminée",
@@ -694,7 +696,7 @@ function AdminDashboard() {
                       </div>
                       <div>
                         <p className="font-semibold text-gray-900">
-                          {booking.user_name || "Élève"}
+                          {booking.user_name || "Membre"}
                         </p>
                         <p className="text-sm text-gray-600">
                           {new Date(booking.slot_date).toLocaleDateString(
