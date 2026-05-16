@@ -11,6 +11,7 @@ const slotRoutes = require("./modules/slots/routes");
 const bookingRoutes = require("./modules/bookings/routes");
 const adminRoutes = require("./modules/admin/routes");
 const availabilityRoutes = require("./modules/availability/routes");
+const unavailabilitiesRoutes = require("./modules/unavailabilities/routes");
 const eventRoutes = require("./modules/events/routes");
 
 const app = express();
@@ -24,7 +25,7 @@ app.use("/api/slots", slotRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/availability", availabilityRoutes);
-app.use("/api/unavailabilities", availabilityRoutes); // Alias pour les indisponibilités
+app.use("/api/unavailabilities", unavailabilitiesRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/admin/reset", require("./modules/admin/resetRoutes"));
 
