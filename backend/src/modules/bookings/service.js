@@ -473,15 +473,24 @@ const confirmBooking = async (bookingId, adminId) => {
 };
 
 const cancelBooking = async (bookingId, cancelledBy, reason = null) => {
+  console.log("🗑️ cancelBooking appelé:", { bookingId, cancelledBy, reason });
+
   const booking = await pool.query("SELECT * FROM bookings WHERE id = $1", [
     bookingId,
   ]);
+
+  console.log("🔍 Booking trouvé:", booking.rows.length > 0);
+
   if (booking.rows.length === 0) {
     throw new Error("Booking not found");
   }
 
   const bookingData = booking.rows[0];
+  console.log("📋 Booking data:", bookingData);
+  console.log("👤 Cancelled by:", cancelledBy);
+
   const isCancelledByAdmin = cancelledBy.role === "ADMIN";
+  console.log("🔐 Is admin?", isCancelledByAdmin);
 
   // Vérifier que l'utilisateur annule SA PROPRE réservation (sauf si admin)
   if (!isCancelledByAdmin && bookingData.user_id !== cancelledBy.id) {

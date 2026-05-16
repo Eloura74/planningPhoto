@@ -10,7 +10,19 @@ const transporter = nodemailer.createTransport({
 });
 
 // Envoyer un email de confirmation de réservation SOLO
-const sendSoloBookingConfirmation = async (userEmail, userName, slotDate, slotTime) => {
+const sendSoloBookingConfirmation = async (
+  userEmail,
+  userName,
+  slotDate,
+  slotTime,
+) => {
+  console.log("📧 Tentative d'envoi d'email à:", userEmail);
+  console.log("📧 GMAIL_USER:", process.env.GMAIL_USER);
+  console.log(
+    "📧 GMAIL_APP_PASSWORD configuré:",
+    !!process.env.GMAIL_APP_PASSWORD,
+  );
+
   const mailOptions = {
     from: process.env.GMAIL_USER,
     to: userEmail,
@@ -34,15 +46,23 @@ const sendSoloBookingConfirmation = async (userEmail, userName, slotDate, slotTi
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log("✅ Email envoyé à:", userEmail);
+    const info = await transporter.sendMail(mailOptions);
+    console.log("✅ Email envoyé avec succès à:", userEmail);
+    console.log("✅ Message ID:", info.messageId);
   } catch (error) {
-    console.error("❌ Erreur envoi email:", error.message);
+    console.error("❌ ERREUR ENVOI EMAIL:", error);
+    console.error("❌ Détails:", error.message);
   }
 };
 
 // Envoyer un email de confirmation de réservation GROUPE
-const sendGroupBookingConfirmation = async (userEmail, userName, slotDate, slotTime, participants) => {
+const sendGroupBookingConfirmation = async (
+  userEmail,
+  userName,
+  slotDate,
+  slotTime,
+  participants,
+) => {
   const mailOptions = {
     from: process.env.GMAIL_USER,
     to: userEmail,
@@ -74,7 +94,12 @@ const sendGroupBookingConfirmation = async (userEmail, userName, slotDate, slotT
 };
 
 // Envoyer un email de confirmation d'événement
-const sendEventConfirmation = async (userEmail, userName, eventName, confirmedDates) => {
+const sendEventConfirmation = async (
+  userEmail,
+  userName,
+  eventName,
+  confirmedDates,
+) => {
   const datesFormatted = confirmedDates
     .map((date) =>
       new Date(date).toLocaleDateString("fr-FR", {
@@ -82,7 +107,7 @@ const sendEventConfirmation = async (userEmail, userName, eventName, confirmedDa
         day: "numeric",
         month: "long",
         year: "numeric",
-      })
+      }),
     )
     .join("<br>");
 
