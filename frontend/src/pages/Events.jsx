@@ -13,6 +13,8 @@ function Events() {
   const { showToast } = useToast();
   const navigate = useNavigate();
 
+  // Force rebuild with new hash
+
   useEffect(() => {
     loadEvents();
   }, []);
