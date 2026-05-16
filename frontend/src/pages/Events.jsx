@@ -23,7 +23,13 @@ function Events() {
       setEvents(response.data);
     } catch (error) {
       console.error("Error loading events:", error);
-      showToast("Erreur lors du chargement des événements", "error");
+      if (error.response?.status === 401) {
+        showToast("Session expirée, veuillez vous reconnecter", "error");
+        logout();
+        navigate("/login");
+      } else {
+        showToast("Erreur lors du chargement des événements", "error");
+      }
     }
   };
 
