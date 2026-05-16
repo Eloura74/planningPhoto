@@ -26,15 +26,15 @@ function AdminDashboardNew() {
           borderColor: "var(--border-primary)",
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
+          <div className="flex justify-between items-center mb-3 sm:mb-0">
             <div className="flex items-center gap-3">
               <div
                 className="p-2 rounded-lg glow-gold"
                 style={{ background: "var(--chrome-gradient)" }}
               >
                 <svg
-                  className="w-6 h-6"
+                  className="w-5 h-5 sm:w-6 sm:h-6"
                   style={{ color: "var(--text-dark)" }}
                   fill="none"
                   stroke="currentColor"
@@ -49,7 +49,7 @@ function AdminDashboardNew() {
                 </svg>
               </div>
               <h1
-                className="text-2xl font-bold"
+                className="text-base sm:text-2xl font-bold"
                 style={{
                   background: "var(--chrome-gradient)",
                   WebkitBackgroundClip: "text",
@@ -59,38 +59,39 @@ function AdminDashboardNew() {
                 Dashboard Admin
               </h1>
             </div>
+          </div>
 
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => navigate("/admin/users")}
-                className="px-4 py-2 rounded-lg font-semibold text-sm btn-gold"
-              >
-                Utilisateurs
-              </button>
-              <button
-                onClick={() => navigate("/admin/events")}
-                className="px-4 py-2 rounded-lg font-semibold text-sm btn-gold"
-              >
-                🎉 Événements
-              </button>
-              <button
-                onClick={() => navigate("/calendar")}
-                className="px-4 py-2 rounded-lg font-semibold text-sm btn-chrome"
-              >
-                Calendrier
-              </button>
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 rounded-lg font-semibold text-sm"
-                style={{
-                  backgroundColor: "rgba(239, 68, 68, 0.2)",
-                  color: "#ef4444",
-                  border: "1px solid rgba(239, 68, 68, 0.3)",
-                }}
-              >
-                Déconnexion
-              </button>
-            </div>
+          {/* Navigation Buttons - Responsive grid */}
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+            <button
+              onClick={() => navigate("/admin/users")}
+              className="px-3 py-2 rounded-lg text-xs sm:text-sm btn-gold whitespace-nowrap"
+            >
+              👥 Utilisateurs
+            </button>
+            <button
+              onClick={() => navigate("/admin/events")}
+              className="px-3 py-2 rounded-lg text-xs sm:text-sm btn-gold whitespace-nowrap"
+            >
+              🎉 Événements
+            </button>
+            <button
+              onClick={() => navigate("/calendar")}
+              className="px-3 py-2 rounded-lg text-xs sm:text-sm btn-chrome whitespace-nowrap"
+            >
+              📅 Calendrier
+            </button>
+            <button
+              onClick={handleLogout}
+              className="px-3 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap"
+              style={{
+                backgroundColor: "rgba(239, 68, 68, 0.2)",
+                color: "#ef4444",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+              }}
+            >
+              🚪 Déconnexion
+            </button>
           </div>
         </div>
       </nav>

@@ -24,10 +24,10 @@ function Login() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center"
+      className="min-h-screen flex items-center justify-center px-4"
       style={{ backgroundColor: "var(--bg-primary)" }}
     >
-      <div className="max-w-md w-full rounded-lg p-8 card-gold fade-in">
+      <div className="max-w-md w-full rounded-lg p-6 sm:p-8 card-gold fade-in">
         <div className="flex justify-between items-center mb-6">
           <h2
             className="text-2xl font-bold"

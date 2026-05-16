@@ -308,74 +308,47 @@ function CalendarPage() {
           borderColor: "var(--border-primary)",
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
-          <div className="flex items-center gap-3">
-            <div
-              className="p-2 rounded-lg glow-gold"
-              style={{ background: "var(--chrome-gradient)" }}
-            >
-              <svg
-                className="w-6 h-6"
-                style={{ color: "var(--text-dark)" }}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
+          <div className="flex justify-between items-center mb-3 sm:mb-0">
+            <div className="flex items-center gap-3">
+              <div
+                className="p-2 rounded-lg glow-gold"
+                style={{ background: "var(--chrome-gradient)" }}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
+                <svg
+                  className="w-5 h-5 sm:w-6 sm:h-6"
+                  style={{ color: "var(--text-dark)" }}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <h1
+                className="text-base sm:text-xl font-bold"
+                style={{
+                  background: "var(--chrome-gradient)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Calendrier
+              </h1>
             </div>
-            <h1
-              className="text-lg sm:text-xl font-bold"
-              style={{
-                background: "var(--chrome-gradient)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              Calendrier
-            </h1>
-          </div>
-          <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
-            {user?.role === "ADMIN" && (
-              <>
-                <select
-                  value={slotTypeFilter}
-                  onChange={(e) => setSlotTypeFilter(e.target.value)}
-                  className="px-3 py-2 rounded-lg text-sm input-dark"
-                >
-                  <option value="ALL">Tous types</option>
-                  <option value="SOLO">Solo</option>
-                  <option value="GROUP">Groupe</option>
-                </select>
-                <select
-                  value={slotStatusFilter}
-                  onChange={(e) => setSlotStatusFilter(e.target.value)}
-                  className="px-3 py-2 rounded-lg text-sm input-dark"
-                >
-                  <option value="ALL">Tous statuts</option>
-                  <option value="OPEN_SOLO">Ouvert Solo</option>
-                  <option value="BLOCKED_FOR_GROUP">Bloqué Groupe</option>
-                  <option value="GROUP_PREBOOKING_OPEN">
-                    Pré-réservation Ouverte
-                  </option>
-                  <option value="GROUP_PREBOOKING">Pré-réservation</option>
-                  <option value="GROUP_CONFIRMED">Groupe Confirmé</option>
-                  <option value="SOLO_CONFIRMED">Solo Confirmé</option>
-                  <option value="FULL">Complet</option>
-                </select>
-              </>
-            )}
+
+            {/* User Avatar - Always visible */}
             <div
-              className="flex items-center gap-2 px-3 py-1.5 rounded-full"
+              className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-full"
               style={{ backgroundColor: "var(--bg-tertiary)" }}
             >
               <div
-                className="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm"
+                className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-semibold text-xs sm:text-sm"
                 style={{
                   background: "var(--chrome-gradient)",
                   color: "var(--text-dark)",
@@ -383,7 +356,7 @@ function CalendarPage() {
               >
                 {user?.name?.charAt(0).toUpperCase()}
               </div>
-              <div className="hidden sm:block">
+              <div className="hidden md:block">
                 <p
                   className="text-sm font-medium"
                   style={{ color: "var(--text-primary)" }}
@@ -399,65 +372,90 @@ function CalendarPage() {
                 </p>
               </div>
             </div>
+          </div>
+
+          {/* Admin Filters - Full width on mobile */}
+          {user?.role === "ADMIN" && (
+            <div className="flex gap-2 mb-3">
+              <select
+                value={slotTypeFilter}
+                onChange={(e) => setSlotTypeFilter(e.target.value)}
+                className="flex-1 px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm input-dark"
+              >
+                <option value="ALL">Tous types</option>
+                <option value="SOLO">Solo</option>
+                <option value="GROUP">Groupe</option>
+              </select>
+              <select
+                value={slotStatusFilter}
+                onChange={(e) => setSlotStatusFilter(e.target.value)}
+                className="flex-1 px-2 sm:px-3 py-2 rounded-lg text-xs sm:text-sm input-dark"
+              >
+                <option value="ALL">Tous statuts</option>
+                <option value="OPEN_SOLO">Ouvert Solo</option>
+                <option value="BLOCKED_FOR_GROUP">Bloqué Groupe</option>
+                <option value="GROUP_PREBOOKING">Pré-réservation</option>
+                <option value="GROUP_CONFIRMED">Groupe Confirmé</option>
+                <option value="SOLO_CONFIRMED">Solo Confirmé</option>
+              </select>
+            </div>
+          )}
+
+          {/* Navigation Buttons - Responsive grid */}
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
             {user?.role === "ADMIN" && (
               <button
                 onClick={() => navigate("/admin")}
-                className="px-3 py-2 rounded-lg text-sm btn-gold"
+                className="px-3 py-2 rounded-lg text-xs sm:text-sm btn-gold whitespace-nowrap"
               >
-                Admin
+                📊 Admin
               </button>
             )}
-            <button
-              onClick={() => navigate("/calendar")}
-              className="px-3 py-2 rounded-lg text-sm btn-chrome"
-            >
-              Calendrier
-            </button>
             {user?.isGroupMember && user?.role !== "ADMIN" && (
               <button
                 onClick={() => navigate("/events")}
-                className="px-3 py-2 rounded-lg text-sm btn-gold"
+                className="px-3 py-2 rounded-lg text-xs sm:text-sm btn-gold whitespace-nowrap"
               >
                 🎉 Événements
               </button>
             )}
             <button
               onClick={() => navigate("/my-account")}
-              className="px-3 py-2 rounded-lg text-sm btn-gold"
+              className="px-3 py-2 rounded-lg text-xs sm:text-sm btn-chrome whitespace-nowrap"
             >
-              Mon Compte
+              👤 Compte
             </button>
             <button
               onClick={logout}
-              className="px-3 py-2 rounded-lg text-sm"
+              className="px-3 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap"
               style={{
                 backgroundColor: "rgba(239, 68, 68, 0.2)",
                 color: "#ef4444",
                 border: "1px solid rgba(239, 68, 68, 0.3)",
               }}
             >
-              Déconnexion
+              🚪 Déconnexion
             </button>
           </div>
         </div>
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <h2
-            className="text-2xl font-bold mb-4"
+            className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4"
             style={{ color: "var(--gold-primary)" }}
           >
             Calendrier des disponibilités
           </h2>
-          <div className="flex gap-4 mb-4 flex-wrap">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-4">
             <div className="flex items-center gap-2">
               <div
-                className="w-4 h-4 rounded"
+                className="w-3 h-3 sm:w-4 sm:h-4 rounded flex-shrink-0"
                 style={{ backgroundColor: "#10b981" }}
               ></div>
               <span
-                className="text-sm"
+                className="text-xs sm:text-sm"
                 style={{ color: "var(--text-secondary)" }}
               >
                 Disponible solo
@@ -465,23 +463,23 @@ function CalendarPage() {
             </div>
             <div className="flex items-center gap-2">
               <div
-                className="w-4 h-4 rounded"
+                className="w-3 h-3 sm:w-4 sm:h-4 rounded flex-shrink-0"
                 style={{ backgroundColor: "#f59e0b" }}
               ></div>
               <span
-                className="text-sm"
+                className="text-xs sm:text-sm"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Groupe (mardi/jeudi)
+                Groupe
               </span>
             </div>
             <div className="flex items-center gap-2">
               <div
-                className="w-4 h-4 rounded"
+                className="w-3 h-3 sm:w-4 sm:h-4 rounded flex-shrink-0"
                 style={{ backgroundColor: "#8b5cf6" }}
               ></div>
               <span
-                className="text-sm"
+                className="text-xs sm:text-sm"
                 style={{ color: "var(--text-secondary)" }}
               >
                 Confirmé
@@ -489,11 +487,11 @@ function CalendarPage() {
             </div>
             <div className="flex items-center gap-2">
               <div
-                className="w-4 h-4 rounded"
+                className="w-3 h-3 sm:w-4 sm:h-4 rounded flex-shrink-0"
                 style={{ backgroundColor: "var(--chrome-dark)" }}
               ></div>
               <span
-                className="text-sm"
+                className="text-xs sm:text-sm"
                 style={{ color: "var(--text-secondary)" }}
               >
                 Complet

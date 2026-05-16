@@ -61,9 +61,9 @@ function Dashboard() {
         className="shadow-sm"
         style={{ backgroundColor: "var(--bg-secondary)" }}
       >
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4 flex justify-between items-center">
           <h1
-            className="text-xl font-bold"
+            className="text-base sm:text-xl font-bold"
             style={{ color: "var(--gold-primary)" }}
           >
             Mes Réservations
@@ -71,18 +71,18 @@ function Dashboard() {
           <div className="flex gap-2">
             <button
               onClick={() => navigate("/calendar")}
-              className="px-4 py-2 rounded-lg btn-gold"
+              className="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm btn-gold whitespace-nowrap"
             >
-              Voir le calendrier
+              📅 Calendrier
             </button>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="rounded-lg shadow-md p-6 card-dark">
+      <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
+        <div className="rounded-lg shadow-md p-4 sm:p-6 card-dark">
           <h2
-            className="text-2xl font-bold mb-6"
+            className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6"
             style={{ color: "var(--gold-primary)" }}
           >
             Mes réservations
@@ -96,16 +96,16 @@ function Dashboard() {
               Vous n'avez aucune réservation
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {bookings.map((booking) => (
                 <div
                   key={booking.id}
-                  className="p-4 rounded-lg flex justify-between items-center card-dark"
+                  className="p-3 sm:p-4 rounded-lg flex flex-col sm:flex-row justify-between sm:items-center gap-3 card-dark"
                   style={{ border: "1px solid var(--border-secondary)" }}
                 >
-                  <div>
+                  <div className="flex-1">
                     <p
-                      className="font-semibold"
+                      className="font-semibold text-sm sm:text-base"
                       style={{ color: "var(--text-primary)" }}
                     >
                       {new Date(booking.date).toLocaleDateString("fr-FR", {
@@ -115,11 +115,14 @@ function Dashboard() {
                         day: "numeric",
                       })}
                     </p>
-                    <p style={{ color: "var(--text-secondary)" }}>
+                    <p
+                      className="text-xs sm:text-sm"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
                       {booking.start_time} - {booking.end_time}
                     </p>
                     <p
-                      className="text-sm"
+                      className="text-xs sm:text-sm"
                       style={{ color: "var(--text-secondary)" }}
                     >
                       Type:{" "}
@@ -131,7 +134,7 @@ function Dashboard() {
                       </span>
                     </p>
                     <p
-                      className="text-sm mt-1"
+                      className="text-xs sm:text-sm mt-1"
                       style={{ color: "var(--text-secondary)" }}
                     >
                       Statut:{" "}
@@ -157,14 +160,14 @@ function Dashboard() {
                   {booking.status !== "CANCELLED" && (
                     <button
                       onClick={() => handleCancelBooking(booking.id)}
-                      className="px-4 py-2 rounded-lg"
+                      className="px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap"
                       style={{
                         backgroundColor: "rgba(239, 68, 68, 0.2)",
                         color: "#ef4444",
                         border: "1px solid rgba(239, 68, 68, 0.3)",
                       }}
                     >
-                      Annuler
+                      ❌ Annuler
                     </button>
                   )}
                 </div>
