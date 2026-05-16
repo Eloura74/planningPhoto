@@ -127,6 +127,12 @@ const getEventStats = async (eventId) => {
 
 // Confirmer un événement avec les dates choisies
 const confirmEvent = async (eventId, confirmedDates, adminId) => {
+  console.log("🔍 confirmEvent called with:", {
+    eventId,
+    confirmedDates,
+    adminId,
+  });
+
   const result = await pool.query(
     `UPDATE events 
      SET status = $1, confirmed_dates = $2, updated_at = CURRENT_TIMESTAMP 
@@ -134,45 +140,56 @@ const confirmEvent = async (eventId, confirmedDates, adminId) => {
      RETURNING *`,
     ["CONFIRMED", JSON.stringify(confirmedDates), eventId],
   );
+  console.log("✅ Event updated:", result.rows[0]);
 
   // Récupérer tous les membres du groupe qui ont voté
   const voters = await pool.query(
     `SELECT DISTINCT user_id FROM event_availabilities WHERE event_id = $1`,
     [eventId],
   );
+  console.log("👥 Voters found:", voters.rows.length);
 
   // Créer des créneaux GROUP bloqués pour chaque date confirmée
   for (const date of confirmedDates) {
     const slotId = `slot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    console.log("📅 Creating slot for date:", date, "with ID:", slotId);
 
-    // Créer un créneau GROUP pour toute la journée
-    await pool.query(
-      `INSERT INTO slots (id, date, start_time, end_time, type, status, capacity_min, capacity_max, modified_by, modification_reason)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-       ON CONFLICT DO NOTHING`,
-      [
-        slotId,
-        date,
-        "09:00",
-        "18:00",
-        "GROUP",
-        "CONFIRMED",
-        1,
-        20,
-        adminId,
-        `Créneau réservé pour l'événement ${eventId}`,
-      ],
-    );
-
-    // Créer des réservations GROUP_PREBOOKING pour tous les votants
-    for (const voter of voters.rows) {
-      const bookingId = `booking_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    try {
+      // Créer un créneau GROUP pour toute la journée
       await pool.query(
-        `INSERT INTO bookings (id, slot_id, user_id, status, created_at)
-         VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+        `INSERT INTO slots (id, date, start_time, end_time, type, status, capacity_min, capacity_max, modified_by, modification_reason)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
          ON CONFLICT DO NOTHING`,
-        [bookingId, slotId, voter.user_id, "GROUP_PREBOOKING"],
+        [
+          slotId,
+          date,
+          "09:00",
+          "18:00",
+          "GROUP",
+          "CONFIRMED",
+          1,
+          20,
+          adminId,
+          `Créneau réservé pour l'événement ${eventId}`,
+        ],
       );
+      console.log("✅ Slot created:", slotId);
+
+      // Créer des réservations GROUP_PREBOOKING pour tous les votants
+      for (const voter of voters.rows) {
+        const bookingId = `booking_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        console.log("📝 Creating booking for user:", voter.user_id);
+        await pool.query(
+          `INSERT INTO bookings (id, slot_id, user_id, status, created_at)
+           VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+           ON CONFLICT DO NOTHING`,
+          [bookingId, slotId, voter.user_id, "GROUP_PREBOOKING"],
+        );
+        console.log("✅ Booking created:", bookingId);
+      }
+    } catch (error) {
+      console.error("❌ Error creating slot/bookings:", error.message);
+      throw error;
     }
   }
 
