@@ -156,23 +156,21 @@ router.get("/group/:slotId", authenticate, async (req, res) => {
     let { slotId } = req.params;
     console.log("🔍 GET /group/:slotId - slotId:", slotId);
 
-    // Si c'est un ID virtuel (format YYYY-MM-DD_HH:MM), chercher le slot réel
-    if (slotId.includes("_")) {
-      const [date, startTime] = slotId.split("_");
-      const realSlot = await pool.query(
-        "SELECT id FROM slots WHERE date = $1 AND start_time = $2",
-        [date, startTime],
-      );
-      if (realSlot.rows.length > 0) {
-        slotId = realSlot.rows[0].id;
-        console.log("🔍 Found real slot ID:", slotId);
-      } else {
-        console.log(
-          "⚠️ No real slot found for virtual ID, returning empty array",
-        );
-        return res.json([]);
-      }
+    // Vérifier si le slot existe dans la base
+    const existingSlot = await pool.query(
+      "SELECT id FROM slots WHERE id = $1",
+      [slotId],
+    );
+
+    // Si le slot n'existe pas et ressemble à un ID virtuel (format YYYY-MM-DD), retourner vide
+    if (existingSlot.rows.length === 0) {
+      console.log("⚠️ Slot not found in database, returning empty array");
+      return res.json([]);
     }
+
+    // Utiliser l'ID du slot existant
+    slotId = existingSlot.rows[0].id;
+    console.log("✅ Using real slot ID:", slotId);
 
     const userData = await pool.query(
       "SELECT role, is_group_member FROM users WHERE id = $1",

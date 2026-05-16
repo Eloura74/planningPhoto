@@ -61,6 +61,27 @@ function MyAccount() {
     }
   };
 
+  const handleCancelBooking = async (bookingId, bookingType) => {
+    if (
+      !window.confirm("Êtes-vous sûr de vouloir annuler cette réservation ?")
+    ) {
+      return;
+    }
+
+    try {
+      if (bookingType === "GROUP_PREBOOKING") {
+        await bookingsAPI.cancelGroupPrebooking(bookingId);
+      } else {
+        await bookingsAPI.cancel(bookingId);
+      }
+      // Recharger les réservations
+      loadMyBookings();
+    } catch (error) {
+      console.error("Error canceling booking:", error);
+      alert("Erreur lors de l'annulation de la réservation");
+    }
+  };
+
   const getStatusBadge = (status) => {
     const badges = {
       CONFIRMED: {
@@ -282,7 +303,40 @@ function MyAccount() {
                           </p>
                         </div>
                       )}
+
+                      {booking.status === "REQUESTED" && (
+                        <div
+                          className="mt-3 p-3 rounded-lg"
+                          style={{ backgroundColor: "rgba(59, 130, 246, 0.1)" }}
+                        >
+                          <p className="text-sm font-semibold text-blue-700">
+                            📝 Demande envoyée à l'administrateur
+                          </p>
+                        </div>
+                      )}
                     </div>
+
+                    {/* Bouton d'annulation */}
+                    {(booking.status === "REQUESTED" ||
+                      booking.status === "PENDING") && (
+                      <div className="ml-4">
+                        <button
+                          onClick={() =>
+                            handleCancelBooking(
+                              booking.id,
+                              booking.booking_type,
+                            )
+                          }
+                          className="px-4 py-2 rounded-lg font-semibold transition-all hover:shadow-md"
+                          style={{
+                            backgroundColor: "#dc2626",
+                            color: "white",
+                          }}
+                        >
+                          ✕ Annuler
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

@@ -1,6 +1,7 @@
 const pool = require("../../database");
 const { v4: uuidv4 } = require("uuid");
 const { createHistory } = require("../common/historyService");
+const { sendEventConfirmation } = require("../../services/emailService");
 
 // Créer un événement (sans dates, les membres les proposeront)
 const createEvent = async (eventData, adminId) => {
@@ -201,6 +202,19 @@ const confirmEvent = async (eventId, confirmedDates, adminId) => {
     adminId,
     `Événement confirmé avec ${confirmedDates.length} date(s)`,
   );
+
+  // Envoyer un email à tous les votants
+  const eventName = result.rows[0].name;
+  for (const voter of voters.rows) {
+    const userInfo = await pool.query(
+      "SELECT email, name FROM users WHERE id = $1",
+      [voter.user_id],
+    );
+    if (userInfo.rows.length > 0) {
+      const { email, name } = userInfo.rows[0];
+      await sendEventConfirmation(email, name, eventName, confirmedDates);
+    }
+  }
 
   return result.rows[0];
 };

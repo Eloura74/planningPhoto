@@ -409,7 +409,7 @@ function CalendarPage() {
             >
               Calendrier
             </button>
-            {user?.isGroupMember && (
+            {user?.isGroupMember && user?.role !== "ADMIN" && (
               <button
                 onClick={() => navigate("/events")}
                 className="px-3 py-2 rounded-lg text-sm btn-gold"

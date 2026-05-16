@@ -1,16 +1,10 @@
 const pool = require("../../database");
 const { v4: uuidv4 } = require("uuid");
 const { createHistory } = require("../common/historyService");
-const sendEmail = async (to, subject, html) => {
-  try {
-    // Désactivé temporairement - erreur d'authentification Gmail
-    console.log(`Email non envoyé (désactivé): ${to} - ${subject}`);
-    return { success: true };
-  } catch (error) {
-    console.error("Email error:", error);
-    return { success: false, error: error.message };
-  }
-};
+const {
+  sendSoloBookingConfirmation,
+  sendGroupBookingConfirmation,
+} = require("../../services/emailService");
 
 const {
   sendBookingConfirmationEmail,
@@ -463,12 +457,28 @@ const confirmBooking = async (bookingId, adminId) => {
       ]);
     }
 
-    await sendBookingConfirmationEmail(
-      userData.email,
-      userData.name,
-      slotData.date,
-      `${slotData.start_time} - ${slotData.end_time}`,
-    );
+    // Envoyer l'email approprié selon le type
+    if (isGroupPrebooking || slotData.type === "GROUP") {
+      // Compter les participants
+      const participants = await pool.query(
+        "SELECT COUNT(*) FROM bookings WHERE slot_id = $1 AND status = 'CONFIRMED'",
+        [booking.slot_id],
+      );
+      await sendGroupBookingConfirmation(
+        userData.email,
+        userData.name,
+        slotData.date,
+        `${slotData.start_time} - ${slotData.end_time}`,
+        parseInt(participants.rows[0].count),
+      );
+    } else {
+      await sendSoloBookingConfirmation(
+        userData.email,
+        userData.name,
+        slotData.date,
+        `${slotData.start_time} - ${slotData.end_time}`,
+      );
+    }
   }
 
   // Récupérer la réservation mise à jour
