@@ -135,6 +135,12 @@ const confirmEvent = async (eventId, confirmedDates, adminId) => {
     ["CONFIRMED", JSON.stringify(confirmedDates), eventId],
   );
 
+  // Récupérer tous les membres du groupe qui ont voté
+  const voters = await pool.query(
+    `SELECT DISTINCT user_id FROM event_availabilities WHERE event_id = $1`,
+    [eventId],
+  );
+
   // Créer des créneaux GROUP bloqués pour chaque date confirmée
   for (const date of confirmedDates) {
     const slotId = `slot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -157,6 +163,17 @@ const confirmEvent = async (eventId, confirmedDates, adminId) => {
         `Créneau réservé pour l'événement ${eventId}`,
       ],
     );
+
+    // Créer des réservations GROUP_PREBOOKING pour tous les votants
+    for (const voter of voters.rows) {
+      const bookingId = `booking_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      await pool.query(
+        `INSERT INTO bookings (id, slot_id, user_id, status, created_at)
+         VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+         ON CONFLICT DO NOTHING`,
+        [bookingId, slotId, voter.user_id, "GROUP_PREBOOKING"],
+      );
+    }
   }
 
   await createHistory(
