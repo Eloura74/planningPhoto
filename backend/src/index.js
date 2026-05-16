@@ -100,7 +100,8 @@ async function runMigrations() {
             'CANCELLED_BY_ADMIN',
             'MODIFIED',
             'COMPLETED',
-            'NO_SHOW'
+            'NO_SHOW',
+            'GROUP_PREBOOKING'
           )
         ) DEFAULT 'REQUESTED',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -208,6 +209,31 @@ async function runMigrations() {
       .catch(() => {
         // Ignore l'erreur si les colonnes sont déjà NULL
         console.log("⚠️ Colonnes start_date/end_date déjà optionnelles");
+      });
+
+    // Ajouter GROUP_PREBOOKING à la contrainte de statut des bookings
+    await pool
+      .query(
+        `
+      ALTER TABLE bookings DROP CONSTRAINT IF EXISTS bookings_status_check;
+      ALTER TABLE bookings ADD CONSTRAINT bookings_status_check CHECK (
+        status IN (
+          'REQUESTED',
+          'PENDING_ADMIN_VALIDATION',
+          'CONFIRMED',
+          'REFUSED',
+          'CANCELLED_BY_STUDENT',
+          'CANCELLED_BY_ADMIN',
+          'MODIFIED',
+          'COMPLETED',
+          'NO_SHOW',
+          'GROUP_PREBOOKING'
+        )
+      );
+    `,
+      )
+      .catch(() => {
+        console.log("⚠️ Contrainte bookings_status_check déjà mise à jour");
       });
 
     // Event availabilities table (votes des membres)
