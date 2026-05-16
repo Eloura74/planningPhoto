@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { eventsAPI } from "../services/api";
+import { eventsAPI, adminAPI } from "../services/api";
 import { useToast } from "../contexts/ToastContext";
 
 function EventsManager() {
@@ -78,7 +78,8 @@ function EventsManager() {
   };
 
   const handleDeleteEvent = async (eventId) => {
-    if (!window.confirm("Supprimer cet événement ?")) return;
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer cet événement ?"))
+      return;
 
     try {
       await eventsAPI.delete(eventId);
@@ -86,7 +87,35 @@ function EventsManager() {
       loadEvents();
       setSelectedEvent(null);
     } catch (error) {
-      showToast(error.response?.data?.error || "Erreur", "error");
+      console.error("Error deleting event:", error);
+      showToast("Erreur lors de la suppression", "error");
+    }
+  };
+
+  const handleResetAll = async () => {
+    if (
+      !window.confirm(
+        "⚠️ ATTENTION ! Cela va supprimer TOUTES les réservations, événements et créneaux. Êtes-vous sûr ?",
+      )
+    )
+      return;
+
+    if (
+      !window.confirm(
+        "Dernière confirmation : Toutes les données seront perdues !",
+      )
+    )
+      return;
+
+    try {
+      const response = await adminAPI.resetAll();
+      showToast("✅ Base de données nettoyée avec succès !", "success");
+      console.log("Données restantes:", response.data.remaining);
+      loadEvents();
+      setSelectedEvent(null);
+    } catch (error) {
+      console.error("Error resetting database:", error);
+      showToast("Erreur lors du nettoyage", "error");
     }
   };
 
@@ -144,19 +173,31 @@ function EventsManager() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center mb-6">
         <h2
           className="text-2xl font-bold"
           style={{ color: "var(--gold-primary)" }}
         >
           🎉 Gestion des Événements Groupe
         </h2>
-        <button
-          onClick={() => setShowCreateForm(!showCreateForm)}
-          className="px-4 py-2 rounded-lg font-semibold transition-all hover:shadow-md btn-gold"
-        >
-          {showCreateForm ? "Annuler" : "+ Nouvel Événement"}
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={handleResetAll}
+            className="px-4 py-2 rounded-lg font-semibold transition-all hover:shadow-md"
+            style={{
+              backgroundColor: "#dc2626",
+              color: "white",
+            }}
+          >
+            🗑️ Nettoyer la base
+          </button>
+          <button
+            onClick={() => setShowCreateForm(!showCreateForm)}
+            className="px-4 py-2 rounded-lg font-semibold transition-all hover:shadow-md btn-gold"
+          >
+            {showCreateForm ? "Annuler" : "+ Nouvel Événement"}
+          </button>
+        </div>
       </div>
 
       {showCreateForm && (

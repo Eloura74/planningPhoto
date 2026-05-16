@@ -78,6 +78,7 @@ export const adminAPI = {
   getHistory: (entity, limit) =>
     api.get("/admin/history", { params: { entity, limit } }),
   getDashboard: () => api.get("/admin/dashboard"),
+  resetAll: () => api.post("/admin/reset/reset-all"),
 };
 
 export const usersAPI = {
