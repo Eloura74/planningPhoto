@@ -140,8 +140,98 @@ const sendEventConfirmation = async (
   }
 };
 
+// Envoyer un email d'annulation par l'admin à l'utilisateur
+const sendCancellationByAdmin = async (
+  userEmail,
+  userName,
+  slotDate,
+  slotTime,
+  slotType,
+  reason,
+) => {
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #ef4444;">❌ Réservation Annulée</h2>
+      <p>Bonjour <strong>${userName}</strong>,</p>
+      <p>Nous vous informons que votre réservation a été annulée par l'administrateur.</p>
+      <div style="background-color: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ef4444;">
+        <p><strong>📅 Date :</strong> ${new Date(slotDate).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
+        <p><strong>🕐 Horaire :</strong> ${slotTime}</p>
+        <p><strong>📍 Type :</strong> ${slotType === "SOLO" ? "Séance Solo" : "Séance Groupe"}</p>
+        ${reason ? `<p><strong>💬 Raison :</strong> ${reason}</p>` : ""}
+      </div>
+      <p>Si vous avez des questions, n'hésitez pas à nous contacter.</p>
+      <p style="color: #666; font-size: 12px; margin-top: 30px;">
+        Cet email a été envoyé automatiquement, merci de ne pas y répondre.
+      </p>
+    </div>
+  `;
+
+  try {
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.sender = { name: FROM_NAME, email: FROM_EMAIL };
+    sendSmtpEmail.to = [{ email: userEmail, name: userName }];
+    sendSmtpEmail.subject = "❌ Réservation annulée - Planning Photo";
+    sendSmtpEmail.htmlContent = htmlContent;
+
+    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log("✅ Email d'annulation envoyé à l'utilisateur:", userEmail);
+    console.log("✅ Message ID:", data.messageId);
+  } catch (error) {
+    console.error("❌ Erreur envoi email d'annulation:", error.message);
+  }
+};
+
+// Envoyer un email de notification à l'admin quand un utilisateur annule
+const sendCancellationNotificationToAdmin = async (
+  userName,
+  userEmail,
+  slotDate,
+  slotTime,
+  slotType,
+) => {
+  const adminEmail = process.env.BREVO_FROM_EMAIL; // Email de l'admin
+
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #f59e0b;">⚠️ Annulation de Réservation</h2>
+      <p>Bonjour,</p>
+      <p>Un utilisateur a annulé sa réservation.</p>
+      <div style="background-color: #fffbeb; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+        <p><strong>👤 Utilisateur :</strong> ${userName} (${userEmail})</p>
+        <p><strong>📅 Date :</strong> ${new Date(slotDate).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
+        <p><strong>🕐 Horaire :</strong> ${slotTime}</p>
+        <p><strong>📍 Type :</strong> ${slotType === "SOLO" ? "Séance Solo" : "Séance Groupe"}</p>
+      </div>
+      <p>Le créneau est maintenant disponible pour d'autres réservations.</p>
+      <p style="color: #666; font-size: 12px; margin-top: 30px;">
+        Cet email a été envoyé automatiquement, merci de ne pas y répondre.
+      </p>
+    </div>
+  `;
+
+  try {
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.sender = { name: FROM_NAME, email: FROM_EMAIL };
+    sendSmtpEmail.to = [{ email: adminEmail, name: "Admin" }];
+    sendSmtpEmail.subject = "⚠️ Annulation de réservation - Planning Photo";
+    sendSmtpEmail.htmlContent = htmlContent;
+
+    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log("✅ Email de notification envoyé à l'admin:", adminEmail);
+    console.log("✅ Message ID:", data.messageId);
+  } catch (error) {
+    console.error(
+      "❌ Erreur envoi email de notification à l'admin:",
+      error.message,
+    );
+  }
+};
+
 module.exports = {
   sendSoloBookingConfirmation,
   sendGroupBookingConfirmation,
   sendEventConfirmation,
+  sendCancellationByAdmin,
+  sendCancellationNotificationToAdmin,
 };

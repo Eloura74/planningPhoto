@@ -4,6 +4,8 @@ const { createHistory } = require("../common/historyService");
 const {
   sendSoloBookingConfirmation,
   sendGroupBookingConfirmation,
+  sendCancellationByAdmin,
+  sendCancellationNotificationToAdmin,
 } = require("../../services/emailService");
 
 const getUserWeeklyBookings = async (userId, startDate, endDate) => {
@@ -554,7 +556,7 @@ const cancelBooking = async (bookingId, cancelledBy, reason = null) => {
     `Annulation par ${isCancelledByAdmin ? "admin" : "élève"}`,
   );
 
-  // Envoyer notification
+  // Récupérer les infos utilisateur et slot pour les emails
   const user = await pool.query("SELECT * FROM users WHERE id = $1", [
     bookingData.user_id,
   ]);
@@ -562,7 +564,38 @@ const cancelBooking = async (bookingId, cancelledBy, reason = null) => {
     bookingData.slot_id,
   ]);
 
-  // Pas d'email envoyé lors de l'annulation (pour l'instant)
+  if (user.rows.length > 0 && slot.rows.length > 0) {
+    const userData = user.rows[0];
+    const slotData = slot.rows[0];
+    const slotTime = `${slotData.start_time} - ${slotData.end_time}`;
+
+    if (isCancelledByAdmin) {
+      // Admin annule → Envoyer email à l'utilisateur
+      console.log(
+        "📧 Envoi email d'annulation à l'utilisateur:",
+        userData.email,
+      );
+      await sendCancellationByAdmin(
+        userData.email,
+        userData.name,
+        slotData.date,
+        slotTime,
+        slotData.type,
+        reason,
+      );
+    } else {
+      // Utilisateur annule → Envoyer notification à l'admin
+      console.log("📧 Envoi notification d'annulation à l'admin");
+      await sendCancellationNotificationToAdmin(
+        userData.name,
+        userData.email,
+        slotData.date,
+        slotTime,
+        slotData.type,
+      );
+    }
+  }
+
   console.log("✅ Réservation annulée avec succès");
 
   return result.rows[0];
