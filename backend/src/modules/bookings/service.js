@@ -425,9 +425,21 @@ const confirmBooking = async (bookingId, adminId) => {
     booking.slot_id,
   ]);
 
+  console.log("🔍 Vérification user/slot:", {
+    userFound: user.rows.length > 0,
+    slotFound: slot.rows.length > 0,
+  });
+
   if (user.rows.length > 0 && slot.rows.length > 0) {
     const userData = user.rows[0];
     const slotData = slot.rows[0];
+
+    console.log("📧 Préparation envoi email:", {
+      email: userData.email,
+      name: userData.name,
+      slotType: slotData.type,
+      isGroupPrebooking,
+    });
 
     // Ne pas mettre à jour le statut du slot si c'est une pré-réservation groupe individuelle
     // Le slot sera mis à jour quand l'admin bloquera tout le créneau
@@ -439,7 +451,13 @@ const confirmBooking = async (bookingId, adminId) => {
     }
 
     // Envoyer l'email approprié selon le type
+    console.log("🔍 Type de réservation:", {
+      isGroupPrebooking,
+      slotType: slotData.type,
+    });
+
     if (isGroupPrebooking || slotData.type === "GROUP") {
+      console.log("📧 → Envoi email GROUPE");
       // Compter les participants
       const participants = await pool.query(
         "SELECT COUNT(*) FROM bookings WHERE slot_id = $1 AND status = 'CONFIRMED'",
@@ -453,13 +471,17 @@ const confirmBooking = async (bookingId, adminId) => {
         parseInt(participants.rows[0].count),
       );
     } else {
+      console.log("📧 → Envoi email SOLO");
       await sendSoloBookingConfirmation(
         userData.email,
         userData.name,
         slotData.date,
         `${slotData.start_time} - ${slotData.end_time}`,
       );
+      console.log("📧 ✅ Email SOLO envoyé (ou tenté)");
     }
+  } else {
+    console.log("⚠️ User ou slot non trouvé, email non envoyé");
   }
 
   // Récupérer la réservation mise à jour
