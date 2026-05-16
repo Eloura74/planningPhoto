@@ -540,27 +540,8 @@ const cancelBooking = async (bookingId, cancelledBy, reason = null) => {
     bookingData.slot_id,
   ]);
 
-  if (user.rows.length > 0 && slot.rows.length > 0) {
-    const userData = user.rows[0];
-    const slotData = slot.rows[0];
-
-    if (isCancelledByAdmin) {
-      await sendCancellationByAdminEmail(
-        userData.email,
-        userData.name,
-        slotData.date,
-        `${slotData.start_time} - ${slotData.end_time}`,
-        reason,
-      );
-    } else {
-      await sendCancellationByStudentEmail(
-        userData.email,
-        userData.name,
-        slotData.date,
-        `${slotData.start_time} - ${slotData.end_time}`,
-      );
-    }
-  }
+  // Pas d'email envoyé lors de l'annulation (pour l'instant)
+  console.log("✅ Réservation annulée avec succès");
 
   return result.rows[0];
 };
