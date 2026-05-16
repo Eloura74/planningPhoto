@@ -1,13 +1,13 @@
-const { Resend } = require("resend");
+const SibApiV3Sdk = require("sib-api-v3-sdk");
 
-// Configuration Resend (alternative à Gmail pour Render)
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Configuration Brevo (ex-Sendinblue)
+const defaultClient = SibApiV3Sdk.ApiClient.instance;
+const apiKey = defaultClient.authentications["api-key"];
+apiKey.apiKey = process.env.BREVO_API_KEY;
 
-// Fallback email si RESEND_API_KEY n'est pas configuré
-const FROM_EMAIL =
-  process.env.RESEND_FROM_EMAIL ||
-  process.env.GMAIL_USER ||
-  "noreply@planningphoto.com";
+const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+const FROM_EMAIL = process.env.BREVO_FROM_EMAIL || "noreply@planningphoto.com";
+const FROM_NAME = "Planning Photo";
 
 // Envoyer un email de confirmation de réservation SOLO
 const sendSoloBookingConfirmation = async (
@@ -18,7 +18,7 @@ const sendSoloBookingConfirmation = async (
 ) => {
   console.log("📧 Tentative d'envoi d'email à:", userEmail);
   console.log("📧 FROM_EMAIL:", FROM_EMAIL);
-  console.log("📧 RESEND_API_KEY configuré:", !!process.env.RESEND_API_KEY);
+  console.log("📧 BREVO_API_KEY configuré:", !!process.env.BREVO_API_KEY);
 
   const htmlContent = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -38,20 +38,15 @@ const sendSoloBookingConfirmation = async (
   `;
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: [userEmail],
-      subject: "✅ Réservation confirmée - Planning Photo",
-      html: htmlContent,
-    });
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.sender = { name: FROM_NAME, email: FROM_EMAIL };
+    sendSmtpEmail.to = [{ email: userEmail, name: userName }];
+    sendSmtpEmail.subject = "✅ Réservation confirmée - Planning Photo";
+    sendSmtpEmail.htmlContent = htmlContent;
 
-    if (error) {
-      console.error("❌ ERREUR ENVOI EMAIL:", error);
-      return;
-    }
-
+    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
     console.log("✅ Email envoyé avec succès à:", userEmail);
-    console.log("✅ Email ID:", data.id);
+    console.log("✅ Message ID:", data.messageId);
   } catch (error) {
     console.error("❌ ERREUR ENVOI EMAIL:", error);
     console.error("❌ Détails:", error.message);
@@ -84,20 +79,15 @@ const sendGroupBookingConfirmation = async (
   `;
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: [userEmail],
-      subject: "✅ Séance Groupe Confirmée - Planning Photo",
-      html: htmlContent,
-    });
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.sender = { name: FROM_NAME, email: FROM_EMAIL };
+    sendSmtpEmail.to = [{ email: userEmail, name: userName }];
+    sendSmtpEmail.subject = "✅ Séance Groupe Confirmée - Planning Photo";
+    sendSmtpEmail.htmlContent = htmlContent;
 
-    if (error) {
-      console.error("❌ Erreur envoi email groupe:", error);
-      return;
-    }
-
+    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
     console.log("✅ Email groupe envoyé à:", userEmail);
-    console.log("✅ Email ID:", data.id);
+    console.log("✅ Message ID:", data.messageId);
   } catch (error) {
     console.error("❌ Erreur envoi email groupe:", error.message);
   }
