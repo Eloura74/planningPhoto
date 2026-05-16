@@ -214,9 +214,21 @@ function Events() {
                         style={{ color: "var(--text-secondary)" }}
                       >
                         Dates confirmées :{" "}
-                        {JSON.parse(event.confirmed_dates || "[]")
-                          .map((d) => formatDate(d))
-                          .join(", ")}
+                        {(() => {
+                          try {
+                            const dates = event.confirmed_dates;
+                            if (!dates || dates === "null") return "Aucune";
+                            const parsed =
+                              typeof dates === "string"
+                                ? JSON.parse(dates)
+                                : dates;
+                            return Array.isArray(parsed)
+                              ? parsed.map((d) => formatDate(d)).join(", ")
+                              : "Aucune";
+                          } catch (e) {
+                            return "Aucune";
+                          }
+                        })()}
                       </p>
                     </div>
                   )}
@@ -286,22 +298,30 @@ function Events() {
                   Cet événement a été confirmé pour les dates suivantes :
                 </p>
                 <div className="space-y-2">
-                  {JSON.parse(selectedEvent.confirmed_dates || "[]").map(
-                    (date, index) => (
-                      <div
-                        key={index}
-                        className="p-3 rounded-lg"
-                        style={{ backgroundColor: "var(--bg-secondary)" }}
+                  {(() => {
+                    try {
+                      const dates = selectedEvent.confirmed_dates;
+                      if (!dates || dates === "null") return [];
+                      const parsed =
+                        typeof dates === "string" ? JSON.parse(dates) : dates;
+                      return Array.isArray(parsed) ? parsed : [];
+                    } catch (e) {
+                      return [];
+                    }
+                  })().map((date, index) => (
+                    <div
+                      key={index}
+                      className="p-3 rounded-lg"
+                      style={{ backgroundColor: "var(--bg-secondary)" }}
+                    >
+                      <p
+                        className="font-semibold"
+                        style={{ color: "var(--text-primary)" }}
                       >
-                        <p
-                          className="font-semibold"
-                          style={{ color: "var(--text-primary)" }}
-                        >
-                          {formatDate(date)}
-                        </p>
-                      </div>
-                    ),
-                  )}
+                        {formatDate(date)}
+                      </p>
+                    </div>
+                  ))}
                 </div>
               </div>
             ) : (
