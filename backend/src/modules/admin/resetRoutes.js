@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { authenticate, requireAdmin } = require("../common/authMiddleware");
-const pool = require("../../config/database");
+const pool = require("../../database");
 
 // Route pour nettoyer toutes les réservations et événements
 router.post("/reset-all", authenticate, requireAdmin, async (req, res) => {
