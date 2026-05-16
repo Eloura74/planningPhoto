@@ -5,6 +5,9 @@ import { useToast } from "../contexts/ToastContext";
 function UnavailabilityManager() {
   const [unavailabilities, setUnavailabilities] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [mode, setMode] = useState("single"); // "single" ou "range"
   const { showToast } = useToast();
 
   const loadUnavailabilities = async () => {
@@ -33,12 +36,35 @@ function UnavailabilityManager() {
 
   const handleMarkUnavailable = async (e) => {
     e.preventDefault();
-    if (!selectedDate) return;
 
     try {
-      await availabilityAPI.markUnavailable(selectedDate);
-      showToast("Jour marqué comme indisponible", "success");
-      setSelectedDate("");
+      if (mode === "single") {
+        if (!selectedDate) return;
+        await availabilityAPI.markUnavailable(selectedDate);
+        showToast("Jour marqué comme indisponible", "success");
+        setSelectedDate("");
+      } else {
+        if (!startDate || !endDate) return;
+
+        // Marquer tous les jours entre startDate et endDate
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const promises = [];
+
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+          const dateStr = d.toISOString().split("T")[0];
+          promises.push(availabilityAPI.markUnavailable(dateStr));
+        }
+
+        await Promise.all(promises);
+        showToast(
+          `Période du ${new Date(startDate).toLocaleDateString("fr-FR")} au ${new Date(endDate).toLocaleDateString("fr-FR")} marquée comme indisponible`,
+          "success",
+        );
+        setStartDate("");
+        setEndDate("");
+      }
+
       loadUnavailabilities();
       // Rafraîchir la page pour mettre à jour le calendrier
       setTimeout(() => window.location.reload(), 1000);
@@ -79,23 +105,88 @@ function UnavailabilityManager() {
 
       <div className="mb-6">
         <p style={{ color: "var(--text-muted)" }} className="mb-3">
-          💡 Sélectionnez une date pour la marquer comme indisponible. Les
-          créneaux de cette journée n'apparaîtront plus dans le calendrier.
+          💡 Sélectionnez une date ou une période pour la marquer comme
+          indisponible. Les créneaux de ces journées n'apparaîtront plus dans le
+          calendrier.
         </p>
+
+        {/* Toggle mode */}
+        <div className="flex gap-2 mb-4">
+          <button
+            type="button"
+            onClick={() => setMode("single")}
+            className={`px-4 py-2 rounded-lg ${mode === "single" ? "btn-gold" : "bg-gray-700 text-gray-300"}`}
+          >
+            📅 Jour unique
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("range")}
+            className={`px-4 py-2 rounded-lg ${mode === "range" ? "btn-gold" : "bg-gray-700 text-gray-300"}`}
+          >
+            📆 Période
+          </button>
+        </div>
+
         <form onSubmit={handleMarkUnavailable}>
-          <div className="flex gap-3">
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="flex-1 px-3 py-2 rounded-lg input-dark"
-              min={new Date().toISOString().split("T")[0]}
-              required
-            />
-            <button type="submit" className="px-6 py-2 rounded-lg btn-gold">
-              ➕ Marquer indisponible
-            </button>
-          </div>
+          {mode === "single" ? (
+            <div className="flex gap-3">
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="flex-1 px-3 py-2 rounded-lg input-dark"
+                min={new Date().toISOString().split("T")[0]}
+                required
+              />
+              <button type="submit" className="px-6 py-2 rounded-lg btn-gold">
+                ➕ Marquer indisponible
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex gap-3">
+                <div className="flex-1">
+                  <label
+                    style={{ color: "var(--text-muted)", fontSize: "0.875rem" }}
+                    className="block mb-1"
+                  >
+                    Du
+                  </label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg input-dark"
+                    min={new Date().toISOString().split("T")[0]}
+                    required
+                  />
+                </div>
+                <div className="flex-1">
+                  <label
+                    style={{ color: "var(--text-muted)", fontSize: "0.875rem" }}
+                    className="block mb-1"
+                  >
+                    Au
+                  </label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg input-dark"
+                    min={startDate || new Date().toISOString().split("T")[0]}
+                    required
+                  />
+                </div>
+              </div>
+              <button
+                type="submit"
+                className="w-full px-6 py-2 rounded-lg btn-gold"
+              >
+                ➕ Marquer la période indisponible
+              </button>
+            </div>
+          )}
         </form>
       </div>
 
