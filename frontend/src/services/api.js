@@ -94,6 +94,10 @@ export const availabilityAPI = {
     api.get("/availability", { params: { startDate, endDate } }),
   getSlots: (startDate, endDate) =>
     api.get("/availability", { params: { startDate, endDate } }),
+  getUnavailabilities: (startDate, endDate) =>
+    api.get("/unavailabilities", { params: { startDate, endDate } }),
+  markUnavailable: (date) => api.post("/unavailabilities", { date }),
+  removeUnavailability: (date) => api.delete(`/unavailabilities/${date}`),
   create: (date) => api.post("/availability", { date }),
   delete: (date) => api.delete(`/availability/${date}`),
 };
