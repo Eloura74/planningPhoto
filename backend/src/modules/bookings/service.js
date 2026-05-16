@@ -6,14 +6,6 @@ const {
   sendGroupBookingConfirmation,
 } = require("../../services/emailService");
 
-const {
-  sendBookingConfirmationEmail,
-  sendSoloRequestEmail,
-  sendAdminSoloRequestNotification,
-  sendCancellationByStudentEmail,
-  sendCancellationByAdminEmail,
-} = require("../notifications/service");
-
 const getUserWeeklyBookings = async (userId, startDate, endDate) => {
   const result = await pool.query(
     `SELECT COUNT(*) as count FROM bookings 
@@ -110,12 +102,24 @@ const createSoloBooking = async (userId, slotId) => {
       throw new Error("Erreur: slot non trouvé après création/récupération");
     }
 
-    if (slotData.status !== "OPEN_SOLO" && slotData.status !== "OPEN_TUESDAY") {
-      throw new Error("Slot not available for solo booking");
+    console.log(
+      "🔍 Vérification statut:",
+      slotData.status,
+      "Type:",
+      slotData.type,
+    );
+
+    // Accepter les statuts OPEN_SOLO, OPEN_TUESDAY, MIXED, DRAFT
+    const validStatuses = ["OPEN_SOLO", "OPEN_TUESDAY", "MIXED", "DRAFT"];
+    if (!validStatuses.includes(slotData.status)) {
+      throw new Error(`Slot non disponible (statut: ${slotData.status})`);
     }
 
-    if (slotData.type !== "SOLO" && slotData.type !== "MIXED") {
-      throw new Error("Slot is not available for solo booking");
+    const validTypes = ["SOLO", "MIXED"];
+    if (!validTypes.includes(slotData.type)) {
+      throw new Error(
+        `Ce créneau n'est pas disponible pour les réservations solo (type: ${slotData.type})`,
+      );
     }
 
     // Règle 1 : Vérifier que l'utilisateur n'a pas déjà réservé ce créneau (par date + heure)
@@ -176,30 +180,7 @@ const createSoloBooking = async (userId, slotId) => {
       "Demande de réservation solo créée",
     );
 
-    // Envoyer notification à l'étudiant
-    const user = await pool.query("SELECT * FROM users WHERE id = $1", [
-      userId,
-    ]);
-    if (user.rows.length > 0) {
-      await sendSoloRequestEmail(
-        user.rows[0].email,
-        user.rows[0].name,
-        slotData.date,
-        `${slotData.start_time} - ${slotData.end_time}`,
-      );
-
-      // Envoyer notification à l'admin
-      const admin = await pool.query(
-        "SELECT * FROM users WHERE role = 'ADMIN' LIMIT 1",
-      );
-      if (admin.rows.length > 0) {
-        await sendEmail(
-          admin.rows[0].email,
-          "Nouvelle demande de réservation solo",
-          `Bonjour ${admin.rows[0].name},<br><br>Une nouvelle demande de réservation solo a été créée pour le ${slotData.date} à ${slotData.start_time} - ${slotData.end_time} par ${user.rows[0].name}.<br><br>Cordialement, l'équipe`,
-        );
-      }
-    }
+    // L'email sera envoyé quand l'admin confirmera la réservation
 
     console.log("Réservation créée avec succès:", result.rows[0]);
     return result.rows[0];
