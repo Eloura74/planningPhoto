@@ -391,7 +391,11 @@ function CalendarPage() {
                   {user?.name}
                 </p>
                 <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-                  {user?.role === "ADMIN" ? "Administrateur" : "Membre"}
+                  {user?.role === "ADMIN"
+                    ? "Administrateur"
+                    : user?.isGroupMember
+                      ? "Membre"
+                      : "Solo"}
                 </p>
               </div>
             </div>

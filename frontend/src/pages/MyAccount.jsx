@@ -183,15 +183,20 @@ function MyAccount() {
           </div>
           <div className="flex gap-3">
             <span
-              className={`px-4 py-2 rounded-lg text-sm font-semibold ${user?.role === "ADMIN" ? "bg-purple-100 text-purple-700" : "bg-blue-100 text-blue-700"}`}
+              className={`px-4 py-2 rounded-lg text-sm font-semibold ${
+                user?.role === "ADMIN"
+                  ? "bg-purple-100 text-purple-700"
+                  : user?.isGroupMember
+                    ? "bg-green-100 text-green-700"
+                    : "bg-blue-100 text-blue-700"
+              }`}
             >
-              {user?.role === "ADMIN" ? "👑 Administrateur" : "� Membre"}
+              {user?.role === "ADMIN"
+                ? "👑 Administrateur"
+                : user?.isGroupMember
+                  ? "👥 Membre"
+                  : "📸 Solo"}
             </span>
-            {user?.isGroupMember && (
-              <span className="px-4 py-2 rounded-lg text-sm font-semibold bg-green-100 text-green-700">
-                👥 Membre du groupe
-              </span>
-            )}
           </div>
         </div>
 

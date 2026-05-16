@@ -369,7 +369,7 @@ function UsersManagement() {
                       }
                       className="w-full px-3 py-2 rounded-lg input-dark"
                     >
-                      <option value="STUDENT">Membre</option>
+                      <option value="STUDENT">Photographe</option>
                       <option value="ADMIN">Admin</option>
                     </select>
                   </div>
@@ -515,7 +515,7 @@ function UsersManagement() {
                       }
                       className="w-full px-3 py-2 rounded-lg input-dark"
                     >
-                      <option value="STUDENT">Membre</option>
+                      <option value="STUDENT">Photographe</option>
                       <option value="ADMIN">Admin</option>
                     </select>
                   </div>
@@ -660,7 +660,11 @@ function UsersManagement() {
                               : "#0000ff"),
                         }}
                       >
-                        {user.role === "ADMIN" ? "Admin" : "Membre"}
+                        {user.role === "ADMIN"
+                          ? "Admin"
+                          : user.is_group_member
+                            ? "Membre"
+                            : "Solo"}
                       </span>
                     </td>
                     <td className="p-3">
