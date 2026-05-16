@@ -145,7 +145,10 @@ function AdminDashboard() {
   const handleConfirmBooking = async (bookingId) => {
     try {
       await bookingsAPI.confirm(bookingId);
-      showToast("Réservation confirmée avec succès", "success");
+      showToast(
+        "✅ Réservation confirmée ! Email envoyé automatiquement.",
+        "success",
+      );
       loadPendingBookings();
       loadDashboardData();
     } catch (error) {
