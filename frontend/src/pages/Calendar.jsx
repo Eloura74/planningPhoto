@@ -52,7 +52,11 @@ function CalendarPage() {
       const response = await availabilityAPI.getSlots(startDate, endDate);
       let filteredSlots = response.data;
 
-      console.log("🔍 Créneaux reçus:", filteredSlots.length, filteredSlots);
+      console.log(
+        "🔍 [v2] Créneaux reçus:",
+        filteredSlots.length,
+        filteredSlots,
+      );
       console.log("🔍 User:", user);
 
       // DEBUG: Compter les créneaux groupe confirmés
