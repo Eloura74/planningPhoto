@@ -32,9 +32,12 @@ const getAllEvents = async () => {
     `SELECT e.*, u.name as creator_name 
      FROM events e 
      LEFT JOIN users u ON e.created_by = u.id 
-     ORDER BY e.start_date DESC`,
+     ORDER BY e.created_at DESC`,
   );
-  return result.rows;
+  return result.rows.map((event) => ({
+    ...event,
+    confirmed_dates: event.confirmed_dates || null,
+  }));
 };
 
 // Récupérer un événement par ID
@@ -54,9 +57,12 @@ const getOpenEvents = async () => {
   const result = await pool.query(
     `SELECT * FROM events 
      WHERE status IN ('OPEN', 'CONFIRMED') 
-     ORDER BY start_date ASC`,
+     ORDER BY created_at DESC`,
   );
-  return result.rows;
+  return result.rows.map((event) => ({
+    ...event,
+    confirmed_dates: event.confirmed_dates || null,
+  }));
 };
 
 // Voter pour des disponibilités
