@@ -135,6 +135,30 @@ const confirmEvent = async (eventId, confirmedDates, adminId) => {
     ["CONFIRMED", JSON.stringify(confirmedDates), eventId],
   );
 
+  // Créer des créneaux GROUP bloqués pour chaque date confirmée
+  for (const date of confirmedDates) {
+    const slotId = `slot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    // Créer un créneau GROUP pour toute la journée
+    await pool.query(
+      `INSERT INTO slots (id, date, start_time, end_time, type, status, capacity_min, capacity_max, modified_by, modification_reason)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+       ON CONFLICT DO NOTHING`,
+      [
+        slotId,
+        date,
+        "09:00",
+        "18:00",
+        "GROUP",
+        "CONFIRMED",
+        1,
+        20,
+        adminId,
+        `Créneau réservé pour l'événement ${eventId}`,
+      ],
+    );
+  }
+
   await createHistory(
     "EVENT",
     eventId,
