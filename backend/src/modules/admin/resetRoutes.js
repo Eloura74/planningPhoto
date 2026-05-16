@@ -15,6 +15,7 @@ router.post("/reset-all", authenticate, requireAdmin, async (req, res) => {
     await pool.query("DELETE FROM events");
     await pool.query("DELETE FROM slots");
     await pool.query("DELETE FROM history");
+    await pool.query("DELETE FROM unavailabilities");
 
     // Compter ce qui reste
     const counts = await Promise.all([
@@ -24,6 +25,7 @@ router.post("/reset-all", authenticate, requireAdmin, async (req, res) => {
       pool.query("SELECT COUNT(*) FROM events"),
       pool.query("SELECT COUNT(*) FROM slots"),
       pool.query("SELECT COUNT(*) FROM history"),
+      pool.query("SELECT COUNT(*) FROM unavailabilities"),
     ]);
 
     const result = {
@@ -33,6 +35,7 @@ router.post("/reset-all", authenticate, requireAdmin, async (req, res) => {
       events: parseInt(counts[3].rows[0].count),
       slots: parseInt(counts[4].rows[0].count),
       history: parseInt(counts[5].rows[0].count),
+      unavailabilities: parseInt(counts[6].rows[0].count),
     };
 
     console.log("✅ Nettoyage terminé:", result);
