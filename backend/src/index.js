@@ -25,6 +25,7 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/availability", availabilityRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/admin/reset", require("./modules/admin/resetRoutes"));
 
 const PORT = process.env.PORT || 5000;
 
