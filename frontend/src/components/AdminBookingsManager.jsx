@@ -28,10 +28,20 @@ function AdminBookingsManager() {
       const response = await bookingsAPI.getAll();
       console.log("📋 All bookings:", response.data);
 
+      // Filtrer les réservations actives (non annulées)
+      const activeBookings = response.data.filter(
+        (booking) =>
+          booking.status !== "CANCELLED_BY_ADMIN" &&
+          booking.status !== "CANCELLED_BY_STUDENT" &&
+          booking.status !== "CANCELLED",
+      );
+
+      console.log("✅ Active bookings:", activeBookings);
+
       // Regrouper par créneau (date + heure)
       const grouped = {};
 
-      response.data.forEach((booking) => {
+      activeBookings.forEach((booking) => {
         const key = `${booking.slot_date}_${booking.slot_start_time}_${booking.slot_end_time}`;
 
         if (!grouped[key]) {
@@ -54,6 +64,7 @@ function AdminBookingsManager() {
         (a, b) => new Date(a.date) - new Date(b.date),
       );
 
+      console.log("📊 Grouped bookings:", bookingsArray);
       setBookings(bookingsArray);
     } catch (error) {
       console.error("Error loading bookings:", error);
