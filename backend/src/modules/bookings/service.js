@@ -395,6 +395,52 @@ const confirmBooking = async (bookingId, adminId) => {
   const booking = bookingResult.rows[0];
 
   if (isGroupPrebooking) {
+    // VÉRIFICATION : Limite de 2 réservations groupe confirmées par mois
+    const slot = await pool.query("SELECT * FROM slots WHERE id = $1", [
+      booking.slot_id,
+    ]);
+
+    if (slot.rows.length > 0) {
+      const slotData = slot.rows[0];
+      const slotDate = new Date(slotData.date);
+      const monthStart = new Date(
+        slotDate.getFullYear(),
+        slotDate.getMonth(),
+        1,
+      );
+      const monthEnd = new Date(
+        slotDate.getFullYear(),
+        slotDate.getMonth() + 1,
+        0,
+      );
+
+      // Compter les réservations groupe CONFIRMÉES de cet utilisateur pour ce mois
+      const confirmedGroupBookings = await pool.query(
+        `SELECT COUNT(*) as count FROM bookings b
+         JOIN slots s ON b.slot_id = s.id
+         WHERE b.user_id = $1 
+         AND s.type = 'GROUP'
+         AND b.status = 'CONFIRMED'
+         AND s.date >= $2 
+         AND s.date <= $3`,
+        [
+          booking.user_id,
+          monthStart.toISOString().split("T")[0],
+          monthEnd.toISOString().split("T")[0],
+        ],
+      );
+
+      const currentConfirmedCount = parseInt(
+        confirmedGroupBookings.rows[0].count,
+      );
+
+      if (currentConfirmedCount >= 2) {
+        throw new Error(
+          "Cet utilisateur a déjà 2 réservations groupe confirmées ce mois-ci (limite atteinte)",
+        );
+      }
+    }
+
     // Confirmer une pré-réservation groupe
     await pool.query(
       "UPDATE group_prebookings SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2",
