@@ -1,0 +1,20 @@
+[33m3327dc0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m test
+[33ma3831b1[m change cahier charge
+[33mc9293b4[m error gpe
+[33m32629e1[m error prereservaqtion groupe
+[33mb9aeebb[m delete resa
+[33mc18f6c0[m resfresh
+[33mbee1c6a[m email cancel
+[33m61ff854[m responsive
+[33m4eb6a48[m error indispo
+[33meb9da27[m roiute backend indispo
+[33m6871ab7[m peridoe indispo
+[33m9acabed[m indçispo correction
+[33m6324d94[m bravo api
+[33mc59a61e[m Add resend package to dependencies
+[33maad9e68[m Switch from Gmail SMTP to Resend API for email delivery on Render
+[33m835ef8b[m Fix: Use port 587 for Gmail SMTP to avoid timeout on Render
+[33m1cdde5a[m Debug: Add comprehensive logging for email sending flow
+[33m7a35f6d[m Fix: Remove undefined email functions for booking cancellation
+[33mf6f20ca[m Debug: Add extensive logging for email sending and booking deletion
+[33m6202f96[m UX: Update confirmation toast to indicate automatic email sending
