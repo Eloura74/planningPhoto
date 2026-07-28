@@ -8,6 +8,10 @@ import BookingModal from "../components/BookingModal";
 import LoadingSpinner from "../components/LoadingSpinner";
 import SlotDetailsModal from "../components/SlotDetailsModal";
 
+// Logger conditionnel (seulement en développement)
+const DEBUG = import.meta.env.DEV;
+const log = (...args) => DEBUG && console.log(...args);
+
 function CalendarPage() {
   const [slots, setSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -29,10 +33,10 @@ function CalendarPage() {
   )
     .toISOString()
     .split("T")[0];
-  // Charger 3 mois à l'avance
+  // Charger 4 mois (mois actuel + 3 suivants)
   const endDate = new Date(
     currentMonth.getFullYear(),
-    currentMonth.getMonth() + 3,
+    currentMonth.getMonth() + 4,
     0,
   )
     .toISOString()
@@ -52,19 +56,16 @@ function CalendarPage() {
       const response = await availabilityAPI.getSlots(startDate, endDate);
       let filteredSlots = response.data;
 
-      console.log(
-        "🔍 [v2] Créneaux reçus:",
-        filteredSlots.length,
-        filteredSlots,
-      );
-      console.log("🔍 User:", user);
+      // ✅ FIX 3: Logger conditionnel (seulement en dev)
+      log("🔍 [v2] Créneaux reçus:", filteredSlots.length, filteredSlots);
+      log("🔍 User:", user);
 
       // DEBUG: Compter les créneaux groupe confirmés
       const groupConfirmed = filteredSlots.filter(
         (s) =>
           s.status === "GROUP_CONFIRMED" || s.status === "BLOCKED_FOR_GROUP",
       );
-      console.log(
+      log(
         "🔍 Créneaux GROUPE CONFIRMÉS:",
         groupConfirmed.length,
         groupConfirmed.map((s) => s.date),
@@ -75,7 +76,7 @@ function CalendarPage() {
         const d = new Date(s.date + "T00:00:00");
         return d.getDay() === 2 || d.getDay() === 4;
       });
-      console.log(
+      log(
         "🔍 Mardis/Jeudis:",
         tuesdaysThursdays.length,
         tuesdaysThursdays.map((s) => ({
@@ -91,7 +92,7 @@ function CalendarPage() {
         (s) => s.date === "2026-05-06" && s.start_time === "14:00",
       );
       if (slot6mai) {
-        console.log("🔍 SLOT 6 MAI 14:00:", {
+        log("🔍 SLOT 6 MAI 14:00:", {
           id: slot6mai.id,
           status: slot6mai.status,
           type: slot6mai.type,
@@ -138,15 +139,12 @@ function CalendarPage() {
         );
       }
 
-      console.log(
-        "🔍 Créneaux après filtrage:",
-        filteredSlots.length,
-        filteredSlots,
-      );
+      log("🔍 Créneaux après filtrage:", filteredSlots.length, filteredSlots);
 
       setSlots(filteredSlots);
     } catch (error) {
       console.error("Error loading slots:", error);
+      showToast("Erreur lors du chargement du calendrier", "error");
     } finally {
       setLoading(false);
     }
@@ -154,38 +152,19 @@ function CalendarPage() {
 
   const loadMyBookings = async () => {
     try {
-      const response = await bookingsAPI.getMyBookings();
-      const myBookingsData = response.data;
+      // ✅ FIX 1: Utiliser endpoint groupé pour éviter N+1 queries
+      const [bookingsResponse, groupPrebookingsResponse] = await Promise.all([
+        bookingsAPI.getMyBookings(),
+        bookingsAPI.getMyGroupPrebookings(),
+      ]);
 
-      // Charger aussi les pré-réservations groupe
-      const now = new Date();
-      const start = now.toISOString().split("T")[0];
-      const end = new Date(now.getFullYear(), now.getMonth() + 3, 0)
-        .toISOString()
-        .split("T")[0];
-      const slotsResponse = await slotsAPI.getAll(start, end);
-
-      const groupPrebookings = [];
-      for (const slot of slotsResponse.data.filter((s) => s.type === "GROUP")) {
-        try {
-          const participants = await bookingsAPI.getGroupPrebookings(slot.id);
-          const myPrebooking = participants.data.find(
-            (p) => p.user_id === user?.id,
-          );
-          if (myPrebooking) {
-            groupPrebookings.push({
-              slot_id: slot.id,
-              status: "GROUP_PREBOOKING",
-            });
-          }
-        } catch (e) {
-          // Slot sans participants
-        }
-      }
-
-      setMyBookings([...myBookingsData, ...groupPrebookings]);
+      setMyBookings([
+        ...bookingsResponse.data,
+        ...groupPrebookingsResponse.data,
+      ]);
     } catch (error) {
       console.error("Error loading bookings:", error);
+      showToast("Erreur lors du chargement de vos réservations", "error");
     }
   };
 
@@ -194,13 +173,21 @@ function CalendarPage() {
   };
 
   const handleBookSolo = async (slotId) => {
+    // ✅ FIX 2: Optimistic UI update
+    const optimisticSlots = slots.map((s) =>
+      s.id === slotId ? { ...s, status: "SOLO_PENDING" } : s,
+    );
+    setSlots(optimisticSlots);
+    setSelectedSlot(null);
+
     try {
       await bookingsAPI.createSolo(slotId);
-      setSelectedSlot(null);
-      loadSlots();
-      loadMyBookings();
+      // Recharger pour avoir l'état réel
+      await Promise.all([loadSlots(), loadMyBookings()]);
       showToast("Réservation créée avec succès", "success");
     } catch (error) {
+      // Rollback en cas d'erreur
+      loadSlots();
       showToast(
         error.response?.data?.error || "Erreur lors de la réservation",
         "error",
@@ -209,13 +196,27 @@ function CalendarPage() {
   };
 
   const handleBookGroup = async (slotId) => {
+    // ✅ FIX 2: Optimistic UI update
+    const optimisticSlots = slots.map((s) =>
+      s.id === slotId
+        ? {
+            ...s,
+            status: "GROUP_PREBOOKING",
+            group_prebooking_count: (s.group_prebooking_count || 0) + 1,
+          }
+        : s,
+    );
+    setSlots(optimisticSlots);
+    setSelectedSlot(null);
+
     try {
       await bookingsAPI.createGroup(slotId);
-      setSelectedSlot(null);
-      loadSlots();
-      loadMyBookings();
+      // Recharger pour avoir l'état réel
+      await Promise.all([loadSlots(), loadMyBookings()]);
       showToast("Pré-réservation créée avec succès", "success");
     } catch (error) {
+      // Rollback en cas d'erreur
+      loadSlots();
       showToast(
         error.response?.data?.error || "Erreur lors de la pré-réservation",
         "error",
@@ -226,8 +227,8 @@ function CalendarPage() {
   const handleCancelBooking = async (bookingId) => {
     try {
       await bookingsAPI.cancel(bookingId);
-      loadSlots();
-      loadMyBookings();
+      // Recharger pour avoir l'état réel
+      await Promise.all([loadSlots(), loadMyBookings()]);
       showToast("Réservation annulée avec succès", "success");
     } catch (error) {
       showToast(
@@ -238,12 +239,15 @@ function CalendarPage() {
   };
 
   const getSlotStatus = (slot) => {
-    // Si le slot est déjà confirmé (SOLO_CONFIRMED ou GROUP_CONFIRMED), garder ce statut
-    if (slot.status === "SOLO_CONFIRMED" || slot.status === "GROUP_CONFIRMED") {
-      // DEBUG
-      if (slot.date === "2026-05-06" && slot.start_time === "14:00") {
-        console.log("✅ 6 MAI: Statut confirmé détecté:", slot.status);
-      }
+    // Garder les statuts système importants qui définissent la couleur
+    if (
+      slot.status === "SOLO_CONFIRMED" ||
+      slot.status === "GROUP_CONFIRMED" ||
+      slot.status === "BLOCKED_FOR_GROUP" ||
+      slot.status === "OPEN_TUESDAY" ||
+      slot.status === "GROUP_PREBOOKING" ||
+      slot.status === "MIXED"
+    ) {
       return slot.status;
     }
 
@@ -263,7 +267,7 @@ function CalendarPage() {
       (b) => b.slot_id === slot.id && b.status === "GROUP_PREBOOKING",
     );
     if (groupPrebooking) {
-      return "BOOKED"; // Déjà pré-réservé
+      return "BOOKED";
     }
 
     return slot.status;
@@ -274,6 +278,7 @@ function CalendarPage() {
       case "OPEN_SOLO":
         return "#10b981"; // Vert émeraude élégant
       case "OPEN_TUESDAY":
+      case "MIXED":
       case "GROUP_PREBOOKING":
         return "#f59e0b"; // Orange doré (groupe disponible)
       case "BLOCKED_FOR_GROUP":

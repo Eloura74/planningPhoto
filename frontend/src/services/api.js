@@ -53,6 +53,7 @@ export const bookingsAPI = {
   createSolo: (slotId) => api.post("/bookings/solo", { slotId }),
   createGroup: (slotId) => api.post("/bookings/group", { slotId }),
   getMyBookings: () => api.get("/bookings/my"),
+  getMyGroupPrebookings: () => api.get("/bookings/my-group-prebookings"),
   getBySlot: (slotId) => api.get(`/bookings/slot/${slotId}`),
   getGroupPrebookings: (slotId) => api.get(`/bookings/group/${slotId}`),
   confirm: (id) => api.patch(`/bookings/${id}/confirm`),

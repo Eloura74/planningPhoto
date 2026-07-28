@@ -124,6 +124,36 @@ router.get("/my", authenticate, async (req, res) => {
   }
 });
 
+// Endpoint groupé pour récupérer toutes les pré-réservations groupe de l'utilisateur
+// Résout le problème N+1 queries (1 requête au lieu de N requêtes par slot)
+router.get("/my-group-prebookings", authenticate, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT 
+        gp.id,
+        gp.slot_id,
+        gp.created_at,
+        s.date,
+        s.start_time,
+        s.end_time,
+        s.type,
+        s.status,
+        'GROUP_PREBOOKING' as status
+      FROM group_prebookings gp
+      JOIN slots s ON gp.slot_id = s.id
+      WHERE gp.user_id = $1
+      ORDER BY s.date ASC, s.start_time ASC
+    `,
+      [req.userId],
+    );
+
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 router.get("/pending", authenticate, requireAdmin, async (req, res) => {
   try {
     const { status } = req.query;
