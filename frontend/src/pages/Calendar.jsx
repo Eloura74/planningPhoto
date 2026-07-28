@@ -246,7 +246,8 @@ function CalendarPage() {
       slot.status === "BLOCKED_FOR_GROUP" ||
       slot.status === "OPEN_TUESDAY" ||
       slot.status === "GROUP_PREBOOKING" ||
-      slot.status === "MIXED"
+      slot.status === "MIXED" ||
+      slot.status === "SOLO_PENDING"
     ) {
       return slot.status;
     }
@@ -289,7 +290,8 @@ function CalendarPage() {
       case "BOOKED":
         return "var(--chrome-dark)";
       case "PENDING":
-        return "var(--gold-primary)";
+      case "SOLO_PENDING": // Demande solo en attente de validation admin
+        return "var(--gold-primary)"; // Doré pour attirer l'attention
       case "CANCELLED":
         return "#ef4444";
       default:
