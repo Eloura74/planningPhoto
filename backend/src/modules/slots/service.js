@@ -5,15 +5,25 @@ const { createHistory } = require("../common/historyService");
 const getAllSlots = async (startDate, endDate) => {
   try {
     console.log("getAllSlots appelé avec:", { startDate, endDate });
-    let query = "SELECT * FROM slots";
+    let query = `
+      SELECT s.*, 
+        COALESCE(
+          (SELECT COUNT(*) 
+           FROM bookings b 
+           WHERE b.slot_id = s.id 
+           AND b.status = 'REQUESTED'
+          ), 0
+        ) as pending_requests_count
+      FROM slots s
+    `;
     const params = [];
 
     if (startDate && endDate) {
-      query += " WHERE date >= $1 AND date <= $2";
+      query += " WHERE s.date >= $1 AND s.date <= $2";
       params.push(startDate, endDate);
     }
 
-    query += " ORDER BY date, start_time";
+    query += " ORDER BY s.date, s.start_time";
 
     const result = await pool.query(query, params);
     console.log(

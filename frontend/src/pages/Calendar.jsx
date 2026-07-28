@@ -270,6 +270,15 @@ function CalendarPage() {
       return "BOOKED";
     }
 
+    // Pour l'admin : afficher SOLO_PENDING si des demandes en attente
+    if (
+      user?.role === "ADMIN" &&
+      slot.pending_requests_count > 0 &&
+      slot.status === "OPEN_SOLO"
+    ) {
+      return "SOLO_PENDING";
+    }
+
     return slot.status;
   };
 
@@ -277,6 +286,8 @@ function CalendarPage() {
     switch (status) {
       case "OPEN_SOLO":
         return "#10b981"; // Vert émeraude élégant
+      case "SOLO_PENDING": // Admin: demandes en attente
+        return "#f59e0b"; // Orange (demandes à traiter)
       case "OPEN_TUESDAY":
       case "MIXED":
       case "GROUP_PREBOOKING":
@@ -288,10 +299,10 @@ function CalendarPage() {
       case "FULL":
       case "BOOKED":
         return "var(--chrome-dark)";
-      case "PENDING": // Ma propre demande en attente
+      case "PENDING": // Élève: ma propre demande en attente
         return "#ef4444"; // Rouge pour que l'élève voit sa demande
       case "CANCELLED":
-        return "#f97316"; // Orange pour annulé
+        return "#f97316"; // Orange clair pour annulé
       default:
         return "var(--chrome-medium)";
     }
@@ -490,7 +501,20 @@ function CalendarPage() {
                 Confirmé
               </span>
             </div>
-            {user?.role !== "ADMIN" && (
+            {user?.role === "ADMIN" ? (
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-3 h-3 sm:w-4 sm:h-4 rounded flex-shrink-0"
+                  style={{ backgroundColor: "#f59e0b" }}
+                ></div>
+                <span
+                  className="text-xs sm:text-sm"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  Demandes en attente
+                </span>
+              </div>
+            ) : (
               <div className="flex items-center gap-2">
                 <div
                   className="w-3 h-3 sm:w-4 sm:h-4 rounded flex-shrink-0"
