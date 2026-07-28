@@ -291,9 +291,9 @@ function CalendarPage() {
         return "var(--chrome-dark)";
       case "PENDING":
       case "SOLO_PENDING": // Demande solo en attente de validation admin
-        return "var(--gold-primary)"; // Doré pour attirer l'attention
+        return "#ef4444"; // Rouge pour attirer l'attention
       case "CANCELLED":
-        return "#ef4444";
+        return "#f97316"; // Orange pour annulé
       default:
         return "var(--chrome-medium)";
     }
@@ -492,6 +492,20 @@ function CalendarPage() {
                 Confirmé
               </span>
             </div>
+            {user?.role === "ADMIN" && (
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-3 h-3 sm:w-4 sm:h-4 rounded flex-shrink-0"
+                  style={{ backgroundColor: "#ef4444" }}
+                ></div>
+                <span
+                  className="text-xs sm:text-sm"
+                  style={{ color: "var(--text-secondary)" }}
+                >
+                  En attente validation
+                </span>
+              </div>
+            )}
             <div className="flex items-center gap-2">
               <div
                 className="w-3 h-3 sm:w-4 sm:h-4 rounded flex-shrink-0"
