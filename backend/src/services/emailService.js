@@ -228,10 +228,104 @@ const sendCancellationNotificationToAdmin = async (
   }
 };
 
+// Notifier l'admin d'une nouvelle demande de réservation solo
+const sendAdminNewSoloBookingNotification = async (
+  userName,
+  userEmail,
+  userPhone,
+  slotDate,
+  slotTime,
+) => {
+  const adminEmail = "fabien.licata@gmail.com";
+
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #d4af37;">🔔 Nouvelle Demande de Réservation Solo</h2>
+      <p>Bonjour Fabien,</p>
+      <p>Un élève vient de faire une demande de réservation solo.</p>
+      <div style="background-color: #f0f9ff; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #d4af37;">
+        <p><strong>👤 Élève :</strong> ${userName}</p>
+        <p><strong>📧 Email :</strong> ${userEmail}</p>
+        ${userPhone ? `<p><strong>📱 Téléphone :</strong> ${userPhone}</p>` : ""}
+        <p><strong>📅 Date :</strong> ${new Date(slotDate).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
+        <p><strong>🕐 Horaire :</strong> ${slotTime}</p>
+      </div>
+      <p>Connectez-vous au dashboard pour valider ou refuser cette demande.</p>
+      <p style="color: #666; font-size: 12px; margin-top: 30px;">
+        Cet email a été envoyé automatiquement, merci de ne pas y répondre.
+      </p>
+    </div>
+  `;
+
+  try {
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.sender = { name: FROM_NAME, email: FROM_EMAIL };
+    sendSmtpEmail.to = [{ email: adminEmail, name: "Fabien Licata" }];
+    sendSmtpEmail.subject =
+      "🔔 Nouvelle demande de réservation solo - Planning Photo";
+    sendSmtpEmail.htmlContent = htmlContent;
+
+    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log("✅ Email de notification envoyé à l'admin:", adminEmail);
+    console.log("✅ Message ID:", data.messageId);
+  } catch (error) {
+    console.error("❌ Erreur envoi email admin:", error.message);
+  }
+};
+
+// Notifier l'admin d'une nouvelle pré-réservation groupe
+const sendAdminNewGroupPrebookingNotification = async (
+  userName,
+  userEmail,
+  userPhone,
+  slotDate,
+  slotTime,
+  currentParticipants,
+) => {
+  const adminEmail = "fabien.licata@gmail.com";
+
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #f59e0b;">👥 Nouvelle Pré-réservation Groupe</h2>
+      <p>Bonjour Fabien,</p>
+      <p>Un membre du groupe vient de se pré-inscrire à une séance.</p>
+      <div style="background-color: #fffbeb; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+        <p><strong>👤 Membre :</strong> ${userName}</p>
+        <p><strong>📧 Email :</strong> ${userEmail}</p>
+        ${userPhone ? `<p><strong>📱 Téléphone :</strong> ${userPhone}</p>` : ""}
+        <p><strong>📅 Date :</strong> ${new Date(slotDate).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
+        <p><strong>🕐 Horaire :</strong> ${slotTime}</p>
+        <p><strong>👥 Participants actuels :</strong> ${currentParticipants}/5</p>
+      </div>
+      ${currentParticipants >= 3 ? '<p style="color: #10b981; font-weight: bold;">✅ Seuil minimum atteint (3 participants) - Vous pouvez valider la séance !</p>' : '<p style="color: #ef4444; font-weight: bold;">⚠️ Seuil minimum non atteint - Attendez plus de participants avant validation.</p>'}
+      <p>Connectez-vous au dashboard pour gérer les pré-réservations.</p>
+      <p style="color: #666; font-size: 12px; margin-top: 30px;">
+        Cet email a été envoyé automatiquement, merci de ne pas y répondre.
+      </p>
+    </div>
+  `;
+
+  try {
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.sender = { name: FROM_NAME, email: FROM_EMAIL };
+    sendSmtpEmail.to = [{ email: adminEmail, name: "Fabien Licata" }];
+    sendSmtpEmail.subject = `👥 Nouvelle pré-réservation groupe (${currentParticipants}/5) - Planning Photo`;
+    sendSmtpEmail.htmlContent = htmlContent;
+
+    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log("✅ Email groupe envoyé à l'admin:", adminEmail);
+    console.log("✅ Message ID:", data.messageId);
+  } catch (error) {
+    console.error("❌ Erreur envoi email admin groupe:", error.message);
+  }
+};
+
 module.exports = {
   sendSoloBookingConfirmation,
   sendGroupBookingConfirmation,
   sendEventConfirmation,
   sendCancellationByAdmin,
   sendCancellationNotificationToAdmin,
+  sendAdminNewSoloBookingNotification,
+  sendAdminNewGroupPrebookingNotification,
 };

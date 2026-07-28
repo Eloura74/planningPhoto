@@ -6,7 +6,15 @@ const {
   sendGroupBookingConfirmation,
   sendCancellationByAdmin,
   sendCancellationNotificationToAdmin,
+  sendAdminNewSoloBookingNotification,
+  sendAdminNewGroupPrebookingNotification,
 } = require("../../services/emailService");
+
+const {
+  notifyAdminNewSoloBooking,
+  notifyAdminNewGroupPrebooking,
+  notifyAdminCancellation,
+} = require("../../services/whatsappService");
 
 const getUserWeeklyBookings = async (userId, startDate, endDate) => {
   const result = await pool.query(
@@ -182,7 +190,29 @@ const createSoloBooking = async (userId, slotId) => {
       "Demande de réservation solo créée",
     );
 
-    // L'email sera envoyé quand l'admin confirmera la réservation
+    // Notifier l'admin de la nouvelle demande
+    try {
+      const userData = await pool.query(
+        "SELECT name, email, phone FROM users WHERE id = $1",
+        [userId],
+      );
+      const user = userData.rows[0];
+      const slotTime = `${slotData.start_time} - ${slotData.end_time}`;
+
+      await sendAdminNewSoloBookingNotification(
+        user.name,
+        user.email,
+        user.phone,
+        slotData.date,
+        slotTime,
+      );
+
+      // WhatsApp
+      await notifyAdminNewSoloBooking(user.name, slotData.date, slotTime);
+    } catch (emailError) {
+      console.error("❌ Erreur envoi notifications admin:", emailError.message);
+      // Ne pas bloquer la réservation si les notifications échouent
+    }
 
     console.log("Réservation créée avec succès:", result.rows[0]);
     return result.rows[0];
@@ -344,6 +374,40 @@ const createGroupPrebooking = async (userId, slotId) => {
     null,
     "Pré-réservation groupe créée",
   );
+
+  // Notifier l'admin de la nouvelle pré-réservation groupe
+  try {
+    const userData = await pool.query(
+      "SELECT name, email, phone FROM users WHERE id = $1",
+      [userId],
+    );
+    const user = userData.rows[0];
+    const slotTime = `${slotData.start_time} - ${slotData.end_time}`;
+    const newCount = count; // Nombre de participants après cette inscription
+
+    await sendAdminNewGroupPrebookingNotification(
+      user.name,
+      user.email,
+      user.phone,
+      slotData.date,
+      slotTime,
+      newCount,
+    );
+
+    // WhatsApp
+    await notifyAdminNewGroupPrebooking(
+      user.name,
+      slotData.date,
+      slotTime,
+      newCount,
+    );
+  } catch (emailError) {
+    console.error(
+      "❌ Erreur envoi notifications admin groupe:",
+      emailError.message,
+    );
+    // Ne pas bloquer la pré-réservation si les notifications échouent
+  }
 
   return { id: prebookingId, userId, slotId };
 };
