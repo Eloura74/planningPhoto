@@ -272,7 +272,7 @@ const createGroupPrebooking = async (userId, slotId) => {
             "GROUP",
             "BLOCKED_FOR_GROUP",
             3,
-            5,
+            999,
           ],
         );
       } catch (error) {
@@ -330,15 +330,13 @@ const createGroupPrebooking = async (userId, slotId) => {
     throw new Error("Already pre-booked for this slot");
   }
 
-  // Vérifier le nombre de participants (max 5)
+  // Pas de limite de participants - l'admin décide
   const currentPrebookings = await pool.query(
     "SELECT COUNT(*) as count FROM group_prebookings WHERE slot_id = $1",
     [slotId],
   );
   const currentCount = parseInt(currentPrebookings.rows[0].count);
-  if (currentCount >= 5) {
-    throw new Error("Ce créneau est complet (maximum 5 participants)");
-  }
+  // Limite supprimée - le groupe peut grandir selon les besoins de l'admin
 
   const prebookingId = uuidv4();
   await pool.query(

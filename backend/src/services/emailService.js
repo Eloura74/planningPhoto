@@ -295,9 +295,9 @@ const sendAdminNewGroupPrebookingNotification = async (
         ${userPhone ? `<p><strong>📱 Téléphone :</strong> ${userPhone}</p>` : ""}
         <p><strong>📅 Date :</strong> ${new Date(slotDate).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
         <p><strong>🕐 Horaire :</strong> ${slotTime}</p>
-        <p><strong>👥 Participants actuels :</strong> ${currentParticipants}/5</p>
+        <p><strong>👥 Participants actuels :</strong> ${currentParticipants}</p>
       </div>
-      ${currentParticipants >= 3 ? '<p style="color: #10b981; font-weight: bold;">✅ Seuil minimum atteint (3 participants) - Vous pouvez valider la séance !</p>' : '<p style="color: #ef4444; font-weight: bold;">⚠️ Seuil minimum non atteint - Attendez plus de participants avant validation.</p>'}
+      ${currentParticipants >= 3 ? '<p style="color: #10b981; font-weight: bold;">✅ Seuil minimum atteint (3 participants) - Vous pouvez valider la séance !</p>' : '<p style="color: #ef4444; font-weight: bold;">⚠️ Seuil minimum non atteint (${currentParticipants}/3) - Attendez plus de participants avant validation.</p>'}
       <p>Connectez-vous au dashboard pour gérer les pré-réservations.</p>
       <p style="color: #666; font-size: 12px; margin-top: 30px;">
         Cet email a été envoyé automatiquement, merci de ne pas y répondre.
@@ -309,7 +309,7 @@ const sendAdminNewGroupPrebookingNotification = async (
     const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
     sendSmtpEmail.sender = { name: FROM_NAME, email: FROM_EMAIL };
     sendSmtpEmail.to = [{ email: adminEmail, name: "Fabien Licata" }];
-    sendSmtpEmail.subject = `👥 Nouvelle pré-réservation groupe (${currentParticipants}/5) - Planning Photo`;
+    sendSmtpEmail.subject = `👥 Nouvelle pré-réservation groupe (${currentParticipants} participants) - Planning Photo`;
     sendSmtpEmail.htmlContent = htmlContent;
 
     const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
