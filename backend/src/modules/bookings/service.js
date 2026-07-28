@@ -158,13 +158,14 @@ const createSoloBooking = async (userId, slotId) => {
       throw new Error("Vous avez déjà une réservation solo pour cette date");
     }
 
-    const existingBooking = await pool.query(
-      "SELECT * FROM bookings WHERE slot_id = $1 AND status NOT IN ('CANCELLED', 'CANCELLED_BY_ADMIN', 'CANCELLED_BY_STUDENT')",
+    // Vérifier qu'il n'y a pas déjà une réservation CONFIRMÉE
+    const existingConfirmedBooking = await pool.query(
+      "SELECT * FROM bookings WHERE slot_id = $1 AND status = 'CONFIRMED'",
       [slotId],
     );
 
-    if (existingBooking.rows.length > 0) {
-      throw new Error("Slot already booked");
+    if (existingConfirmedBooking.rows.length > 0) {
+      throw new Error("Ce créneau est déjà confirmé pour un autre élève");
     }
 
     const bookingId = uuidv4();
@@ -173,10 +174,8 @@ const createSoloBooking = async (userId, slotId) => {
       [bookingId, userId, slotId, "REQUESTED"],
     );
 
-    await pool.query("UPDATE slots SET status = $1 WHERE id = $2", [
-      "SOLO_PENDING",
-      slotId,
-    ]);
+    // Ne plus bloquer le slot - rester en OPEN_SOLO pour permettre d'autres demandes
+    // Le slot ne change de statut que quand l'admin valide une demande
     await createHistory(
       "BOOKING",
       bookingId,
@@ -513,6 +512,12 @@ const confirmBooking = async (bookingId, adminId) => {
     await pool.query(
       "UPDATE bookings SET status = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2",
       ["CONFIRMED", bookingId],
+    );
+
+    // Refuser automatiquement toutes les autres demandes sur ce même créneau
+    await pool.query(
+      "UPDATE bookings SET status = 'CANCELLED_BY_ADMIN', updated_at = CURRENT_TIMESTAMP WHERE slot_id = $1 AND id != $2 AND status = 'REQUESTED'",
+      [booking.slot_id, bookingId],
     );
   }
 

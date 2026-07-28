@@ -246,8 +246,7 @@ function CalendarPage() {
       slot.status === "BLOCKED_FOR_GROUP" ||
       slot.status === "OPEN_TUESDAY" ||
       slot.status === "GROUP_PREBOOKING" ||
-      slot.status === "MIXED" ||
-      slot.status === "SOLO_PENDING"
+      slot.status === "MIXED"
     ) {
       return slot.status;
     }
@@ -289,9 +288,8 @@ function CalendarPage() {
       case "FULL":
       case "BOOKED":
         return "var(--chrome-dark)";
-      case "PENDING":
-      case "SOLO_PENDING": // Demande solo en attente de validation admin
-        return "#ef4444"; // Rouge pour attirer l'attention
+      case "PENDING": // Ma propre demande en attente
+        return "#ef4444"; // Rouge pour que l'élève voit sa demande
       case "CANCELLED":
         return "#f97316"; // Orange pour annulé
       default:
@@ -492,7 +490,7 @@ function CalendarPage() {
                 Confirmé
               </span>
             </div>
-            {user?.role === "ADMIN" && (
+            {user?.role !== "ADMIN" && (
               <div className="flex items-center gap-2">
                 <div
                   className="w-3 h-3 sm:w-4 sm:h-4 rounded flex-shrink-0"
@@ -502,7 +500,7 @@ function CalendarPage() {
                   className="text-xs sm:text-sm"
                   style={{ color: "var(--text-secondary)" }}
                 >
-                  En attente validation
+                  Ma demande en attente
                 </span>
               </div>
             )}
