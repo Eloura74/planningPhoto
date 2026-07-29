@@ -287,7 +287,7 @@ function CalendarPage() {
       case "OPEN_SOLO":
         return "#10b981"; // Vert émeraude élégant
       case "SOLO_PENDING": // Admin: demandes en attente
-        return "#f59e0b"; // Orange (demandes à traiter)
+        return "#ef4444"; // Rouge (demandes à traiter)
       case "OPEN_TUESDAY":
       case "MIXED":
       case "GROUP_PREBOOKING":
@@ -298,7 +298,7 @@ function CalendarPage() {
         return "#8b5cf6"; // Violet élégant (confirmé)
       case "FULL":
       case "BOOKED":
-        return "var(--chrome-dark)";
+        return "#6b7280"; // Gris plus visible
       case "PENDING": // Élève: ma propre demande en attente
         return "#ef4444"; // Rouge pour que l'élève voit sa demande
       case "CANCELLED":
@@ -474,7 +474,7 @@ function CalendarPage() {
                 className="text-xs sm:text-sm"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Disponible solo
+                Disponible
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -505,7 +505,7 @@ function CalendarPage() {
               <div className="flex items-center gap-2">
                 <div
                   className="w-3 h-3 sm:w-4 sm:h-4 rounded flex-shrink-0"
-                  style={{ backgroundColor: "#f59e0b" }}
+                  style={{ backgroundColor: "#ef4444" }}
                 ></div>
                 <span
                   className="text-xs sm:text-sm"
@@ -531,7 +531,7 @@ function CalendarPage() {
             <div className="flex items-center gap-2">
               <div
                 className="w-3 h-3 sm:w-4 sm:h-4 rounded flex-shrink-0"
-                style={{ backgroundColor: "var(--chrome-dark)" }}
+                style={{ backgroundColor: "#6b7280" }}
               ></div>
               <span
                 className="text-xs sm:text-sm"
