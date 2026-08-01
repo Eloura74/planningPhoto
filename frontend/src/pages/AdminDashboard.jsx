@@ -619,12 +619,21 @@ function AdminDashboard() {
                     />
                   </svg>
                 </div>
-                <h2
-                  className="text-2xl font-bold"
-                  style={{ color: "var(--gold-primary)" }}
-                >
-                  Réservations Solo
-                </h2>
+                <div>
+                  <h2
+                    className="text-2xl font-bold"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    Gestion des Réservations
+                  </h2>
+                  <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+                    {
+                      pendingBookings.filter((b) => b.status === "REQUESTED")
+                        .length
+                    }{" "}
+                    demande(s) en attente de validation
+                  </p>
+                </div>
                 <span
                   className="px-3 py-1 rounded-full text-sm font-medium"
                   style={{
@@ -632,7 +641,7 @@ function AdminDashboard() {
                     color: "var(--gold-primary)",
                   }}
                 >
-                  {pendingBookings.length}
+                  {pendingBookings.length} total
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -681,8 +690,8 @@ function AdminDashboard() {
                     key={booking.id}
                     className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 hover:shadow-md transition"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center">
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
                         <svg
                           className="w-6 h-6 text-indigo-600"
                           fill="none"
@@ -697,28 +706,103 @@ function AdminDashboard() {
                           />
                         </svg>
                       </div>
-                      <div>
-                        <p className="font-semibold text-gray-900">
-                          {booking.user_name || "Photographe"}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {new Date(booking.slot_date).toLocaleDateString(
-                            "fr-FR",
-                            {
-                              weekday: "short",
-                              day: "numeric",
-                              month: "short",
-                            },
-                          )}{" "}
-                          {booking.start_time &&
-                            booking.end_time &&
-                            `- ${booking.start_time} - ${booking.end_time}`}
-                        </p>
-                        <span
-                          className={`inline-block px-2 py-1 rounded text-xs font-medium mt-1 ${statusColors[booking.status] || "bg-gray-100 text-gray-800"}`}
-                        >
-                          {statusLabels[booking.status] || booking.status}
-                        </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-semibold text-gray-900">
+                            {booking.user_name || "Photographe"}
+                          </p>
+                          <span
+                            className={`inline-block px-2 py-1 rounded text-xs font-medium ${statusColors[booking.status] || "bg-gray-100 text-gray-800"}`}
+                          >
+                            {statusLabels[booking.status] || booking.status}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+                          <div className="flex items-center gap-1">
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                            <span>
+                              {new Date(booking.slot_date).toLocaleDateString(
+                                "fr-FR",
+                                {
+                                  weekday: "short",
+                                  day: "numeric",
+                                  month: "short",
+                                  year: "numeric",
+                                },
+                              )}
+                            </span>
+                          </div>
+                          {booking.start_time && booking.end_time && (
+                            <div className="flex items-center gap-1">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                              <span>
+                                {booking.start_time} - {booking.end_time}
+                              </span>
+                            </div>
+                          )}
+                          {booking.user_email && (
+                            <div className="flex items-center gap-1">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                />
+                              </svg>
+                              <span className="truncate">
+                                {booking.user_email}
+                              </span>
+                            </div>
+                          )}
+                          {booking.user_phone && (
+                            <div className="flex items-center gap-1">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                                />
+                              </svg>
+                              <span>{booking.user_phone}</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
