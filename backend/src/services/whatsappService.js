@@ -107,9 +107,32 @@ const notifyAdminCancellation = async (userName, slotDate, slotTime, type) => {
   await sendWhatsAppNotification(message);
 };
 
+/**
+ * Notifier l'admin d'une nouvelle inscription
+ */
+const notifyAdminNewUserRegistration = async (
+  userName,
+  userEmail,
+  isGroupMember,
+) => {
+  const groupStatus = isGroupMember
+    ? "✅ Membre du groupe"
+    : "❌ Non membre du groupe";
+
+  const message =
+    `👤 *Nouvelle Inscription*\n\n` +
+    `👤 Nom: ${userName}\n` +
+    `📧 Email: ${userEmail}\n` +
+    `👥 ${groupStatus}\n\n` +
+    `Le nouveau membre peut maintenant réserver des créneaux.`;
+
+  await sendWhatsAppNotification(message);
+};
+
 module.exports = {
   sendWhatsAppNotification,
   notifyAdminNewSoloBooking,
   notifyAdminNewGroupPrebooking,
   notifyAdminCancellation,
+  notifyAdminNewUserRegistration,
 };

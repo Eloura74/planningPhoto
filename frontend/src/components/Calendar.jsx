@@ -147,7 +147,7 @@ function Calendar({ slots, onSlotClick, getSlotStatus, getSlotColor }) {
                         className="text-[10px] md:text-xs font-semibold"
                         style={{ color: "var(--text-primary)" }}
                       >
-                        {slot.start_time}
+                        {slot.type === "SOLO" ? "10:00-17:00" : slot.start_time}
                       </div>
                       <div
                         className="text-[10px] md:text-xs hidden md:block"

@@ -320,6 +320,51 @@ const sendAdminNewGroupPrebookingNotification = async (
   }
 };
 
+// Notifier l'admin d'une nouvelle inscription
+const sendAdminNewUserRegistration = async (
+  userName,
+  userEmail,
+  userPhone,
+  isGroupMember,
+) => {
+  const adminEmail = "fabien.licata@gmail.com";
+
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #10b981;">👤 Nouvelle Inscription</h2>
+      <p>Bonjour Fabien,</p>
+      <p>Un nouveau membre vient de s'inscrire sur la plateforme Planning Photo.</p>
+      <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
+        <p><strong>👤 Nom :</strong> ${userName}</p>
+        <p><strong>📧 Email :</strong> ${userEmail}</p>
+        ${userPhone ? `<p><strong>📱 Téléphone :</strong> ${userPhone}</p>` : ""}
+        <p><strong>👥 Membre du groupe :</strong> ${isGroupMember ? "Oui ✅" : "Non"}</p>
+      </div>
+      <p>Le nouveau membre peut maintenant se connecter et réserver des créneaux.</p>
+      <p style="color: #666; font-size: 12px; margin-top: 30px;">
+        Cet email a été envoyé automatiquement, merci de ne pas y répondre.
+      </p>
+    </div>
+  `;
+
+  try {
+    const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+    sendSmtpEmail.sender = { name: FROM_NAME, email: FROM_EMAIL };
+    sendSmtpEmail.to = [{ email: adminEmail, name: "Fabien Licata" }];
+    sendSmtpEmail.subject = `👤 Nouvelle inscription - ${userName} - Planning Photo`;
+    sendSmtpEmail.htmlContent = htmlContent;
+
+    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log("✅ Email nouvelle inscription envoyé à l'admin:", adminEmail);
+    console.log("✅ Message ID:", data.messageId);
+  } catch (error) {
+    console.error(
+      "❌ Erreur envoi email admin nouvelle inscription:",
+      error.message,
+    );
+  }
+};
+
 module.exports = {
   sendSoloBookingConfirmation,
   sendGroupBookingConfirmation,
@@ -328,4 +373,5 @@ module.exports = {
   sendCancellationNotificationToAdmin,
   sendAdminNewSoloBookingNotification,
   sendAdminNewGroupPrebookingNotification,
+  sendAdminNewUserRegistration,
 };

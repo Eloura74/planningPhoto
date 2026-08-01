@@ -474,7 +474,7 @@ function CalendarPage() {
                 className="text-xs sm:text-sm"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Disponible
+                Disponible solo
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -486,7 +486,7 @@ function CalendarPage() {
                 className="text-xs sm:text-sm"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Groupe
+                Disponible groupe
               </span>
             </div>
             <div className="flex items-center gap-2">

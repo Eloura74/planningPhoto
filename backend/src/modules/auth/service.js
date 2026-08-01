@@ -3,6 +3,10 @@ const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
 const pool = require("../../database");
 const { createHistory } = require("../common/historyService");
+const { sendAdminNewUserRegistration } = require("../../services/emailService");
+const {
+  notifyAdminNewUserRegistration,
+} = require("../../services/whatsappService");
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
@@ -33,6 +37,18 @@ const register = async (
     },
     null,
   );
+
+  // Notifier l'admin de la nouvelle inscription
+  try {
+    await sendAdminNewUserRegistration(name, email, phone, isGroupMember);
+    await notifyAdminNewUserRegistration(name, email, isGroupMember);
+  } catch (notificationError) {
+    console.error(
+      "❌ Erreur envoi notifications admin nouvelle inscription:",
+      notificationError.message,
+    );
+    // Ne pas bloquer l'inscription si les notifications échouent
+  }
 
   return {
     id: userId,
