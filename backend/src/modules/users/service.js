@@ -3,14 +3,14 @@ const { createHistory } = require("../common/historyService");
 
 const getAllUsers = async () => {
   const result = await pool.query(
-    "SELECT id, name, email, phone, role, is_group_member, created_at FROM users ORDER BY created_at DESC",
+    "SELECT id, name, email, phone, role, is_group_member, is_active, created_at FROM users ORDER BY created_at DESC",
   );
   return result.rows;
 };
 
 const getUserById = async (id) => {
   const result = await pool.query(
-    "SELECT id, name, email, phone, role, is_group_member, created_at FROM users WHERE id = $1",
+    "SELECT id, name, email, phone, role, is_group_member, is_active, created_at FROM users WHERE id = $1",
     [id],
   );
   return result.rows[0];

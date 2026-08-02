@@ -133,8 +133,12 @@ function UsersManagement() {
   const handleToggleGroupMember = async (userId, currentStatus) => {
     try {
       const userToUpdate = users.find((u) => u.id === userId);
+      // Envoyer uniquement les champs nécessaires
       await usersAPI.update(userId, {
-        ...userToUpdate,
+        name: userToUpdate.name,
+        email: userToUpdate.email,
+        phone: userToUpdate.phone,
+        role: userToUpdate.role,
         is_group_member: !currentStatus,
       });
       showToast(
