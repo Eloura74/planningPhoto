@@ -69,6 +69,14 @@ const login = async (email, password) => {
   }
 
   const user = result.rows[0];
+
+  // Vérifier si l'utilisateur est actif
+  if (!user.is_active) {
+    throw new Error(
+      "Votre compte n'est pas encore activé. Veuillez contacter l'administrateur.",
+    );
+  }
+
   const validPassword = await bcrypt.compare(password, user.password_hash);
 
   if (!validPassword) {

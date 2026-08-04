@@ -305,14 +305,17 @@ const createGroupPrebooking = async (userId, slotId) => {
   }
 
   // Vérifier que le slot est disponible pour le groupe
+  // Accepter BLOCKED_FOR_GROUP (créneaux réservés pour le groupe)
+  // Les autres statuts bloquent les pré-inscriptions
   if (
     slotData.status !== "BLOCKED_FOR_GROUP" &&
     slotData.status !== "GROUP_PREBOOKING_OPEN" &&
-    slotData.status !== "GROUP_PREBOOKING" &&
     slotData.status !== "OPEN_TUESDAY" &&
     slotData.status !== "MIXED"
   ) {
-    throw new Error("Slot not available for group pre-booking");
+    throw new Error(
+      "Ce créneau n'est plus disponible pour les pré-inscriptions groupe",
+    );
   }
 
   // Vérifier par date + heure pour éviter les doublons avec slots virtuels
@@ -350,15 +353,9 @@ const createGroupPrebooking = async (userId, slotId) => {
 
   const count = parseInt(prebookings.rows[0].count);
 
-  if (
-    count >= slotData.capacity_min &&
-    slotData.status === "BLOCKED_FOR_GROUP"
-  ) {
-    await pool.query("UPDATE slots SET status = $1 WHERE id = $2", [
-      "GROUP_PREBOOKING",
-      slotId,
-    ]);
-  }
+  // Ne plus changer le statut du slot - il reste BLOCKED_FOR_GROUP
+  // pour permettre d'autres pré-inscriptions jusqu'à validation admin
+  // L'admin verra le nombre de pré-inscrits et décidera quand valider
 
   await createHistory(
     "GROUP_PREBOOKING",

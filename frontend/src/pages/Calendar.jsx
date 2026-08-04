@@ -279,6 +279,15 @@ function CalendarPage() {
       return "SOLO_PENDING";
     }
 
+    // Pour les membres groupe : afficher GROUP_PENDING si des pré-inscriptions en attente
+    if (
+      user?.is_group_member &&
+      slot.group_prebookings_count > 0 &&
+      slot.status === "BLOCKED_FOR_GROUP"
+    ) {
+      return "GROUP_PENDING";
+    }
+
     return slot.status;
   };
 
@@ -286,13 +295,16 @@ function CalendarPage() {
     switch (status) {
       case "OPEN_SOLO":
         return "#10b981"; // Vert émeraude élégant
-      case "SOLO_PENDING": // Admin: demandes en attente
+      case "SOLO_PENDING": // Admin: demandes solo en attente
         return "#ef4444"; // Rouge (demandes à traiter)
+      case "GROUP_PENDING": // Membres groupe: pré-inscriptions en attente
+        return "#ef4444"; // Rouge pour voir l'avancement
       case "OPEN_TUESDAY":
       case "MIXED":
       case "GROUP_PREBOOKING":
         return "#f59e0b"; // Orange doré (groupe disponible)
       case "BLOCKED_FOR_GROUP":
+        return "#f59e0b"; // Orange (disponible pour pré-inscription groupe)
       case "GROUP_CONFIRMED":
       case "SOLO_CONFIRMED":
         return "#8b5cf6"; // Violet élégant (confirmé)

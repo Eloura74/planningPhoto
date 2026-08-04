@@ -13,7 +13,14 @@ const getAllSlots = async (startDate, endDate) => {
            WHERE b.slot_id = s.id 
            AND b.status = 'REQUESTED'
           ), 0
-        ) as pending_requests_count
+        ) as pending_requests_count,
+        COALESCE(
+          (SELECT COUNT(*) 
+           FROM group_prebookings gp 
+           WHERE gp.slot_id = s.id 
+           AND gp.status = 'PENDING'
+          ), 0
+        ) as group_prebookings_count
       FROM slots s
     `;
     const params = [];
