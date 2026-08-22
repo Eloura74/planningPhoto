@@ -66,11 +66,11 @@ const getAvailableSlots = async (startDate, endDate) => {
     .toISOString()
     .split("T")[0];
 
-  // Compter les JOURS UNIQUES avec des créneaux groupe confirmés (pas le nombre de créneaux)
+  // Compter les JOURS UNIQUES avec des créneaux groupe CONFIRMÉS (pas bloqués)
   const confirmedGroupSlots = await pool.query(
     `SELECT COUNT(DISTINCT date) as count FROM slots 
      WHERE type = 'GROUP' 
-     AND (status = 'GROUP_CONFIRMED' OR status = 'BLOCKED_FOR_GROUP')
+     AND status = 'GROUP_CONFIRMED'
      AND date >= $1 AND date <= $2`,
     [monthStart, monthEnd],
   );
@@ -213,7 +213,7 @@ const getAvailableSlots = async (startDate, endDate) => {
             const monthConfirmedSlots = await pool.query(
               `SELECT COUNT(DISTINCT date) as count FROM slots 
                WHERE type = 'GROUP' 
-               AND (status = 'GROUP_CONFIRMED' OR status = 'BLOCKED_FOR_GROUP')
+               AND status = 'GROUP_CONFIRMED'
                AND date >= $1 AND date <= $2`,
               [slotMonthStart, slotMonthEnd],
             );
