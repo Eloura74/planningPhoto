@@ -57,6 +57,23 @@ function BookingsTable() {
     }
   };
 
+  const handleCancelConfirmation = async (bookingId) => {
+    if (
+      !window.confirm(
+        "Annuler cette confirmation ? La réservation sera remise en attente.",
+      )
+    ) {
+      return;
+    }
+    try {
+      const response = await bookingsAPI.cancelConfirmation(bookingId);
+      showToast(response.data.message || "Confirmation annulée", "success");
+      loadBookings();
+    } catch (error) {
+      showToast(error.response?.data?.error || "Erreur", "error");
+    }
+  };
+
   const filteredBookings = bookings.filter((b) => {
     if (filter === "ALL") return true;
     return b.status === filter;
@@ -294,20 +311,34 @@ function BookingsTable() {
                         </>
                       )}
                       {booking.status === "CONFIRMED" && (
-                        <button
-                          onClick={() =>
-                            handleCancel(booking.id, booking.booking_type)
-                          }
-                          className="px-3 py-1 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
-                          style={{
-                            background:
-                              "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
-                            color: "white",
-                          }}
-                          title="Annuler"
-                        >
-                          🚫 Annuler
-                        </button>
+                        <>
+                          <button
+                            onClick={() => handleCancelConfirmation(booking.id)}
+                            className="px-3 py-1 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                            style={{
+                              background:
+                                "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+                              color: "white",
+                            }}
+                            title="Annuler la confirmation (remet en attente)"
+                          >
+                            ↩️ Annuler confirmation
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleCancel(booking.id, booking.booking_type)
+                            }
+                            className="px-3 py-1 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                            style={{
+                              background:
+                                "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                              color: "white",
+                            }}
+                            title="Supprimer définitivement"
+                          >
+                            �️ Supprimer
+                          </button>
+                        </>
                       )}
                       <button
                         onClick={() => setEmailModalBooking(booking)}

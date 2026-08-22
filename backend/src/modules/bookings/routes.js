@@ -15,6 +15,7 @@ const {
   deleteGroupPrebooking,
   getSlotsWithLowGroupParticipation,
 } = require("./service");
+const { cancelConfirmation } = require("./cancel-confirmation");
 
 // Route pour récupérer toutes les réservations (admin seulement)
 router.get("/", authenticate, requireAdmin, async (req, res) => {
@@ -310,6 +311,22 @@ router.get(
       res.json(slots);
     } catch (error) {
       res.status(500).json({ error: error.message });
+    }
+  },
+);
+
+// Route pour annuler une confirmation (admin uniquement)
+router.post(
+  "/:id/cancel-confirmation",
+  authenticate,
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const result = await cancelConfirmation(req.params.id, req.user.id);
+      res.json(result);
+    } catch (error) {
+      console.error("Erreur annulation confirmation:", error);
+      res.status(400).json({ error: error.message });
     }
   },
 );

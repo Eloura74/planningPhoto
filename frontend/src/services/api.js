@@ -58,6 +58,7 @@ export const bookingsAPI = {
   getGroupPrebookings: (slotId) => api.get(`/bookings/group/${slotId}`),
   confirm: (id) => api.patch(`/bookings/${id}/confirm`),
   cancel: (id, reason) => api.delete(`/bookings/${id}`, { data: { reason } }),
+  cancelConfirmation: (id) => api.post(`/bookings/${id}/cancel-confirmation`),
   getAllPending: (status) =>
     api.get("/bookings/pending", { params: { status } }),
   cancelGroupPrebooking: (slotId) => api.delete(`/bookings/group/${slotId}`),
