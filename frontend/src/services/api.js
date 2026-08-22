@@ -80,6 +80,7 @@ export const adminAPI = {
     api.get("/admin/history", { params: { entity, limit } }),
   getDashboard: () => api.get("/admin/dashboard"),
   resetAll: () => api.post("/admin/reset/reset-all"),
+  fixSeptember: () => api.post("/admin/fix-september"),
 };
 
 export const usersAPI = {
