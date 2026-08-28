@@ -350,20 +350,24 @@ const blockSlot = async (slotId, userId) => {
   console.log(`📊 ${confirmedCount} créneaux groupe CONFIRMÉS ce mois`);
 
   if (confirmedCount >= 2) {
-    // Passer tous les autres créneaux groupe du mois en SOLO
-    await pool.query(
+    // Passer tous les autres créneaux groupe du mois en SOLO (sauf les confirmés)
+    const updateResult = await pool.query(
       `UPDATE slots 
-       SET type = 'SOLO', status = 'OPEN_SOLO' 
+       SET type = 'SOLO', status = 'OPEN_SOLO', start_time = '14:00', end_time = '17:00'
        WHERE type = 'GROUP' 
-       AND status NOT IN ('GROUP_CONFIRMED', 'BLOCKED_FOR_GROUP')
+       AND status != 'GROUP_CONFIRMED'
        AND date >= $1 
-       AND date <= $2`,
+       AND date <= $2
+       RETURNING date, status`,
       [
         monthStart.toISOString().split("T")[0],
         monthEnd.toISOString().split("T")[0],
       ],
     );
-    console.log(`✅ Autres créneaux groupe du mois convertis en SOLO`);
+    console.log(
+      `✅ ${updateResult.rows.length} créneaux groupe convertis en SOLO:`,
+      updateResult.rows.map((r) => r.date),
+    );
   }
 
   return result.rows[0];

@@ -270,16 +270,12 @@ function CalendarPage() {
       return "BOOKED";
     }
 
-    // Pour l'admin : afficher SOLO_PENDING si des demandes en attente
-    if (
-      user?.role === "ADMIN" &&
-      slot.pending_requests_count > 0 &&
-      slot.status === "OPEN_SOLO"
-    ) {
+    // SOLO : Afficher rouge pour TOUS si des demandes en attente
+    if (slot.pending_requests_count > 0 && slot.status === "OPEN_SOLO") {
       return "SOLO_PENDING";
     }
 
-    // Pour les membres groupe : afficher GROUP_PENDING si des pré-inscriptions en attente
+    // GROUPE : Afficher rouge pour TOUS les membres groupe si des pré-inscriptions en attente
     if (
       user?.is_group_member &&
       slot.group_prebookings_count > 0 &&
