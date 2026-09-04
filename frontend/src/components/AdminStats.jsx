@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { adminAPI } from "../services/api";
 
-function AdminStats() {
+function AdminStats({ onTabChange }) {
   const [stats, setStats] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadStats();
@@ -30,24 +32,36 @@ function AdminStats() {
       value: stats.totalUsers || 0,
       icon: "👥",
       color: "from-blue-500 to-blue-600",
+      onClick: () => navigate("/admin/users"),
     },
     {
       title: "Créneaux",
       value: stats.totalSlots || 0,
       icon: "📅",
       color: "from-purple-500 to-purple-600",
+      onClick: () => onTabChange?.("slots"),
     },
     {
       title: "En attente",
       value: stats.pendingBookings || 0,
       icon: "⏳",
       color: "from-orange-500 to-orange-600",
+      onClick: () =>
+        window.scrollTo({
+          top: document.getElementById("bookings-section")?.offsetTop || 800,
+          behavior: "smooth",
+        }),
     },
     {
       title: "Pré-réservations",
       value: stats.groupPrebookings || 0,
       icon: "👨‍👩‍👧‍👦",
       color: "from-green-500 to-green-600",
+      onClick: () =>
+        window.scrollTo({
+          top: document.getElementById("bookings-section")?.offsetTop || 800,
+          behavior: "smooth",
+        }),
     },
   ];
 
@@ -56,7 +70,8 @@ function AdminStats() {
       {statCards.map((card, index) => (
         <div
           key={index}
-          className="rounded-xl p-6 shadow-lg hover:shadow-xl transition-all card-dark glow-gold"
+          onClick={card.onClick}
+          className="rounded-xl p-6 shadow-lg hover:shadow-xl transition-all card-dark glow-gold cursor-pointer hover:scale-105"
         >
           <div className="flex items-center justify-between">
             <div>

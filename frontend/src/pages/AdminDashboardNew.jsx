@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import AdminStats from "../components/AdminStats";
 import AdminBookingsManager from "../components/AdminBookingsManager";
 import UnavailabilityManager from "../components/UnavailabilityManager";
+import SlotsManagement from "../components/SlotsManagement";
 
 function AdminDashboardNew() {
+  const [activeTab, setActiveTab] = useState("dashboard");
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -64,14 +67,30 @@ function AdminDashboardNew() {
           {/* Navigation Buttons - Responsive grid */}
           <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
             <button
+              onClick={() => setActiveTab("dashboard")}
+              className={`px-3 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap ${
+                activeTab === "dashboard" ? "btn-gold" : "btn-chrome"
+              }`}
+            >
+              📊 Dashboard
+            </button>
+            <button
+              onClick={() => setActiveTab("slots")}
+              className={`px-3 py-2 rounded-lg text-xs sm:text-sm whitespace-nowrap ${
+                activeTab === "slots" ? "btn-gold" : "btn-chrome"
+              }`}
+            >
+              📅 Créneaux
+            </button>
+            <button
               onClick={() => navigate("/admin/users")}
-              className="px-3 py-2 rounded-lg text-xs sm:text-sm btn-gold whitespace-nowrap"
+              className="px-3 py-2 rounded-lg text-xs sm:text-sm btn-chrome whitespace-nowrap"
             >
               👥 Utilisateurs
             </button>
             <button
               onClick={() => navigate("/admin/events")}
-              className="px-3 py-2 rounded-lg text-xs sm:text-sm btn-gold whitespace-nowrap"
+              className="px-3 py-2 rounded-lg text-xs sm:text-sm btn-chrome whitespace-nowrap"
             >
               🎉 Événements
             </button>
@@ -79,7 +98,7 @@ function AdminDashboardNew() {
               onClick={() => navigate("/calendar")}
               className="px-3 py-2 rounded-lg text-xs sm:text-sm btn-chrome whitespace-nowrap"
             >
-              📅 Calendrier
+              � Calendrier
             </button>
             <button
               onClick={handleLogout}
@@ -98,14 +117,22 @@ function AdminDashboardNew() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-        {/* Statistics Cards */}
-        <AdminStats />
+        {/* Onglet Gestion des Créneaux */}
+        {activeTab === "slots" && <SlotsManagement />}
 
-        {/* Admin Bookings Management */}
-        <AdminBookingsManager />
+        {/* Onglet Dashboard */}
+        {activeTab === "dashboard" && (
+          <>
+            {/* Statistics Cards */}
+            <AdminStats onTabChange={setActiveTab} />
 
-        {/* Unavailability Manager */}
-        <UnavailabilityManager />
+            {/* Admin Bookings Management */}
+            <AdminBookingsManager />
+
+            {/* Unavailability Manager */}
+            <UnavailabilityManager />
+          </>
+        )}
       </div>
     </div>
   );

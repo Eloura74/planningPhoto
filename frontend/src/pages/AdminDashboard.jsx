@@ -12,6 +12,7 @@ import EventsManager from "../components/EventsManager";
 import SlotsManagement from "../components/SlotsManagement";
 
 function AdminDashboard() {
+  // Dashboard avec cartes cliquables - v2.0
   const [activeTab, setActiveTab] = useState("dashboard");
   const [dashboardData, setDashboardData] = useState(null);
   const [slots, setSlots] = useState([]);
