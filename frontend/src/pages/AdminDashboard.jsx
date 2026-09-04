@@ -9,8 +9,10 @@ import AdminStats from "../components/AdminStats";
 import GroupSlotManager from "../components/GroupSlotManager";
 import BookingsTable from "../components/BookingsTable";
 import EventsManager from "../components/EventsManager";
+import SlotsManagement from "../components/SlotsManagement";
 
 function AdminDashboard() {
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [dashboardData, setDashboardData] = useState(null);
   const [slots, setSlots] = useState([]);
   const [selectedSlots, setSelectedSlots] = useState([]);
@@ -381,22 +383,38 @@ function AdminDashboard() {
           </div>
           <div className="flex items-center gap-2 sm:gap-3">
             <button
-              onClick={() => navigate("/admin/users")}
-              className="px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold text-sm btn-gold"
+              onClick={() => setActiveTab("dashboard")}
+              className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold text-sm ${
+                activeTab === "dashboard" ? "btn-gold" : "btn-chrome"
+              }`}
             >
-              Utilisateurs
+              📊 Dashboard
+            </button>
+            <button
+              onClick={() => setActiveTab("slots")}
+              className={`px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold text-sm ${
+                activeTab === "slots" ? "btn-gold" : "btn-chrome"
+              }`}
+            >
+              📅 Créneaux
+            </button>
+            <button
+              onClick={() => navigate("/admin/users")}
+              className="px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold text-sm btn-chrome"
+            >
+              👥 Utilisateurs
             </button>
             <button
               onClick={() => navigate("/admin/events")}
-              className="px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold text-sm btn-gold"
+              className="px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold text-sm btn-chrome"
             >
-              Événements
+              🎉 Événements
             </button>
             <button
               onClick={() => navigate("/calendar")}
               className="px-3 py-2 sm:px-4 sm:py-2 rounded-lg font-semibold text-sm btn-chrome"
             >
-              Calendrier
+              📆 Calendrier
             </button>
             <button
               onClick={handleLogout}
@@ -414,358 +432,343 @@ function AdminDashboard() {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Alertes */}
-        {lowParticipationAlerts.length > 0 && (
-          <div
-            className="p-4 mb-6 rounded-r-lg"
-            style={{
-              backgroundColor: "rgba(255, 183, 71, 0.1)",
-              borderLeft: "4px solid var(--gold-secondary)",
-            }}
-          >
-            <div className="flex items-start">
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-5 w-5"
-                  style={{ color: "var(--gold-secondary)" }}
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div className="ml-3 flex-1">
-                <h3
-                  className="text-sm font-medium"
-                  style={{ color: "var(--gold-primary)" }}
-                >
-                  Alertes seuil groupe non atteint
-                </h3>
-                <div className="mt-2">
-                  <ul
-                    className="list-disc list-inside text-sm"
-                    style={{ color: "var(--text-secondary)" }}
-                  >
-                    {lowParticipationAlerts.map((alert) => (
-                      <li key={alert.id}>
-                        {alert.date} - {alert.participant_count} participant(s)
-                        (minimum 3 requis)
-                      </li>
-                    ))}
-                  </ul>
+        {/* Onglet Gestion des Créneaux */}
+        {activeTab === "slots" && <SlotsManagement />}
+
+        {/* Onglet Dashboard */}
+        {activeTab === "dashboard" && (
+          <>
+            {/* Alertes */}
+            {lowParticipationAlerts.length > 0 && (
+              <div
+                className="p-4 mb-6 rounded-r-lg"
+                style={{
+                  backgroundColor: "rgba(255, 183, 71, 0.1)",
+                  borderLeft: "4px solid var(--gold-secondary)",
+                }}
+              >
+                <div className="flex items-start">
+                  <div className="flex-shrink-0">
+                    <svg
+                      className="h-5 w-5"
+                      style={{ color: "var(--gold-secondary)" }}
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                  <div className="ml-3 flex-1">
+                    <h3
+                      className="text-sm font-medium"
+                      style={{ color: "var(--gold-primary)" }}
+                    >
+                      Alertes seuil groupe non atteint
+                    </h3>
+                    <div className="mt-2">
+                      <ul
+                        className="list-disc list-inside text-sm"
+                        style={{ color: "var(--text-secondary)" }}
+                      >
+                        {lowParticipationAlerts.map((alert) => (
+                          <li key={alert.id}>
+                            {alert.date} - {alert.participant_count}{" "}
+                            participant(s) (minimum 3 requis)
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        )}
+            )}
 
-        {dashboardData && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-            <div className="p-6 rounded-xl text-white card-gold scale-in">
-              <div className="flex items-center gap-3 mb-2">
-                <svg
-                  className="w-8 h-8"
-                  style={{ color: "var(--gold-primary)" }}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                </svg>
-                <h3
-                  className="text-sm font-medium"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  Utilisateurs
-                </h3>
-              </div>
-              <p
-                className="text-4xl font-bold"
-                style={{ color: "var(--gold-primary)" }}
-              >
-                {dashboardData.totalUsers}
-              </p>
-            </div>
-            <div className="p-6 rounded-xl text-white card-dark scale-in">
-              <div className="flex items-center gap-3 mb-2">
-                <svg
-                  className="w-8 h-8"
-                  style={{ color: "var(--chrome-medium)" }}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                <h3
-                  className="text-sm font-medium"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  Créneaux
-                </h3>
-              </div>
-              <p
-                className="text-4xl font-bold"
-                style={{ color: "var(--chrome-light)" }}
-              >
-                {dashboardData.totalSlots}
-              </p>
-            </div>
-            <div className="p-6 rounded-xl text-white card-dark scale-in">
-              <div className="flex items-center gap-3 mb-2">
-                <svg
-                  className="w-8 h-8"
-                  style={{ color: "var(--gold-secondary)" }}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <h3
-                  className="text-sm font-medium"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  En attente
-                </h3>
-              </div>
-              <p
-                className="text-4xl font-bold"
-                style={{ color: "var(--gold-secondary)" }}
-              >
-                {dashboardData.pendingBookings}
-              </p>
-            </div>
-            <div className="p-6 rounded-xl text-white card-dark scale-in">
-              <div className="flex items-center gap-3 mb-2">
-                <svg
-                  className="w-8 h-8"
-                  style={{ color: "var(--chrome-light)" }}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                  />
-                </svg>
-                <h3
-                  className="text-sm font-medium"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  Pré-réservations
-                </h3>
-              </div>
-              <p
-                className="text-4xl font-bold"
-                style={{ color: "var(--chrome-light)" }}
-              >
-                {dashboardData.groupPrebookings}
-              </p>
-            </div>
-            <div className="p-6 rounded-xl text-white card-gold scale-in">
-              <div className="flex items-center gap-3 mb-2">
-                <svg
-                  className="w-8 h-8"
-                  style={{ color: "var(--gold-primary)" }}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                <h3
-                  className="text-sm font-medium"
-                  style={{ color: "var(--text-secondary)" }}
-                >
-                  À venir
-                </h3>
-              </div>
-              <p
-                className="text-4xl font-bold"
-                style={{ color: "var(--gold-primary)" }}
-              >
-                {dashboardData.upcomingSlots}
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Bouton Réparer Septembre */}
-        <div className="mb-6">
-          <button
-            onClick={handleFixSeptember}
-            className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-orange-600 hover:to-orange-700 transition shadow-lg flex items-center gap-2"
-          >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
-            🔧 Réparer Septembre 2026
-          </button>
-        </div>
-
-        {pendingBookings.length > 0 && (
-          <div className="rounded-xl shadow-lg p-6 mb-8 card-dark">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div
-                  className="p-2 rounded-lg glow-gold"
-                  style={{ background: "var(--chrome-gradient)" }}
-                >
-                  <svg
-                    className="w-6 h-6"
-                    style={{ color: "var(--text-dark)" }}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <h2
-                    className="text-2xl font-bold"
+            {dashboardData && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+                <div className="p-6 rounded-xl text-white card-gold scale-in">
+                  <div className="flex items-center gap-3 mb-2">
+                    <svg
+                      className="w-8 h-8"
+                      style={{ color: "var(--gold-primary)" }}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                      />
+                    </svg>
+                    <h3
+                      className="text-sm font-medium"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      Utilisateurs
+                    </h3>
+                  </div>
+                  <p
+                    className="text-4xl font-bold"
                     style={{ color: "var(--gold-primary)" }}
                   >
-                    Gestion des Réservations
-                  </h2>
-                  <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-                    {
-                      pendingBookings.filter((b) => b.status === "REQUESTED")
-                        .length
-                    }{" "}
-                    demande(s) en attente de validation
+                    {dashboardData.totalUsers}
                   </p>
                 </div>
-                <span
-                  className="px-3 py-1 rounded-full text-sm font-medium"
-                  style={{
-                    backgroundColor: "rgba(255, 215, 0, 0.2)",
-                    color: "var(--gold-primary)",
-                  }}
-                >
-                  {pendingBookings.length} total
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <select
-                  value={bookingStatusFilter}
-                  onChange={(e) => setBookingStatusFilter(e.target.value)}
-                  className="px-3 py-2 rounded-lg text-sm input-dark"
-                >
-                  <option value="ALL">Tous les statuts</option>
-                  <option value="REQUESTED">En attente</option>
-                  <option value="CONFIRMED">Confirmé</option>
-                  <option value="CANCELLED_BY_ADMIN">Annulé par admin</option>
-                  <option value="CANCELLED_BY_STUDENT">
-                    Annulé par photographe
-                  </option>
-                </select>
-              </div>
-            </div>
-            <div className="space-y-3">
-              {pendingBookings.map((booking) => {
-                const statusColors = {
-                  REQUESTED: "bg-blue-100 text-blue-800",
-                  PENDING_ADMIN_VALIDATION: "bg-yellow-100 text-yellow-800",
-                  CONFIRMED: "bg-green-100 text-green-800",
-                  REFUSED: "bg-red-100 text-red-800",
-                  CANCELLED_BY_STUDENT: "bg-gray-100 text-gray-800",
-                  CANCELLED_BY_ADMIN: "bg-purple-100 text-purple-800",
-                  MODIFIED: "bg-orange-100 text-orange-800",
-                  COMPLETED: "bg-teal-100 text-teal-800",
-                  NO_SHOW: "bg-pink-100 text-pink-800",
-                };
-                const statusLabels = {
-                  REQUESTED: "Demandée",
-                  PENDING_ADMIN_VALIDATION: "En attente",
-                  CONFIRMED: "Confirmée",
-                  REFUSED: "Refusée",
-                  CANCELLED_BY_STUDENT: "Annulée (photographe)",
-                  CANCELLED_BY_ADMIN: "Annulée (admin)",
-                  MODIFIED: "Modifiée",
-                  COMPLETED: "Terminée",
-                  NO_SHOW: "Absence",
-                };
-
-                return (
-                  <div
-                    key={booking.id}
-                    className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 hover:shadow-md transition"
+                <div className="p-6 rounded-xl text-white card-dark scale-in">
+                  <div className="flex items-center gap-3 mb-2">
+                    <svg
+                      className="w-8 h-8"
+                      style={{ color: "var(--chrome-medium)" }}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <h3
+                      className="text-sm font-medium"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      Créneaux
+                    </h3>
+                  </div>
+                  <p
+                    className="text-4xl font-bold"
+                    style={{ color: "var(--chrome-light)" }}
                   >
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
-                        <svg
-                          className="w-6 h-6 text-indigo-600"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <p className="font-semibold text-gray-900">
-                            {booking.user_name || "Photographe"}
-                          </p>
-                          <span
-                            className={`inline-block px-2 py-1 rounded text-xs font-medium ${statusColors[booking.status] || "bg-gray-100 text-gray-800"}`}
-                          >
-                            {statusLabels[booking.status] || booking.status}
-                          </span>
-                        </div>
-                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
-                          <div className="flex items-center gap-1">
+                    {dashboardData.totalSlots}
+                  </p>
+                </div>
+                <div className="p-6 rounded-xl text-white card-dark scale-in">
+                  <div className="flex items-center gap-3 mb-2">
+                    <svg
+                      className="w-8 h-8"
+                      style={{ color: "var(--gold-secondary)" }}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <h3
+                      className="text-sm font-medium"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      En attente
+                    </h3>
+                  </div>
+                  <p
+                    className="text-4xl font-bold"
+                    style={{ color: "var(--gold-secondary)" }}
+                  >
+                    {dashboardData.pendingBookings}
+                  </p>
+                </div>
+                <div className="p-6 rounded-xl text-white card-dark scale-in">
+                  <div className="flex items-center gap-3 mb-2">
+                    <svg
+                      className="w-8 h-8"
+                      style={{ color: "var(--chrome-light)" }}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                      />
+                    </svg>
+                    <h3
+                      className="text-sm font-medium"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      Pré-réservations
+                    </h3>
+                  </div>
+                  <p
+                    className="text-4xl font-bold"
+                    style={{ color: "var(--chrome-light)" }}
+                  >
+                    {dashboardData.groupPrebookings}
+                  </p>
+                </div>
+                <div className="p-6 rounded-xl text-white card-gold scale-in">
+                  <div className="flex items-center gap-3 mb-2">
+                    <svg
+                      className="w-8 h-8"
+                      style={{ color: "var(--gold-primary)" }}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <h3
+                      className="text-sm font-medium"
+                      style={{ color: "var(--text-secondary)" }}
+                    >
+                      À venir
+                    </h3>
+                  </div>
+                  <p
+                    className="text-4xl font-bold"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    {dashboardData.upcomingSlots}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Bouton Réparer Septembre */}
+            <div className="mb-6">
+              <button
+                onClick={handleFixSeptember}
+                className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-orange-600 hover:to-orange-700 transition shadow-lg flex items-center gap-2"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                🔧 Réparer Septembre 2026
+              </button>
+            </div>
+
+            {pendingBookings.length > 0 && (
+              <div className="rounded-xl shadow-lg p-6 mb-8 card-dark">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="p-2 rounded-lg glow-gold"
+                      style={{ background: "var(--chrome-gradient)" }}
+                    >
+                      <svg
+                        className="w-6 h-6"
+                        style={{ color: "var(--text-dark)" }}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                        />
+                      </svg>
+                    </div>
+                    <div>
+                      <h2
+                        className="text-2xl font-bold"
+                        style={{ color: "var(--gold-primary)" }}
+                      >
+                        Gestion des Réservations
+                      </h2>
+                      <p
+                        className="text-sm"
+                        style={{ color: "var(--text-muted)" }}
+                      >
+                        {
+                          pendingBookings.filter(
+                            (b) => b.status === "REQUESTED",
+                          ).length
+                        }{" "}
+                        demande(s) en attente de validation
+                      </p>
+                    </div>
+                    <span
+                      className="px-3 py-1 rounded-full text-sm font-medium"
+                      style={{
+                        backgroundColor: "rgba(255, 215, 0, 0.2)",
+                        color: "var(--gold-primary)",
+                      }}
+                    >
+                      {pendingBookings.length} total
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={bookingStatusFilter}
+                      onChange={(e) => setBookingStatusFilter(e.target.value)}
+                      className="px-3 py-2 rounded-lg text-sm input-dark"
+                    >
+                      <option value="ALL">Tous les statuts</option>
+                      <option value="REQUESTED">En attente</option>
+                      <option value="CONFIRMED">Confirmé</option>
+                      <option value="CANCELLED_BY_ADMIN">
+                        Annulé par admin
+                      </option>
+                      <option value="CANCELLED_BY_STUDENT">
+                        Annulé par photographe
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {pendingBookings.map((booking) => {
+                    const statusColors = {
+                      REQUESTED: "bg-blue-100 text-blue-800",
+                      PENDING_ADMIN_VALIDATION: "bg-yellow-100 text-yellow-800",
+                      CONFIRMED: "bg-green-100 text-green-800",
+                      REFUSED: "bg-red-100 text-red-800",
+                      CANCELLED_BY_STUDENT: "bg-gray-100 text-gray-800",
+                      CANCELLED_BY_ADMIN: "bg-purple-100 text-purple-800",
+                      MODIFIED: "bg-orange-100 text-orange-800",
+                      COMPLETED: "bg-teal-100 text-teal-800",
+                      NO_SHOW: "bg-pink-100 text-pink-800",
+                    };
+                    const statusLabels = {
+                      REQUESTED: "Demandée",
+                      PENDING_ADMIN_VALIDATION: "En attente",
+                      CONFIRMED: "Confirmée",
+                      REFUSED: "Refusée",
+                      CANCELLED_BY_STUDENT: "Annulée (photographe)",
+                      CANCELLED_BY_ADMIN: "Annulée (admin)",
+                      MODIFIED: "Modifiée",
+                      COMPLETED: "Terminée",
+                      NO_SHOW: "Absence",
+                    };
+
+                    return (
+                      <div
+                        key={booking.id}
+                        className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-200 hover:shadow-md transition"
+                      >
+                        <div className="flex items-center gap-4 flex-1">
+                          <div className="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
                             <svg
-                              className="w-4 h-4"
+                              className="w-6 h-6 text-indigo-600"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -774,121 +777,339 @@ function AdminDashboard() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth={2}
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                               />
                             </svg>
-                            <span>
-                              {new Date(booking.slot_date).toLocaleDateString(
-                                "fr-FR",
-                                {
-                                  weekday: "short",
-                                  day: "numeric",
-                                  month: "short",
-                                  year: "numeric",
-                                },
-                              )}
-                            </span>
                           </div>
-                          {booking.start_time && booking.end_time && (
-                            <div className="flex items-center gap-1">
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className="font-semibold text-gray-900">
+                                {booking.user_name || "Photographe"}
+                              </p>
+                              <span
+                                className={`inline-block px-2 py-1 rounded text-xs font-medium ${statusColors[booking.status] || "bg-gray-100 text-gray-800"}`}
                               >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                              </svg>
-                              <span>
-                                {booking.start_time} - {booking.end_time}
+                                {statusLabels[booking.status] || booking.status}
                               </span>
                             </div>
-                          )}
-                          {booking.user_email && (
-                            <div className="flex items-center gap-1">
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                />
-                              </svg>
-                              <span className="truncate">
-                                {booking.user_email}
-                              </span>
+                            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+                              <div className="flex items-center gap-1">
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                  />
+                                </svg>
+                                <span>
+                                  {new Date(
+                                    booking.slot_date,
+                                  ).toLocaleDateString("fr-FR", {
+                                    weekday: "short",
+                                    day: "numeric",
+                                    month: "short",
+                                    year: "numeric",
+                                  })}
+                                </span>
+                              </div>
+                              {booking.start_time && booking.end_time && (
+                                <div className="flex items-center gap-1">
+                                  <svg
+                                    className="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                  </svg>
+                                  <span>
+                                    {booking.start_time} - {booking.end_time}
+                                  </span>
+                                </div>
+                              )}
+                              {booking.user_email && (
+                                <div className="flex items-center gap-1">
+                                  <svg
+                                    className="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                    />
+                                  </svg>
+                                  <span className="truncate">
+                                    {booking.user_email}
+                                  </span>
+                                </div>
+                              )}
+                              {booking.user_phone && (
+                                <div className="flex items-center gap-1">
+                                  <svg
+                                    className="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                                    />
+                                  </svg>
+                                  <span>{booking.user_phone}</span>
+                                </div>
+                              )}
                             </div>
-                          )}
-                          {booking.user_phone && (
-                            <div className="flex items-center gap-1">
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {booking.status === "REQUESTED" ||
+                          booking.status === "PENDING_ADMIN_VALIDATION" ? (
+                            <>
+                              <button
+                                onClick={() => handleConfirmBooking(booking.id)}
+                                className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition shadow-md text-sm"
                               >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                                />
-                              </svg>
-                              <span>{booking.user_phone}</span>
-                            </div>
+                                Confirmer
+                              </button>
+                              <button
+                                onClick={() => handleRefuseBooking(booking.id)}
+                                className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition shadow-md text-sm"
+                              >
+                                Refuser
+                              </button>
+                            </>
+                          ) : null}
+                          <button
+                            onClick={() => handleDeleteBooking(booking.id)}
+                            className="bg-gray-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-gray-600 transition shadow-md text-sm"
+                          >
+                            Supprimer
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {groupSlotsWithPrebookings.length > 0 && (
+              <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-purple-100 rounded-lg">
+                      <svg
+                        className="w-6 h-6 text-purple-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                        />
+                      </svg>
+                    </div>
+                    <h2 className="text-2xl font-bold">
+                      Créneaux Groupe - Pré-réservations Ouvertes
+                    </h2>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {groupSlotsWithPrebookings.map((slot) => (
+                    <div
+                      key={slot.id}
+                      className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200 hover:shadow-md transition"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                          <svg
+                            className="w-6 h-6 text-purple-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <p
+                            className="font-semibold"
+                            style={{ color: "var(--text-primary)" }}
+                          >
+                            {new Date(slot.date).toLocaleDateString("fr-FR", {
+                              weekday: "short",
+                              day: "numeric",
+                              month: "short",
+                            })}{" "}
+                            - {slot.start_time} - {slot.end_time}
+                          </p>
+                          <p
+                            className="text-sm"
+                            style={{ color: "var(--text-muted)" }}
+                          >
+                            {slot.prebookingCount} pré-choix /{" "}
+                            {slot.capacity_max} max
+                          </p>
+                          {slot.prebookingCount < 3 && (
+                            <p
+                              className="text-xs font-medium mt-1"
+                              style={{ color: "var(--gold-secondary)" }}
+                            >
+                              ⚠️ Seuil minimum non atteint (3 requis)
+                            </p>
                           )}
                         </div>
                       </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleConfirmGroupSlot(slot.id)}
+                          className="px-4 py-2 rounded-xl font-semibold text-sm btn-gold"
+                        >
+                          Confirmer
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {booking.status === "REQUESTED" ||
-                      booking.status === "PENDING_ADMIN_VALIDATION" ? (
-                        <>
-                          <button
-                            onClick={() => handleConfirmBooking(booking.id)}
-                            className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 py-2 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition shadow-md text-sm"
-                          >
-                            Confirmer
-                          </button>
-                          <button
-                            onClick={() => handleRefuseBooking(booking.id)}
-                            className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition shadow-md text-sm"
-                          >
-                            Refuser
-                          </button>
-                        </>
-                      ) : null}
-                      <button
-                        onClick={() => handleDeleteBooking(booking.id)}
-                        className="bg-gray-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-gray-600 transition shadow-md text-sm"
-                      >
-                        Supprimer
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
+                  ))}
+                </div>
+              </div>
+            )}
 
-        {groupSlotsWithPrebookings.length > 0 && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-purple-100 rounded-lg">
+            {historyEntries.length > 0 && (
+              <div className="rounded-xl shadow-lg p-6 mb-8 card-dark">
+                <div className="flex items-center gap-3 mb-6">
+                  <div
+                    className="p-2 rounded-lg glow-gold"
+                    style={{ background: "var(--chrome-gradient)" }}
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      style={{ color: "var(--text-dark)" }}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </div>
+                  <h2
+                    className="text-2xl font-bold"
+                    style={{ color: "var(--gold-primary)" }}
+                  >
+                    Historique des actions
+                  </h2>
+                </div>
+                <div className="space-y-3 max-h-96 overflow-y-auto">
+                  {historyEntries.map((entry) => (
+                    <div
+                      key={entry.id}
+                      className="flex items-start gap-4 p-4 rounded-xl card-dark"
+                      style={{ border: "1px solid var(--border-secondary)" }}
+                    >
+                      <div
+                        className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: "rgba(255, 215, 0, 0.1)" }}
+                      >
+                        <svg
+                          className="w-5 h-5"
+                          style={{ color: "var(--gold-primary)" }}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span
+                            className="font-semibold"
+                            style={{ color: "var(--gold-primary)" }}
+                          >
+                            {entry.action_type}
+                          </span>
+                          <span
+                            className="text-sm"
+                            style={{ color: "var(--text-muted)" }}
+                          >
+                            sur
+                          </span>
+                          <span
+                            className="text-sm font-medium"
+                            style={{ color: "var(--text-secondary)" }}
+                          >
+                            #{entry.entity_id?.substring(0, 8)}...
+                          </span>
+                        </div>
+                        <p
+                          className="text-sm"
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          {entry.description || "Aucune raison spécifiée"}
+                        </p>
+                        <p
+                          className="text-xs mt-1"
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          Par {entry.created_by} -{" "}
+                          {new Date(entry.created_at).toLocaleString("fr-FR")}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <UnavailabilityManager />
+
+            <div
+              className="p-6 rounded-2xl card-gold mt-6"
+              style={{ backgroundColor: "var(--bg-secondary)" }}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div
+                  className="p-3 rounded-xl glow-gold"
+                  style={{ background: "var(--chrome-gradient)" }}
+                >
                   <svg
-                    className="w-6 h-6 text-purple-600"
+                    className="w-8 h-8"
+                    style={{ color: "var(--text-dark)" }}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -901,434 +1122,247 @@ function AdminDashboard() {
                     />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold">
-                  Créneaux Groupe - Pré-réservations Ouvertes
+                <h2
+                  className="text-2xl font-bold"
+                  style={{ color: "var(--gold-primary)" }}
+                >
+                  Gestion des créneaux groupe
                 </h2>
               </div>
-            </div>
-            <div className="space-y-3">
-              {groupSlotsWithPrebookings.map((slot) => (
-                <div
-                  key={slot.id}
-                  className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200 hover:shadow-md transition"
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                      <svg
-                        className="w-6 h-6 text-purple-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                    </div>
-                    <div>
-                      <p
-                        className="font-semibold"
-                        style={{ color: "var(--text-primary)" }}
-                      >
-                        {new Date(slot.date).toLocaleDateString("fr-FR", {
-                          weekday: "short",
-                          day: "numeric",
-                          month: "short",
-                        })}{" "}
-                        - {slot.start_time} - {slot.end_time}
-                      </p>
-                      <p
-                        className="text-sm"
-                        style={{ color: "var(--text-muted)" }}
-                      >
-                        {slot.prebookingCount} pré-choix / {slot.capacity_max}{" "}
-                        max
-                      </p>
-                      {slot.prebookingCount < 3 && (
-                        <p
-                          className="text-xs font-medium mt-1"
-                          style={{ color: "var(--gold-secondary)" }}
-                        >
-                          ⚠️ Seuil minimum non atteint (3 requis)
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleConfirmGroupSlot(slot.id)}
-                      className="px-4 py-2 rounded-xl font-semibold text-sm btn-gold"
-                    >
-                      Confirmer
-                    </button>
-                  </div>
+
+              {selectedSlots.length > 0 && (
+                <div className="mb-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                  <p className="mb-2 font-medium text-blue-900">
+                    {selectedSlots.length} créneau(x) sélectionné(s)
+                  </p>
+                  <button
+                    onClick={handleReleaseSlots}
+                    className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition shadow-md"
+                  >
+                    Libérer pour solo
+                  </button>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
+              )}
 
-        {historyEntries.length > 0 && (
-          <div className="rounded-xl shadow-lg p-6 mb-8 card-dark">
-            <div className="flex items-center gap-3 mb-6">
-              <div
-                className="p-2 rounded-lg glow-gold"
-                style={{ background: "var(--chrome-gradient)" }}
-              >
-                <svg
-                  className="w-6 h-6"
-                  style={{ color: "var(--text-dark)" }}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <h2
-                className="text-2xl font-bold"
-                style={{ color: "var(--gold-primary)" }}
-              >
-                Historique des actions
-              </h2>
-            </div>
-            <div className="space-y-3 max-h-96 overflow-y-auto">
-              {historyEntries.map((entry) => (
-                <div
-                  key={entry.id}
-                  className="flex items-start gap-4 p-4 rounded-xl card-dark"
-                  style={{ border: "1px solid var(--border-secondary)" }}
-                >
-                  <div
-                    className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: "rgba(255, 215, 0, 0.1)" }}
-                  >
-                    <svg
-                      className="w-5 h-5"
-                      style={{ color: "var(--gold-primary)" }}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span
-                        className="font-semibold"
-                        style={{ color: "var(--gold-primary)" }}
-                      >
-                        {entry.action_type}
-                      </span>
-                      <span
-                        className="text-sm"
-                        style={{ color: "var(--text-muted)" }}
-                      >
-                        sur
-                      </span>
-                      <span
-                        className="text-sm font-medium"
-                        style={{ color: "var(--text-secondary)" }}
-                      >
-                        #{entry.entity_id?.substring(0, 8)}...
-                      </span>
-                    </div>
-                    <p
-                      className="text-sm"
-                      style={{ color: "var(--text-muted)" }}
-                    >
-                      {entry.description || "Aucune raison spécifiée"}
-                    </p>
-                    <p
-                      className="text-xs mt-1"
-                      style={{ color: "var(--text-muted)" }}
-                    >
-                      Par {entry.created_by} -{" "}
-                      {new Date(entry.created_at).toLocaleString("fr-FR")}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <UnavailabilityManager />
-
-        <div
-          className="p-6 rounded-2xl card-gold mt-6"
-          style={{ backgroundColor: "var(--bg-secondary)" }}
-        >
-          <div className="flex items-center gap-3 mb-6">
-            <div
-              className="p-3 rounded-xl glow-gold"
-              style={{ background: "var(--chrome-gradient)" }}
-            >
-              <svg
-                className="w-8 h-8"
-                style={{ color: "var(--text-dark)" }}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
-            </div>
-            <h2
-              className="text-2xl font-bold"
-              style={{ color: "var(--gold-primary)" }}
-            >
-              Gestion des créneaux groupe
-            </h2>
-          </div>
-
-          {selectedSlots.length > 0 && (
-            <div className="mb-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
-              <p className="mb-2 font-medium text-blue-900">
-                {selectedSlots.length} créneau(x) sélectionné(s)
-              </p>
-              <button
-                onClick={handleReleaseSlots}
-                className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition shadow-md"
-              >
-                Libérer pour solo
-              </button>
-            </div>
-          )}
-
-          <div className="space-y-2">
-            {slots
-              .filter(
-                (slot) =>
-                  slot.type === "GROUP" &&
-                  (slot.status === "BLOCKED_FOR_GROUP" ||
-                    slot.status === "GROUP_PREBOOKING"),
-              )
-              .map((slot) => (
-                <div
-                  key={slot.id}
-                  className={`p-4 border rounded-lg flex justify-between items-center ${
-                    selectedSlots.includes(slot.id)
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200"
-                  }`}
-                >
-                  <div className="flex items-center gap-4">
-                    <input
-                      type="checkbox"
-                      checked={selectedSlots.includes(slot.id)}
-                      onChange={() => handleSlotSelection(slot.id)}
-                      className="w-5 h-5"
-                    />
-                    <div>
-                      <p className="font-semibold">
-                        {new Date(slot.date).toLocaleDateString("fr-FR")}
-                      </p>
-                      <p className="text-gray-600">
-                        {slot.start_time} - {slot.end_time}
-                      </p>
-                      <p className="text-sm">
-                        Statut:{" "}
-                        <span className="font-semibold">{slot.status}</span>
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => loadGroupPrebookings(slot.id)}
-                      className="bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300"
-                    >
-                      Voir pré-réservations
-                    </button>
-                    {slot.status === "GROUP_PREBOOKING" && (
-                      <button
-                        onClick={() => handleValidateGroup(slot.id)}
-                        className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
-                      >
-                        Valider
-                      </button>
-                    )}
-                    <button
-                      onClick={() => handleBlockSlot(slot.id)}
-                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-                    >
-                      Bloquer
-                    </button>
-                  </div>
-                </div>
-              ))}
-          </div>
-
-          {groupPrebookings.length > 0 && (
-            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-bold mb-2">
-                Pré-réservations pour ce créneau:
-              </h3>
-              <ul className="space-y-1">
-                {groupPrebookings.map((prebooking) => (
-                  <li key={prebooking.id} className="text-sm">
-                    {prebooking.name} ({prebooking.email})
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold mb-4">Tous les créneaux</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr
-                  className="border-b"
-                  style={{ borderColor: "var(--border-primary)" }}
-                >
-                  <th
-                    className="p-2 text-left font-semibold"
-                    style={{ color: "var(--gold-primary)" }}
-                  >
-                    Date
-                  </th>
-                  <th
-                    className="p-2 text-left font-semibold"
-                    style={{ color: "var(--gold-primary)" }}
-                  >
-                    Horaires
-                  </th>
-                  <th
-                    className="p-2 text-left font-semibold"
-                    style={{ color: "var(--gold-primary)" }}
-                  >
-                    Type
-                  </th>
-                  <th
-                    className="p-2 text-left font-semibold"
-                    style={{ color: "var(--gold-primary)" }}
-                  >
-                    Statut
-                  </th>
-                  <th
-                    className="p-2 text-left font-semibold"
-                    style={{ color: "var(--gold-primary)" }}
-                  >
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
+              <div className="space-y-2">
                 {slots
                   .filter(
                     (slot) =>
-                      (slotTypeFilter === "ALL" ||
-                        slot.type === slotTypeFilter) &&
-                      (slotStatusFilter === "ALL" ||
-                        slot.status === slotStatusFilter),
+                      slot.type === "GROUP" &&
+                      (slot.status === "BLOCKED_FOR_GROUP" ||
+                        slot.status === "GROUP_PREBOOKING"),
                   )
                   .map((slot) => (
-                    <tr
+                    <div
                       key={slot.id}
-                      className="border-b"
-                      style={{ borderColor: "var(--border-secondary)" }}
+                      className={`p-4 border rounded-lg flex justify-between items-center ${
+                        selectedSlots.includes(slot.id)
+                          ? "border-blue-500 bg-blue-50"
+                          : "border-gray-200"
+                      }`}
                     >
-                      <td
-                        className="p-2"
-                        style={{ color: "var(--text-secondary)" }}
-                      >
-                        {new Date(slot.date).toLocaleDateString("fr-FR")}
-                      </td>
-                      <td
-                        className="p-2"
-                        style={{ color: "var(--text-secondary)" }}
-                      >
-                        {slot.start_time} - {slot.end_time}
-                      </td>
-                      <td
-                        className="p-2"
-                        style={{ color: "var(--text-secondary)" }}
-                      >
-                        {slot.type === "SOLO" ? "Solo" : "Groupe"}
-                      </td>
-                      <td className="p-2">
-                        <span
-                          className="px-2 py-1 rounded text-xs"
-                          style={{
-                            backgroundColor:
-                              slot.status === "OPEN_SOLO"
-                                ? "rgba(0, 255, 0, 0.1)"
-                                : slot.status === "BLOCKED_FOR_GROUP"
-                                  ? "rgba(255, 0, 0, 0.1)"
-                                  : slot.status === "GROUP_PREBOOKING"
-                                    ? "rgba(255, 215, 0, 0.1)"
-                                    : slot.status === "GROUP_CONFIRMED"
-                                      ? "rgba(0, 0, 255, 0.1)"
-                                      : "rgba(128, 128, 128, 0.1)",
-                            color:
-                              slot.status === "OPEN_SOLO"
-                                ? "#00ff00"
-                                : slot.status === "BLOCKED_FOR_GROUP"
-                                  ? "#ff0000"
-                                  : slot.status === "GROUP_PREBOOKING"
-                                    ? "var(--gold-primary)"
-                                    : slot.status === "GROUP_CONFIRMED"
-                                      ? "#0000ff"
-                                      : "var(--text-muted)",
-                          }}
-                        >
-                          {slot.status}
-                        </span>
-                      </td>
-                      <td className="p-2">
-                        <div className="flex gap-2">
-                          {slot.type === "GROUP" &&
-                            slot.status === "BLOCKED_FOR_GROUP" && (
-                              <button
-                                onClick={() =>
-                                  setSelectedSlots([...selectedSlots, slot.id])
-                                }
-                                className="px-2 py-1 rounded text-xs btn-chrome"
-                              >
-                                Sélectionner
-                              </button>
-                            )}
-                          <button
-                            onClick={() => handleDeleteSlot(slot.id)}
-                            className="px-2 py-1 rounded text-xs"
-                            style={{
-                              backgroundColor: "rgba(239, 68, 68, 0.2)",
-                              color: "#ef4444",
-                              border: "1px solid rgba(239, 68, 68, 0.3)",
-                            }}
-                          >
-                            Supprimer
-                          </button>
+                      <div className="flex items-center gap-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedSlots.includes(slot.id)}
+                          onChange={() => handleSlotSelection(slot.id)}
+                          className="w-5 h-5"
+                        />
+                        <div>
+                          <p className="font-semibold">
+                            {new Date(slot.date).toLocaleDateString("fr-FR")}
+                          </p>
+                          <p className="text-gray-600">
+                            {slot.start_time} - {slot.end_time}
+                          </p>
+                          <p className="text-sm">
+                            Statut:{" "}
+                            <span className="font-semibold">{slot.status}</span>
+                          </p>
                         </div>
-                      </td>
-                    </tr>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => loadGroupPrebookings(slot.id)}
+                          className="bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300"
+                        >
+                          Voir pré-réservations
+                        </button>
+                        {slot.status === "GROUP_PREBOOKING" && (
+                          <button
+                            onClick={() => handleValidateGroup(slot.id)}
+                            className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                          >
+                            Valider
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleBlockSlot(slot.id)}
+                          className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                        >
+                          Bloquer
+                        </button>
+                      </div>
+                    </div>
                   ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+              </div>
+
+              {groupPrebookings.length > 0 && (
+                <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+                  <h3 className="font-bold mb-2">
+                    Pré-réservations pour ce créneau:
+                  </h3>
+                  <ul className="space-y-1">
+                    {groupPrebookings.map((prebooking) => (
+                      <li key={prebooking.id} className="text-sm">
+                        {prebooking.name} ({prebooking.email})
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-2xl font-bold mb-4">Tous les créneaux</h2>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr
+                      className="border-b"
+                      style={{ borderColor: "var(--border-primary)" }}
+                    >
+                      <th
+                        className="p-2 text-left font-semibold"
+                        style={{ color: "var(--gold-primary)" }}
+                      >
+                        Date
+                      </th>
+                      <th
+                        className="p-2 text-left font-semibold"
+                        style={{ color: "var(--gold-primary)" }}
+                      >
+                        Horaires
+                      </th>
+                      <th
+                        className="p-2 text-left font-semibold"
+                        style={{ color: "var(--gold-primary)" }}
+                      >
+                        Type
+                      </th>
+                      <th
+                        className="p-2 text-left font-semibold"
+                        style={{ color: "var(--gold-primary)" }}
+                      >
+                        Statut
+                      </th>
+                      <th
+                        className="p-2 text-left font-semibold"
+                        style={{ color: "var(--gold-primary)" }}
+                      >
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {slots
+                      .filter(
+                        (slot) =>
+                          (slotTypeFilter === "ALL" ||
+                            slot.type === slotTypeFilter) &&
+                          (slotStatusFilter === "ALL" ||
+                            slot.status === slotStatusFilter),
+                      )
+                      .map((slot) => (
+                        <tr
+                          key={slot.id}
+                          className="border-b"
+                          style={{ borderColor: "var(--border-secondary)" }}
+                        >
+                          <td
+                            className="p-2"
+                            style={{ color: "var(--text-secondary)" }}
+                          >
+                            {new Date(slot.date).toLocaleDateString("fr-FR")}
+                          </td>
+                          <td
+                            className="p-2"
+                            style={{ color: "var(--text-secondary)" }}
+                          >
+                            {slot.start_time} - {slot.end_time}
+                          </td>
+                          <td
+                            className="p-2"
+                            style={{ color: "var(--text-secondary)" }}
+                          >
+                            {slot.type === "SOLO" ? "Solo" : "Groupe"}
+                          </td>
+                          <td className="p-2">
+                            <span
+                              className="px-2 py-1 rounded text-xs"
+                              style={{
+                                backgroundColor:
+                                  slot.status === "OPEN_SOLO"
+                                    ? "rgba(0, 255, 0, 0.1)"
+                                    : slot.status === "BLOCKED_FOR_GROUP"
+                                      ? "rgba(255, 0, 0, 0.1)"
+                                      : slot.status === "GROUP_PREBOOKING"
+                                        ? "rgba(255, 215, 0, 0.1)"
+                                        : slot.status === "GROUP_CONFIRMED"
+                                          ? "rgba(0, 0, 255, 0.1)"
+                                          : "rgba(128, 128, 128, 0.1)",
+                                color:
+                                  slot.status === "OPEN_SOLO"
+                                    ? "#00ff00"
+                                    : slot.status === "BLOCKED_FOR_GROUP"
+                                      ? "#ff0000"
+                                      : slot.status === "GROUP_PREBOOKING"
+                                        ? "var(--gold-primary)"
+                                        : slot.status === "GROUP_CONFIRMED"
+                                          ? "#0000ff"
+                                          : "var(--text-muted)",
+                              }}
+                            >
+                              {slot.status}
+                            </span>
+                          </td>
+                          <td className="p-2">
+                            <div className="flex gap-2">
+                              {slot.type === "GROUP" &&
+                                slot.status === "BLOCKED_FOR_GROUP" && (
+                                  <button
+                                    onClick={() =>
+                                      setSelectedSlots([
+                                        ...selectedSlots,
+                                        slot.id,
+                                      ])
+                                    }
+                                    className="px-2 py-1 rounded text-xs btn-chrome"
+                                  >
+                                    Sélectionner
+                                  </button>
+                                )}
+                              <button
+                                onClick={() => handleDeleteSlot(slot.id)}
+                                className="px-2 py-1 rounded text-xs"
+                                style={{
+                                  backgroundColor: "rgba(239, 68, 68, 0.2)",
+                                  color: "#ef4444",
+                                  border: "1px solid rgba(239, 68, 68, 0.3)",
+                                }}
+                              >
+                                Supprimer
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
