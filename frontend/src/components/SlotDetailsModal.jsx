@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { bookingsAPI } from "../services/api";
+import { bookingsAPI, adminAPI } from "../services/api";
+import { useToast } from "../contexts/ToastContext";
 
-function SlotDetailsModal({ slot, onClose, user }) {
+function SlotDetailsModal({ slot, onClose, user, onSlotUpdated }) {
   const [participants, setParticipants] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { showToast } = useToast();
 
   useEffect(() => {
     loadParticipants();
@@ -51,6 +53,27 @@ function SlotDetailsModal({ slot, onClose, user }) {
       console.error("❌ Error loading participants:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleForceType = async (newType) => {
+    if (
+      !window.confirm(
+        `Forcer ce créneau en ${newType === "SOLO" ? "SOLO (14h-17h)" : "GROUPE (10h-17h)"} ?`,
+      )
+    ) {
+      return;
+    }
+    try {
+      const response = await adminAPI.forceSlotType(slot.id, newType);
+      showToast(response.data.message, "success");
+      if (onSlotUpdated) onSlotUpdated();
+      onClose();
+    } catch (error) {
+      showToast(
+        error.response?.data?.error || "Erreur lors du changement de type",
+        "error",
+      );
     }
   };
 
@@ -279,7 +302,35 @@ function SlotDetailsModal({ slot, onClose, user }) {
         </div>
 
         {/* Footer */}
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex justify-between items-center">
+          {user?.role === "ADMIN" && (
+            <div className="flex gap-2">
+              <button
+                onClick={() => handleForceType("SOLO")}
+                className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                  color: "white",
+                }}
+                title="Forcer en SOLO (14h-17h)"
+              >
+                🟢 Forcer SOLO
+              </button>
+              <button
+                onClick={() => handleForceType("GROUP")}
+                className="px-4 py-2 rounded-lg font-semibold text-sm transition-all hover:shadow-md"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+                  color: "white",
+                }}
+                title="Forcer en GROUPE (10h-17h)"
+              >
+                🟠 Forcer GROUPE
+              </button>
+            </div>
+          )}
           <button
             onClick={onClose}
             className="px-6 py-2 rounded-lg font-semibold btn-chrome"

@@ -8,7 +8,7 @@ const { createHistory } = require("../history/service");
  */
 const cancelConfirmation = async (bookingId, adminId) => {
   const client = await pool.connect();
-  
+
   try {
     await client.query("BEGIN");
 
@@ -18,7 +18,7 @@ const cancelConfirmation = async (bookingId, adminId) => {
        FROM bookings b
        JOIN slots s ON b.slot_id = s.id
        WHERE b.id = $1`,
-      [bookingId]
+      [bookingId],
     );
 
     if (bookingResult.rows.length === 0) {
@@ -28,15 +28,17 @@ const cancelConfirmation = async (bookingId, adminId) => {
     const booking = bookingResult.rows[0];
 
     if (booking.status !== "CONFIRMED") {
-      throw new Error("Seules les réservations confirmées peuvent être annulées");
+      throw new Error(
+        "Seules les réservations confirmées peuvent être annulées",
+      );
     }
 
     if (booking.type === "SOLO") {
       // SOLO : Remettre en REQUESTED
-      await client.query(
-        "UPDATE bookings SET status = $1 WHERE id = $2",
-        ["REQUESTED", bookingId]
-      );
+      await client.query("UPDATE bookings SET status = $1 WHERE id = $2", [
+        "REQUESTED",
+        bookingId,
+      ]);
 
       await createHistory(
         "BOOKING",
@@ -44,9 +46,8 @@ const cancelConfirmation = async (bookingId, adminId) => {
         "CANCEL_CONFIRMATION",
         { previousStatus: "CONFIRMED", newStatus: "REQUESTED" },
         adminId,
-        "Confirmation annulée par admin - remis en attente"
+        "Confirmation annulée par admin - remis en attente",
       );
-
     } else if (booking.type === "GROUP") {
       // GROUPE : Supprimer tous les bookings confirmés du slot et remettre en BLOCKED_FOR_GROUP
       const slotId = booking.slot_id;
@@ -54,19 +55,19 @@ const cancelConfirmation = async (bookingId, adminId) => {
       // Récupérer tous les bookings confirmés de ce slot
       const confirmedBookings = await client.query(
         "SELECT id, user_id FROM bookings WHERE slot_id = $1 AND status = 'CONFIRMED'",
-        [slotId]
+        [slotId],
       );
 
       // Supprimer tous les bookings confirmés
       await client.query(
         "DELETE FROM bookings WHERE slot_id = $1 AND status = 'CONFIRMED'",
-        [slotId]
+        [slotId],
       );
 
-      // Remettre le slot en BLOCKED_FOR_GROUP
+      // Remettre le slot en BLOCKED_FOR_GROUP avec type GROUP et horaires 10h-17h
       await client.query(
-        "UPDATE slots SET status = $1 WHERE id = $2",
-        ["BLOCKED_FOR_GROUP", slotId]
+        "UPDATE slots SET status = $1, type = $2, start_time = $3, end_time = $4 WHERE id = $5",
+        ["BLOCKED_FOR_GROUP", "GROUP", "10:00", "17:00", slotId],
       );
 
       // Historique
@@ -77,10 +78,10 @@ const cancelConfirmation = async (bookingId, adminId) => {
         {
           previousStatus: "GROUP_CONFIRMED",
           newStatus: "BLOCKED_FOR_GROUP",
-          deletedBookings: confirmedBookings.rows.length
+          deletedBookings: confirmedBookings.rows.length,
         },
         adminId,
-        `Confirmation groupe annulée - ${confirmedBookings.rows.length} réservation(s) supprimée(s)`
+        `Confirmation groupe annulée - ${confirmedBookings.rows.length} réservation(s) supprimée(s)`,
       );
     }
 
@@ -88,11 +89,11 @@ const cancelConfirmation = async (bookingId, adminId) => {
 
     return {
       success: true,
-      message: booking.type === "SOLO" 
-        ? "Confirmation annulée - réservation remise en attente"
-        : "Confirmation groupe annulée - slot remis en pré-réservation"
+      message:
+        booking.type === "SOLO"
+          ? "Confirmation annulée - réservation remise en attente"
+          : "Confirmation groupe annulée - slot remis en pré-réservation",
     };
-
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;

@@ -584,6 +584,7 @@ function CalendarPage() {
               setDetailsSlot(null);
             }}
             user={user}
+            onSlotUpdated={loadSlots}
           />
         )}
       </div>

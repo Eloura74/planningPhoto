@@ -11,6 +11,7 @@ const {
   getDashboardData,
 } = require("./service");
 const { fixSeptemberSlots } = require("./fix-september");
+const { forceSlotType } = require("./force-slot-type");
 
 router.post("/validate-group", authenticate, requireAdmin, async (req, res) => {
   try {
@@ -96,5 +97,26 @@ router.post("/fix-september", authenticate, requireAdmin, async (req, res) => {
     });
   }
 });
+
+// Route pour forcer le type d'un slot (SOLO ou GROUP)
+router.post(
+  "/force-slot-type",
+  authenticate,
+  requireAdmin,
+  async (req, res) => {
+    try {
+      const { slotId, type } = req.body;
+
+      if (!slotId || !type) {
+        return res.status(400).json({ error: "slotId et type sont requis" });
+      }
+
+      const result = await forceSlotType(slotId, type, req.user.id);
+      res.json(result);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
+);
 
 module.exports = router;

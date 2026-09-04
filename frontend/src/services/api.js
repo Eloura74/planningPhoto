@@ -82,6 +82,8 @@ export const adminAPI = {
   getDashboard: () => api.get("/admin/dashboard"),
   resetAll: () => api.post("/admin/reset/reset-all"),
   fixSeptember: () => api.post("/admin/fix-september"),
+  forceSlotType: (slotId, type) =>
+    api.post("/admin/force-slot-type", { slotId, type }),
 };
 
 export const usersAPI = {
