@@ -1,5 +1,5 @@
 const pool = require("../../database");
-const { createHistory } = require("../history/service");
+const { createHistory } = require("../common/historyService");
 
 /**
  * Annule une confirmation de réservation (remet en attente)

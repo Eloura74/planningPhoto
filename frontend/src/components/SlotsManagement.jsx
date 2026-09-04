@@ -120,7 +120,13 @@ function SlotsManagement({ onSlotUpdated }) {
       return;
     }
     try {
-      await adminAPI.forceSlotType(slotId, type);
+      // Utiliser update avec le nouveau type
+      const updateData = {
+        type: type,
+        startTime: type === "SOLO" ? "14:00" : "10:00",
+        endTime: "17:00",
+      };
+      await slotsAPI.update(slotId, updateData);
       showToast(`Créneau converti en ${type}`, "success");
       loadSlots();
       if (onSlotUpdated) onSlotUpdated();
