@@ -8,12 +8,18 @@ import SlotsManagement from "../components/SlotsManagement";
 
 function AdminDashboardNew() {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [refreshKey, setRefreshKey] = useState(0);
   const navigate = useNavigate();
   const { logout } = useAuth();
 
   const handleLogout = () => {
     logout();
     navigate("/login");
+  };
+
+  const handleSlotUpdate = () => {
+    // Forcer le rechargement des stats
+    setRefreshKey((prev) => prev + 1);
   };
 
   return (
@@ -118,13 +124,15 @@ function AdminDashboardNew() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
         {/* Onglet Gestion des Créneaux */}
-        {activeTab === "slots" && <SlotsManagement />}
+        {activeTab === "slots" && (
+          <SlotsManagement onSlotUpdated={handleSlotUpdate} />
+        )}
 
         {/* Onglet Dashboard */}
         {activeTab === "dashboard" && (
           <>
             {/* Statistics Cards */}
-            <AdminStats onTabChange={setActiveTab} />
+            <AdminStats key={refreshKey} onTabChange={setActiveTab} />
 
             {/* Admin Bookings Management */}
             <AdminBookingsManager />

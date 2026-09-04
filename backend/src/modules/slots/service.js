@@ -108,13 +108,46 @@ const createSlot = async (data, userId) => {
 };
 
 const updateSlot = async (id, data) => {
-  const { date, startTime, endTime, type, status, capacityMin, capacityMax } =
-    data;
+  const { date, startTime, endTime, type } = data;
 
-  const result = await pool.query(
-    "UPDATE slots SET date = $1, start_time = $2, end_time = $3, type = $4, status = $5, capacity_min = $6, capacity_max = $7 WHERE id = $8 RETURNING *",
-    [date, startTime, endTime, type, status, capacityMin, capacityMax, id],
-  );
+  // Construire la requête dynamiquement selon les champs fournis
+  const updates = [];
+  const values = [];
+  let paramCount = 1;
+
+  if (date !== undefined) {
+    updates.push(`date = $${paramCount++}`);
+    values.push(date);
+  }
+  if (startTime !== undefined) {
+    updates.push(`start_time = $${paramCount++}`);
+    values.push(startTime);
+  }
+  if (endTime !== undefined) {
+    updates.push(`end_time = $${paramCount++}`);
+    values.push(endTime);
+  }
+  if (type !== undefined) {
+    updates.push(`type = $${paramCount++}`);
+    values.push(type);
+    // Ajuster le statut selon le type
+    const newStatus = type === "SOLO" ? "OPEN_SOLO" : "BLOCKED_FOR_GROUP";
+    updates.push(`status = $${paramCount++}`);
+    values.push(newStatus);
+  }
+
+  if (updates.length === 0) {
+    throw new Error("Aucun champ à mettre à jour");
+  }
+
+  values.push(id);
+  const query = `UPDATE slots SET ${updates.join(", ")} WHERE id = $${paramCount} RETURNING *`;
+
+  const result = await pool.query(query, values);
+
+  if (result.rows.length === 0) {
+    throw new Error("Créneau non trouvé");
+  }
 
   await createHistory("SLOT", id, "UPDATE", data, null);
   return result.rows[0];

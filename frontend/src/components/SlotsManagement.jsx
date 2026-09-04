@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { slotsAPI, adminAPI } from "../services/api";
 import { useToast } from "../contexts/ToastContext";
 
-function SlotsManagement() {
+function SlotsManagement({ onSlotUpdated }) {
   const [slots, setSlots] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -61,6 +61,7 @@ function SlotsManagement() {
         type: "SOLO",
       });
       loadSlots();
+      if (onSlotUpdated) onSlotUpdated();
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors de la création",
@@ -82,6 +83,7 @@ function SlotsManagement() {
         type: "SOLO",
       });
       loadSlots();
+      if (onSlotUpdated) onSlotUpdated();
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors de la modification",
@@ -100,6 +102,7 @@ function SlotsManagement() {
       await slotsAPI.delete(slotId);
       showToast("Créneau supprimé avec succès", "success");
       loadSlots();
+      if (onSlotUpdated) onSlotUpdated();
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors de la suppression",
@@ -120,6 +123,7 @@ function SlotsManagement() {
       await adminAPI.forceSlotType(slotId, type);
       showToast(`Créneau converti en ${type}`, "success");
       loadSlots();
+      if (onSlotUpdated) onSlotUpdated();
     } catch (error) {
       showToast(
         error.response?.data?.error || "Erreur lors de la conversion",
@@ -130,8 +134,12 @@ function SlotsManagement() {
 
   const startEdit = (slot) => {
     setEditingSlot(slot);
+    // Convertir la date au format YYYY-MM-DD pour l'input date
+    const dateStr = slot.date
+      ? new Date(slot.date).toISOString().split("T")[0]
+      : "";
     setFormData({
-      date: slot.date,
+      date: dateStr,
       startTime: slot.start_time,
       endTime: slot.end_time,
       type: slot.type,
