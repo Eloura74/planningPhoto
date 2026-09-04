@@ -110,6 +110,15 @@ router.patch(
   },
 );
 
+router.put("/:id", authenticate, requireAdmin, async (req, res) => {
+  try {
+    const slot = await updateSlot(req.params.id, req.body);
+    res.json(slot);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
 router.delete("/:id", authenticate, requireAdmin, async (req, res) => {
   try {
     await deleteSlot(req.params.id);

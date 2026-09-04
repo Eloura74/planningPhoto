@@ -17,10 +17,18 @@ function SlotsManagement() {
 
   // Charger les créneaux du mois actuel + 3 mois
   const currentMonth = new Date();
-  const startDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)
+  const startDate = new Date(
+    currentMonth.getFullYear(),
+    currentMonth.getMonth(),
+    1,
+  )
     .toISOString()
     .split("T")[0];
-  const endDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 4, 0)
+  const endDate = new Date(
+    currentMonth.getFullYear(),
+    currentMonth.getMonth() + 4,
+    0,
+  )
     .toISOString()
     .split("T")[0];
 
@@ -54,7 +62,10 @@ function SlotsManagement() {
       });
       loadSlots();
     } catch (error) {
-      showToast(error.response?.data?.error || "Erreur lors de la création", "error");
+      showToast(
+        error.response?.data?.error || "Erreur lors de la création",
+        "error",
+      );
     }
   };
 
@@ -72,12 +83,17 @@ function SlotsManagement() {
       });
       loadSlots();
     } catch (error) {
-      showToast(error.response?.data?.error || "Erreur lors de la modification", "error");
+      showToast(
+        error.response?.data?.error || "Erreur lors de la modification",
+        "error",
+      );
     }
   };
 
   const handleDeleteSlot = async (slotId) => {
-    if (!window.confirm("Supprimer ce créneau ? Cette action est irréversible.")) {
+    if (
+      !window.confirm("Supprimer ce créneau ? Cette action est irréversible.")
+    ) {
       return;
     }
     try {
@@ -85,12 +101,19 @@ function SlotsManagement() {
       showToast("Créneau supprimé avec succès", "success");
       loadSlots();
     } catch (error) {
-      showToast(error.response?.data?.error || "Erreur lors de la suppression", "error");
+      showToast(
+        error.response?.data?.error || "Erreur lors de la suppression",
+        "error",
+      );
     }
   };
 
   const handleForceType = async (slotId, type) => {
-    if (!window.confirm(`Forcer ce créneau en ${type === 'SOLO' ? 'SOLO (14h-17h)' : 'GROUPE (10h-17h)'} ?`)) {
+    if (
+      !window.confirm(
+        `Forcer ce créneau en ${type === "SOLO" ? "SOLO (14h-17h)" : "GROUPE (10h-17h)"} ?`,
+      )
+    ) {
       return;
     }
     try {
@@ -98,7 +121,10 @@ function SlotsManagement() {
       showToast(`Créneau converti en ${type}`, "success");
       loadSlots();
     } catch (error) {
-      showToast(error.response?.data?.error || "Erreur lors de la conversion", "error");
+      showToast(
+        error.response?.data?.error || "Erreur lors de la conversion",
+        "error",
+      );
     }
   };
 
@@ -151,7 +177,10 @@ function SlotsManagement() {
     <div className="space-y-6">
       {/* Header avec bouton créer */}
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold" style={{ color: "var(--gold-primary)" }}>
+        <h2
+          className="text-2xl font-bold"
+          style={{ color: "var(--gold-primary)" }}
+        >
           Gestion des Créneaux
         </h2>
         <button
@@ -172,25 +201,39 @@ function SlotsManagement() {
       {/* Formulaire création/modification */}
       {(showCreateForm || editingSlot) && (
         <div className="card-dark p-6 rounded-xl">
-          <h3 className="text-xl font-bold mb-4" style={{ color: "var(--gold-primary)" }}>
+          <h3
+            className="text-xl font-bold mb-4"
+            style={{ color: "var(--gold-primary)" }}
+          >
             {editingSlot ? "Modifier le créneau" : "Créer un nouveau créneau"}
           </h3>
-          <form onSubmit={editingSlot ? handleUpdateSlot : handleCreateSlot} className="space-y-4">
+          <form
+            onSubmit={editingSlot ? handleUpdateSlot : handleCreateSlot}
+            className="space-y-4"
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>
+                <label
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   Date
                 </label>
                 <input
                   type="date"
                   value={formData.date}
-                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, date: e.target.value })
+                  }
                   required
                   className="w-full px-4 py-2 rounded-lg input-dark"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>
+                <label
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   Type
                 </label>
                 <select
@@ -211,25 +254,35 @@ function SlotsManagement() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>
+                <label
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   Heure début
                 </label>
                 <input
                   type="time"
                   value={formData.startTime}
-                  onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, startTime: e.target.value })
+                  }
                   required
                   className="w-full px-4 py-2 rounded-lg input-dark"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-2" style={{ color: "var(--text-secondary)" }}>
+                <label
+                  className="block text-sm font-medium mb-2"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   Heure fin
                 </label>
                 <input
                   type="time"
                   value={formData.endTime}
-                  onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, endTime: e.target.value })
+                  }
                   required
                   className="w-full px-4 py-2 rounded-lg input-dark"
                 />
@@ -240,7 +293,8 @@ function SlotsManagement() {
                 type="submit"
                 className="px-6 py-2 rounded-lg font-semibold transition-all hover:shadow-md"
                 style={{
-                  background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                  background:
+                    "linear-gradient(135deg, #10b981 0%, #059669 100%)",
                   color: "white",
                 }}
               >
@@ -252,7 +306,8 @@ function SlotsManagement() {
                   onClick={cancelEdit}
                   className="px-6 py-2 rounded-lg font-semibold transition-all hover:shadow-md"
                   style={{
-                    background: "linear-gradient(135deg, #6b7280 0%, #4b5563 100%)",
+                    background:
+                      "linear-gradient(135deg, #6b7280 0%, #4b5563 100%)",
                     color: "white",
                   }}
                 >
@@ -270,19 +325,34 @@ function SlotsManagement() {
           <table className="w-full">
             <thead style={{ backgroundColor: "var(--bg-tertiary)" }}>
               <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold" style={{ color: "var(--gold-primary)" }}>
+                <th
+                  className="px-4 py-3 text-left text-sm font-semibold"
+                  style={{ color: "var(--gold-primary)" }}
+                >
                   Date
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold" style={{ color: "var(--gold-primary)" }}>
+                <th
+                  className="px-4 py-3 text-left text-sm font-semibold"
+                  style={{ color: "var(--gold-primary)" }}
+                >
                   Horaires
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold" style={{ color: "var(--gold-primary)" }}>
+                <th
+                  className="px-4 py-3 text-left text-sm font-semibold"
+                  style={{ color: "var(--gold-primary)" }}
+                >
                   Type
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-semibold" style={{ color: "var(--gold-primary)" }}>
+                <th
+                  className="px-4 py-3 text-left text-sm font-semibold"
+                  style={{ color: "var(--gold-primary)" }}
+                >
                   Statut
                 </th>
-                <th className="px-4 py-3 text-right text-sm font-semibold" style={{ color: "var(--gold-primary)" }}>
+                <th
+                  className="px-4 py-3 text-right text-sm font-semibold"
+                  style={{ color: "var(--gold-primary)" }}
+                >
                   Actions
                 </th>
               </tr>
@@ -294,22 +364,31 @@ function SlotsManagement() {
                   className="border-t"
                   style={{ borderColor: "var(--bg-tertiary)" }}
                 >
-                  <td className="px-4 py-3" style={{ color: "var(--text-primary)" }}>
-                    {new Date(slot.date + "T00:00:00").toLocaleDateString("fr-FR", {
-                      weekday: "short",
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
+                  <td
+                    className="px-4 py-3"
+                    style={{ color: "var(--text-primary)" }}
+                  >
+                    {slot.date
+                      ? new Date(slot.date).toLocaleDateString("fr-FR", {
+                          weekday: "short",
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })
+                      : "Date invalide"}
                   </td>
-                  <td className="px-4 py-3" style={{ color: "var(--text-secondary)" }}>
+                  <td
+                    className="px-4 py-3"
+                    style={{ color: "var(--text-secondary)" }}
+                  >
                     {slot.start_time} - {slot.end_time}
                   </td>
                   <td className="px-4 py-3">
                     <span
                       className="px-2 py-1 rounded text-xs font-semibold"
                       style={{
-                        backgroundColor: slot.type === "SOLO" ? "#10b981" : "#f59e0b",
+                        backgroundColor:
+                          slot.type === "SOLO" ? "#10b981" : "#f59e0b",
                         color: "white",
                       }}
                     >
@@ -323,7 +402,8 @@ function SlotsManagement() {
                         onClick={() => startEdit(slot)}
                         className="px-3 py-1 rounded-lg text-xs font-semibold transition-all hover:shadow-md"
                         style={{
-                          background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                          background:
+                            "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
                           color: "white",
                         }}
                         title="Modifier"
@@ -335,7 +415,8 @@ function SlotsManagement() {
                           onClick={() => handleForceType(slot.id, "GROUP")}
                           className="px-3 py-1 rounded-lg text-xs font-semibold transition-all hover:shadow-md"
                           style={{
-                            background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+                            background:
+                              "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
                             color: "white",
                           }}
                           title="Convertir en GROUPE"
@@ -348,7 +429,8 @@ function SlotsManagement() {
                           onClick={() => handleForceType(slot.id, "SOLO")}
                           className="px-3 py-1 rounded-lg text-xs font-semibold transition-all hover:shadow-md"
                           style={{
-                            background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                            background:
+                              "linear-gradient(135deg, #10b981 0%, #059669 100%)",
                             color: "white",
                           }}
                           title="Convertir en SOLO"
@@ -360,7 +442,8 @@ function SlotsManagement() {
                         onClick={() => handleDeleteSlot(slot.id)}
                         className="px-3 py-1 rounded-lg text-xs font-semibold transition-all hover:shadow-md"
                         style={{
-                          background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                          background:
+                            "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
                           color: "white",
                         }}
                         title="Supprimer"
@@ -377,7 +460,10 @@ function SlotsManagement() {
       </div>
 
       {slots.length === 0 && (
-        <div className="text-center py-8" style={{ color: "var(--text-muted)" }}>
+        <div
+          className="text-center py-8"
+          style={{ color: "var(--text-muted)" }}
+        >
           Aucun créneau trouvé
         </div>
       )}
