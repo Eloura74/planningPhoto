@@ -88,13 +88,19 @@ const getAvailableSlots = async (startDate, endDate) => {
   console.log(`📅 Période: ${startDate} → ${endDate}`);
 
   const existingSlotsMap = new Map();
+  const existingSlotsByDate = new Map();
   existingSlots.rows.forEach((slot) => {
     // Normaliser la date au format YYYY-MM-DD
     const dateStr =
       slot.date instanceof Date
         ? slot.date.toISOString().split("T")[0]
         : slot.date;
-    // Utiliser uniquement la date comme clé (ignorer l'horaire)
+    // Stocker tous les slots par date (peut y en avoir plusieurs)
+    if (!existingSlotsByDate.has(dateStr)) {
+      existingSlotsByDate.set(dateStr, []);
+    }
+    existingSlotsByDate.get(dateStr).push(slot);
+    // Garder aussi l'ancien Map pour compatibilité
     const key = dateStr;
     existingSlotsMap.set(key, slot);
   });
@@ -165,15 +171,12 @@ const getAvailableSlots = async (startDate, endDate) => {
       timeSlots = [{ start: "14:00", end: "17:00" }];
     }
 
-    for (const timeSlot of timeSlots) {
-      // Utiliser uniquement la date comme clé (ignorer l'horaire)
-      const slotKey = dateStr;
+    // Vérifier si des slots existent déjà pour cette date
+    const existingSlotsForDate = existingSlotsByDate.get(dateStr);
 
-      // Vérifier si un slot existe déjà dans la base
-      const existingSlot = existingSlotsMap.get(slotKey);
-
-      if (existingSlot) {
-        // Utiliser le slot existant avec ses pré-réservations ET bookings confirmés
+    if (existingSlotsForDate && existingSlotsForDate.length > 0) {
+      // Utiliser TOUS les slots existants pour cette date
+      existingSlotsForDate.forEach((existingSlot) => {
         const prebookingCount =
           groupPrebookingsBySlot.get(existingSlot.id)?.length || 0;
         const confirmedCount =
@@ -184,7 +187,10 @@ const getAvailableSlots = async (startDate, endDate) => {
           ...existingSlot,
           group_prebooking_count: totalParticipants,
         });
-      } else {
+      });
+    } else {
+      // Pas de slot existant, générer des virtuels
+      for (const timeSlot of timeSlots) {
         // Créer un slot virtuel selon le jour de la semaine
         let status, type;
 
