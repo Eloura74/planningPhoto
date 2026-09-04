@@ -131,6 +131,21 @@ const getAvailableSlots = async (startDate, endDate) => {
   );
 
   const slots = [];
+
+  // IMPORTANT: Ajouter d'abord TOUS les slots existants en base
+  existingSlots.rows.forEach((existingSlot) => {
+    const prebookingCount =
+      groupPrebookingsBySlot.get(existingSlot.id)?.length || 0;
+    const confirmedCount =
+      confirmedBookingsBySlot.get(existingSlot.id)?.length || 0;
+    const totalParticipants = prebookingCount + confirmedCount;
+
+    slots.push({
+      ...existingSlot,
+      group_prebooking_count: totalParticipants,
+    });
+  });
+
   const startLoop = new Date(startDate + "T00:00:00Z");
   const endLoop = new Date(endDate + "T00:00:00Z");
 
@@ -174,21 +189,8 @@ const getAvailableSlots = async (startDate, endDate) => {
     // Vérifier si des slots existent déjà pour cette date
     const existingSlotsForDate = existingSlotsByDate.get(dateStr);
 
-    if (existingSlotsForDate && existingSlotsForDate.length > 0) {
-      // Utiliser TOUS les slots existants pour cette date
-      existingSlotsForDate.forEach((existingSlot) => {
-        const prebookingCount =
-          groupPrebookingsBySlot.get(existingSlot.id)?.length || 0;
-        const confirmedCount =
-          confirmedBookingsBySlot.get(existingSlot.id)?.length || 0;
-        const totalParticipants = prebookingCount + confirmedCount;
-
-        slots.push({
-          ...existingSlot,
-          group_prebooking_count: totalParticipants,
-        });
-      });
-    } else {
+    // Ne générer des virtuels QUE si aucun slot n'existe pour cette date
+    if (!existingSlotsForDate || existingSlotsForDate.length === 0) {
       // Pas de slot existant, générer des virtuels
       for (const timeSlot of timeSlots) {
         // Utiliser uniquement la date comme clé pour les slots virtuels
