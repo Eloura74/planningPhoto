@@ -191,6 +191,9 @@ const getAvailableSlots = async (startDate, endDate) => {
     } else {
       // Pas de slot existant, générer des virtuels
       for (const timeSlot of timeSlots) {
+        // Utiliser uniquement la date comme clé pour les slots virtuels
+        const slotKey = dateStr;
+
         // Créer un slot virtuel selon le jour de la semaine
         let status, type;
 
