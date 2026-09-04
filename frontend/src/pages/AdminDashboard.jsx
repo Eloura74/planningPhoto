@@ -489,7 +489,10 @@ function AdminDashboard() {
 
             {dashboardData && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-                <div className="p-6 rounded-xl text-white card-gold scale-in">
+                <div
+                  onClick={() => navigate("/admin/users")}
+                  className="p-6 rounded-xl text-white card-gold scale-in cursor-pointer hover:scale-105 transition-transform"
+                >
                   <div className="flex items-center gap-3 mb-2">
                     <svg
                       className="w-8 h-8"
@@ -519,7 +522,10 @@ function AdminDashboard() {
                     {dashboardData.totalUsers}
                   </p>
                 </div>
-                <div className="p-6 rounded-xl text-white card-dark scale-in">
+                <div
+                  onClick={() => setActiveTab("slots")}
+                  className="p-6 rounded-xl text-white card-dark scale-in cursor-pointer hover:scale-105 transition-transform"
+                >
                   <div className="flex items-center gap-3 mb-2">
                     <svg
                       className="w-8 h-8"
@@ -549,7 +555,17 @@ function AdminDashboard() {
                     {dashboardData.totalSlots}
                   </p>
                 </div>
-                <div className="p-6 rounded-xl text-white card-dark scale-in">
+                <div
+                  onClick={() =>
+                    window.scrollTo({
+                      top:
+                        document.getElementById("bookings-section")
+                          ?.offsetTop || 800,
+                      behavior: "smooth",
+                    })
+                  }
+                  className="p-6 rounded-xl text-white card-dark scale-in cursor-pointer hover:scale-105 transition-transform"
+                >
                   <div className="flex items-center gap-3 mb-2">
                     <svg
                       className="w-8 h-8"
@@ -579,7 +595,17 @@ function AdminDashboard() {
                     {dashboardData.pendingBookings}
                   </p>
                 </div>
-                <div className="p-6 rounded-xl text-white card-dark scale-in">
+                <div
+                  onClick={() =>
+                    window.scrollTo({
+                      top:
+                        document.getElementById("bookings-section")
+                          ?.offsetTop || 800,
+                      behavior: "smooth",
+                    })
+                  }
+                  className="p-6 rounded-xl text-white card-dark scale-in cursor-pointer hover:scale-105 transition-transform"
+                >
                   <div className="flex items-center gap-3 mb-2">
                     <svg
                       className="w-8 h-8"
@@ -661,13 +687,16 @@ function AdminDashboard() {
                     d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                   />
                 </svg>
-                🔧 Réparer Septembre 2026
+                Réparer Septembre 2026
               </button>
             </div>
 
             {pendingBookings.length > 0 && (
-              <div className="rounded-xl shadow-lg p-6 mb-8 card-dark">
-                <div className="flex items-center justify-between mb-6">
+              <div
+                id="bookings-section"
+                className="rounded-xl shadow-lg p-6 mb-8 card-dark"
+              >
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
                   <div className="flex items-center gap-3">
                     <div
                       className="p-2 rounded-lg glow-gold"
