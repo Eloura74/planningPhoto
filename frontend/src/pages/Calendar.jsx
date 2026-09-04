@@ -332,44 +332,11 @@ function CalendarPage() {
           borderColor: "var(--border-primary)",
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
-          <div className="flex justify-between items-center mb-3 sm:mb-0">
-            <div className="flex items-center gap-3">
-              <div
-                className="p-2 rounded-lg glow-gold"
-                style={{ background: "var(--chrome-gradient)" }}
-              >
-                <svg
-                  className="w-5 h-5 sm:w-6 sm:h-6"
-                  style={{ color: "var(--text-dark)" }}
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <h1
-                className="text-base sm:text-xl font-bold"
-                style={{
-                  background: "var(--chrome-gradient)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-              >
-                Calendrier
-              </h1>
-            </div>
-
-            {/* User Avatar - Always visible */}
+        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
+          <div className="flex items-center gap-3">
             <div
-              className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-full"
-              style={{ backgroundColor: "var(--bg-tertiary)" }}
+              className="p-2 rounded-lg glow-gold"
+              style={{ background: "var(--chrome-gradient)" }}
             >
               <div
                 className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-semibold text-xs sm:text-sm"
