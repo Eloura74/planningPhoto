@@ -275,11 +275,15 @@ function CalendarPage() {
       return "SOLO_PENDING";
     }
 
-    // GROUPE : Afficher rouge pour TOUS les membres groupe si des pré-inscriptions en attente
+    // GROUPE : Afficher rouge si des pré-inscriptions en attente
+    // Pour les membres groupe ET l'admin
     if (
-      user?.is_group_member &&
+      (user?.is_group_member || user?.role === "ADMIN") &&
       slot.group_prebookings_count > 0 &&
-      slot.status === "BLOCKED_FOR_GROUP"
+      (slot.status === "BLOCKED_FOR_GROUP" ||
+        slot.status === "OPEN_TUESDAY" ||
+        slot.status === "MIXED" ||
+        slot.type === "GROUP")
     ) {
       return "GROUP_PENDING";
     }
