@@ -291,14 +291,15 @@ const createGroupPrebooking = async (userId, slotId) => {
     slotData = slot.rows[0];
   }
 
-  // Vérifier que c'est bien un mardi ou jeudi
+  // Vérifier que c'est bien un mardi/jeudi OU un créneau GROUP créé manuellement
   const slotDate =
     slotData.date instanceof Date
       ? slotData.date
       : new Date(slotData.date + "T00:00:00");
   const dayOfWeek = slotDate.getDay();
 
-  if (dayOfWeek !== 2 && dayOfWeek !== 4) {
+  // Exception : si le créneau est de type GROUP, accepter n'importe quel jour
+  if (slotData.type !== "GROUP" && dayOfWeek !== 2 && dayOfWeek !== 4) {
     throw new Error(
       `Les pré-réservations groupe ne sont possibles que les mardis et jeudis`,
     );

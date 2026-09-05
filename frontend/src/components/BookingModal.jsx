@@ -26,7 +26,8 @@ function BookingModal({
     (status === "OPEN_TUESDAY" ||
       status === "MIXED" ||
       status === "BLOCKED_FOR_GROUP" ||
-      status === "GROUP_PREBOOKING") &&
+      status === "GROUP_PREBOOKING" ||
+      slot.type === "GROUP") &&
     user?.isGroupMember &&
     status !== "GROUP_CONFIRMED" &&
     status !== "SOLO_CONFIRMED" &&
