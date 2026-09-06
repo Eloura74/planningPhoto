@@ -239,19 +239,12 @@ function CalendarPage() {
   };
 
   const getSlotStatus = (slot) => {
-    // Garder les statuts système importants qui définissent la couleur
-    if (
-      slot.status === "SOLO_CONFIRMED" ||
-      slot.status === "GROUP_CONFIRMED" ||
-      slot.status === "BLOCKED_FOR_GROUP" ||
-      slot.status === "OPEN_TUESDAY" ||
-      slot.status === "GROUP_PREBOOKING" ||
-      slot.status === "MIXED"
-    ) {
+    // PRIORITÉ 1 : Vérifier les statuts confirmés (ne pas override)
+    if (slot.status === "SOLO_CONFIRMED" || slot.status === "GROUP_CONFIRMED") {
       return slot.status;
     }
 
-    // Vérifier les bookings solo de l'utilisateur
+    // PRIORITÉ 2 : Vérifier les bookings de l'utilisateur
     const booking = myBookings.find(
       (b) =>
         b.slot_id === slot.id &&
@@ -270,13 +263,12 @@ function CalendarPage() {
       return "BOOKED";
     }
 
-    // SOLO : Afficher rouge pour TOUS si des demandes en attente
+    // PRIORITÉ 3 : SOLO avec demandes en attente → Rouge
     if (slot.pending_requests_count > 0 && slot.status === "OPEN_SOLO") {
       return "SOLO_PENDING";
     }
 
-    // GROUPE : Afficher rouge si des pré-inscriptions en attente
-    // Pour les membres groupe ET l'admin
+    // PRIORITÉ 4 : GROUPE avec pré-réservations en attente → Rouge
     if (
       (user?.is_group_member || user?.role === "ADMIN") &&
       slot.group_prebooking_count > 0 &&
@@ -288,6 +280,7 @@ function CalendarPage() {
       return "GROUP_PENDING";
     }
 
+    // PRIORITÉ 5 : Retourner le statut par défaut
     return slot.status;
   };
 
