@@ -249,18 +249,19 @@ function CalendarPage() {
       return "SOLO_PENDING";
     }
 
-    // PRIORITÉ 3 : GROUPE avec 3+ participants → Violet (confirmé)
+    // PRIORITÉ 3 : GROUPE complet (5 participants) mais pas confirmé → Gris
     if (
-      slot.group_prebooking_count >= 3 &&
+      slot.group_prebooking_count >= 5 &&
+      slot.status !== "GROUP_CONFIRMED" &&
       (slot.status === "BLOCKED_FOR_GROUP" ||
         slot.status === "OPEN_TUESDAY" ||
         slot.status === "MIXED" ||
         slot.type === "GROUP")
     ) {
-      return "GROUP_CONFIRMED";
+      return "FULL";
     }
 
-    // PRIORITÉ 4 : GROUPE avec pré-réservations en attente (1-2) → Rouge
+    // PRIORITÉ 4 : GROUPE avec pré-réservations en attente (1-4) → Rouge
     // L'admin voit TOUJOURS rouge s'il y a des pré-réservations
     if (
       user?.role === "ADMIN" &&
