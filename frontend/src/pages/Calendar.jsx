@@ -244,7 +244,36 @@ function CalendarPage() {
       return slot.status;
     }
 
-    // PRIORITÉ 2 : Vérifier les bookings de l'utilisateur
+    // PRIORITÉ 2 : SOLO avec demandes en attente → Rouge
+    if (slot.pending_requests_count > 0 && slot.status === "OPEN_SOLO") {
+      return "SOLO_PENDING";
+    }
+
+    // PRIORITÉ 3 : GROUPE avec 3+ participants → Violet (confirmé)
+    if (
+      slot.group_prebooking_count >= 3 &&
+      (slot.status === "BLOCKED_FOR_GROUP" ||
+        slot.status === "OPEN_TUESDAY" ||
+        slot.status === "MIXED" ||
+        slot.type === "GROUP")
+    ) {
+      return "GROUP_CONFIRMED";
+    }
+
+    // PRIORITÉ 4 : GROUPE avec pré-réservations en attente (1-2) → Rouge
+    // L'admin voit TOUJOURS rouge s'il y a des pré-réservations
+    if (
+      user?.role === "ADMIN" &&
+      slot.group_prebooking_count > 0 &&
+      (slot.status === "BLOCKED_FOR_GROUP" ||
+        slot.status === "OPEN_TUESDAY" ||
+        slot.status === "MIXED" ||
+        slot.type === "GROUP")
+    ) {
+      return "GROUP_PENDING";
+    }
+
+    // PRIORITÉ 5 : Vérifier les bookings de l'utilisateur (sauf admin pour groupe)
     const booking = myBookings.find(
       (b) =>
         b.slot_id === slot.id &&
@@ -255,22 +284,17 @@ function CalendarPage() {
       return booking.status === "CONFIRMED" ? "BOOKED" : "PENDING";
     }
 
-    // Vérifier les pré-réservations groupe de l'utilisateur
+    // Vérifier les pré-réservations groupe de l'utilisateur (membres non-admin)
     const groupPrebooking = myBookings.find(
       (b) => b.slot_id === slot.id && b.status === "GROUP_PREBOOKING",
     );
-    if (groupPrebooking) {
+    if (groupPrebooking && user?.is_group_member) {
       return "BOOKED";
     }
 
-    // PRIORITÉ 3 : SOLO avec demandes en attente → Rouge
-    if (slot.pending_requests_count > 0 && slot.status === "OPEN_SOLO") {
-      return "SOLO_PENDING";
-    }
-
-    // PRIORITÉ 4 : GROUPE avec pré-réservations en attente → Rouge
+    // PRIORITÉ 6 : GROUPE avec pré-réservations pour les membres (non-admin)
     if (
-      (user?.is_group_member || user?.role === "ADMIN") &&
+      user?.is_group_member &&
       slot.group_prebooking_count > 0 &&
       (slot.status === "BLOCKED_FOR_GROUP" ||
         slot.status === "OPEN_TUESDAY" ||
@@ -280,7 +304,7 @@ function CalendarPage() {
       return "GROUP_PENDING";
     }
 
-    // PRIORITÉ 5 : Retourner le statut par défaut
+    // PRIORITÉ 7 : Retourner le statut par défaut
     return slot.status;
   };
 
