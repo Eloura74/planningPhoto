@@ -254,6 +254,8 @@ function CalendarPage() {
       slot.group_prebooking_count >= 5 &&
       slot.status !== "GROUP_CONFIRMED" &&
       (slot.status === "BLOCKED_FOR_GROUP" ||
+        slot.status === "GROUP_PREBOOKING" ||
+        slot.status === "GROUP_PENDING" ||
         slot.status === "OPEN_TUESDAY" ||
         slot.status === "MIXED" ||
         slot.type === "GROUP")
@@ -267,6 +269,8 @@ function CalendarPage() {
       user?.role === "ADMIN" &&
       slot.group_prebooking_count > 0 &&
       (slot.status === "BLOCKED_FOR_GROUP" ||
+        slot.status === "GROUP_PREBOOKING" ||
+        slot.status === "GROUP_PENDING" ||
         slot.status === "OPEN_TUESDAY" ||
         slot.status === "MIXED" ||
         slot.type === "GROUP")
