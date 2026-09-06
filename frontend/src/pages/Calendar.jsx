@@ -279,7 +279,7 @@ function CalendarPage() {
     // Pour les membres groupe ET l'admin
     if (
       (user?.is_group_member || user?.role === "ADMIN") &&
-      slot.group_prebookings_count > 0 &&
+      slot.group_prebooking_count > 0 &&
       (slot.status === "BLOCKED_FOR_GROUP" ||
         slot.status === "OPEN_TUESDAY" ||
         slot.status === "MIXED" ||
