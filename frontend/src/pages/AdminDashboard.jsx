@@ -125,12 +125,7 @@ function AdminDashboard() {
         }),
       );
       setGroupSlotsWithPrebookings(
-        slotsWithCounts.filter(
-          (s) =>
-            s.prebookingCount > 0 &&
-            s.status !== "GROUP_CONFIRMED" &&
-            s.status !== "SOLO_CONFIRMED",
-        ),
+        slotsWithCounts.filter((s) => s.prebookingCount > 0),
       );
     } catch (error) {
       console.error("Error loading group slots with prebookings:", error);
@@ -1018,12 +1013,18 @@ function AdminDashboard() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleConfirmGroupSlot(slot.id)}
-                          className="px-4 py-2 rounded-xl font-semibold text-sm btn-gold"
-                        >
-                          Confirmer
-                        </button>
+                        {slot.status === "GROUP_CONFIRMED" ? (
+                          <div className="px-4 py-2 rounded-xl font-semibold text-sm bg-purple-100 text-purple-700 border border-purple-300">
+                            ✅ Confirmé
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => handleConfirmGroupSlot(slot.id)}
+                            className="px-4 py-2 rounded-xl font-semibold text-sm btn-gold"
+                          >
+                            Confirmer
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
