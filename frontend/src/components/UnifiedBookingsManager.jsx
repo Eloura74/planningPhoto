@@ -63,11 +63,17 @@ function UnifiedBookingsManager() {
 
   const handleBlockSlot = async (slotId) => {
     try {
-      await slotsAPI.blockSlot(slotId);
-      showToast("Créneau bloqué et participants validés", "success");
+      console.log("🔵 Confirming group slot:", slotId);
+      await slotsAPI.confirmGroup([slotId]);
+      console.log("✅ Group confirmed successfully");
+      showToast("Créneau groupe confirmé avec succès", "success");
       setTimeout(() => window.location.reload(), 1000);
     } catch (error) {
-      showToast(error.response?.data?.error || "Erreur", "error");
+      console.error("❌ Confirmation error:", error);
+      showToast(
+        error.response?.data?.error || "Erreur lors de la confirmation",
+        "error",
+      );
     }
   };
 
