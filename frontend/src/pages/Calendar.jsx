@@ -264,10 +264,11 @@ function CalendarPage() {
     }
 
     // PRIORITÉ 4 : GROUPE avec pré-réservations en attente (1-4) → Rouge
-    // L'admin voit TOUJOURS rouge s'il y a des pré-réservations
+    // Pour ADMIN et MEMBRES GROUPE
     if (
-      user?.role === "ADMIN" &&
+      (user?.role === "ADMIN" || user?.is_group_member) &&
       slot.group_prebooking_count > 0 &&
+      slot.group_prebooking_count < 5 &&
       (slot.status === "BLOCKED_FOR_GROUP" ||
         slot.status === "GROUP_PREBOOKING" ||
         slot.status === "GROUP_PENDING" ||
@@ -278,7 +279,7 @@ function CalendarPage() {
       return "GROUP_PENDING";
     }
 
-    // PRIORITÉ 5 : Vérifier les bookings de l'utilisateur (sauf admin pour groupe)
+    // PRIORITÉ 5 : Vérifier les bookings SOLO de l'utilisateur
     const booking = myBookings.find(
       (b) =>
         b.slot_id === slot.id &&
@@ -287,26 +288,6 @@ function CalendarPage() {
     );
     if (booking) {
       return booking.status === "CONFIRMED" ? "BOOKED" : "PENDING";
-    }
-
-    // Vérifier les pré-réservations groupe de l'utilisateur (membres non-admin)
-    const groupPrebooking = myBookings.find(
-      (b) => b.slot_id === slot.id && b.status === "GROUP_PREBOOKING",
-    );
-    if (groupPrebooking && user?.is_group_member) {
-      return "BOOKED";
-    }
-
-    // PRIORITÉ 6 : GROUPE avec pré-réservations pour les membres (non-admin)
-    if (
-      user?.is_group_member &&
-      slot.group_prebooking_count > 0 &&
-      (slot.status === "BLOCKED_FOR_GROUP" ||
-        slot.status === "OPEN_TUESDAY" ||
-        slot.status === "MIXED" ||
-        slot.type === "GROUP")
-    ) {
-      return "GROUP_PENDING";
     }
 
     // PRIORITÉ 7 : Retourner le statut par défaut
