@@ -127,8 +127,9 @@ function AdminDashboard() {
       setGroupSlotsWithPrebookings(
         slotsWithCounts.filter(
           (s) =>
-            s.status === "GROUP_PREBOOKING_OPEN" ||
-            s.status === "GROUP_PREBOOKING",
+            s.prebookingCount > 0 &&
+            s.status !== "GROUP_CONFIRMED" &&
+            s.status !== "SOLO_CONFIRMED",
         ),
       );
     } catch (error) {
