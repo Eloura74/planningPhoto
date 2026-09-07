@@ -210,12 +210,12 @@ const confirmGroupSlots = async (confirmedSlotIds, userId) => {
           UPDATE slots
           SET status = 'OPEN_SOLO'
           WHERE id NOT IN (${confirmedSlotIds
-            .map((_, i) => `$${i + 2}`)
+            .map((_, i) => `$${i + 3}`)
             .join(",")})
           AND type = 'GROUP'
           AND status IN ('BLOCKED_FOR_GROUP', 'GROUP_PREBOOKING', 'GROUP_PREBOOKING_OPEN')
           AND date >= $1
-          AND date <= $${confirmedSlotIds.length + 2}
+          AND date <= $2
           AND EXTRACT(DOW FROM date) IN (2, 4)
         `,
         [
