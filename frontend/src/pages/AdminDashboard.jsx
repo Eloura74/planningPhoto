@@ -193,13 +193,16 @@ function AdminDashboard() {
   };
 
   const handleConfirmGroupSlot = async (slotId) => {
+    console.log("🔵 Confirming slot:", slotId);
     try {
-      await slotsAPI.confirmGroup([slotId]);
+      const result = await slotsAPI.confirmGroup([slotId]);
+      console.log("✅ Confirmation result:", result);
       showToast("Créneau groupe confirmé avec succès", "success");
       loadGroupSlotsWithPrebookings();
       loadSlots();
       loadDashboardData();
     } catch (error) {
+      console.error("❌ Confirmation error:", error);
       showToast(
         error.response?.data?.error || "Erreur lors de la confirmation",
         "error",
