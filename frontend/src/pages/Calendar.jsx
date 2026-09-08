@@ -226,7 +226,15 @@ function CalendarPage() {
 
   const handleCancelBooking = async (bookingId) => {
     try {
-      await bookingsAPI.cancel(bookingId);
+      // Vérifier si c'est une pré-réservation groupe
+      const booking = myBookings.find((b) => b.id === bookingId);
+      if (booking?.status === "GROUP_PREBOOKING") {
+        // Pour les pré-réservations groupe, utiliser slot_id
+        await bookingsAPI.cancelGroupPrebooking(booking.slot_id);
+      } else {
+        // Pour les bookings solo
+        await bookingsAPI.cancel(bookingId);
+      }
       // Recharger pour avoir l'état réel
       await Promise.all([loadSlots(), loadMyBookings()]);
       showToast("Réservation annulée avec succès", "success");
