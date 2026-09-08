@@ -253,12 +253,7 @@ function CalendarPage() {
     if (
       slot.group_prebooking_count >= 5 &&
       slot.status !== "GROUP_CONFIRMED" &&
-      (slot.status === "BLOCKED_FOR_GROUP" ||
-        slot.status === "GROUP_PREBOOKING" ||
-        slot.status === "GROUP_PENDING" ||
-        slot.status === "OPEN_TUESDAY" ||
-        slot.status === "MIXED" ||
-        slot.type === "GROUP")
+      slot.type === "GROUP"
     ) {
       return "FULL";
     }
@@ -269,12 +264,7 @@ function CalendarPage() {
       (user?.role === "ADMIN" || user?.is_group_member) &&
       slot.group_prebooking_count > 0 &&
       slot.group_prebooking_count < 5 &&
-      (slot.status === "BLOCKED_FOR_GROUP" ||
-        slot.status === "GROUP_PREBOOKING" ||
-        slot.status === "GROUP_PENDING" ||
-        slot.status === "OPEN_TUESDAY" ||
-        slot.status === "MIXED" ||
-        slot.type === "GROUP")
+      slot.type === "GROUP"
     ) {
       return "GROUP_PENDING";
     }
@@ -294,11 +284,8 @@ function CalendarPage() {
     if (
       slot.type === "GROUP" &&
       slot.group_prebooking_count === 0 &&
-      (slot.status === "BLOCKED_FOR_GROUP" ||
-        slot.status === "GROUP_PREBOOKING" ||
-        slot.status === "OPEN_TUESDAY" ||
-        slot.status === "MIXED" ||
-        slot.status === "OPEN_SOLO")
+      slot.status !== "GROUP_CONFIRMED" &&
+      slot.status !== "SOLO_CONFIRMED"
     ) {
       return "BLOCKED_FOR_GROUP"; // Orange (disponible groupe)
     }
