@@ -37,6 +37,7 @@ function MyAccount() {
           if (myPrebooking) {
             groupPrebookings.push({
               id: myPrebooking.id,
+              slot_id: slot.id,
               slot_date: slot.date,
               slot_start_time: slot.start_time,
               slot_end_time: slot.end_time,
