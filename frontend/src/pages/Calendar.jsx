@@ -290,6 +290,19 @@ function CalendarPage() {
       return booking.status === "CONFIRMED" ? "BOOKED" : "PENDING";
     }
 
+    // PRIORITÉ 6 : Créneaux GROUP disponibles (0 pré-réservations) → Orange
+    if (
+      slot.type === "GROUP" &&
+      slot.group_prebooking_count === 0 &&
+      (slot.status === "BLOCKED_FOR_GROUP" ||
+        slot.status === "GROUP_PREBOOKING" ||
+        slot.status === "OPEN_TUESDAY" ||
+        slot.status === "MIXED" ||
+        slot.status === "OPEN_SOLO")
+    ) {
+      return "BLOCKED_FOR_GROUP"; // Orange (disponible groupe)
+    }
+
     // PRIORITÉ 7 : Retourner le statut par défaut
     return slot.status;
   };

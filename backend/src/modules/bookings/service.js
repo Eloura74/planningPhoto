@@ -307,12 +307,14 @@ const createGroupPrebooking = async (userId, slotId) => {
 
   // Vérifier que le slot est disponible pour le groupe
   // Accepter BLOCKED_FOR_GROUP (créneaux réservés pour le groupe)
+  // Accepter aussi OPEN_SOLO si le type est GROUP
   // Les autres statuts bloquent les pré-inscriptions
   if (
     slotData.status !== "BLOCKED_FOR_GROUP" &&
     slotData.status !== "GROUP_PREBOOKING_OPEN" &&
     slotData.status !== "OPEN_TUESDAY" &&
-    slotData.status !== "MIXED"
+    slotData.status !== "MIXED" &&
+    !(slotData.status === "OPEN_SOLO" && slotData.type === "GROUP")
   ) {
     throw new Error(
       "Ce créneau n'est plus disponible pour les pré-inscriptions groupe",
