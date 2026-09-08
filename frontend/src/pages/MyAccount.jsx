@@ -61,7 +61,7 @@ function MyAccount() {
     }
   };
 
-  const handleCancelBooking = async (bookingId, bookingType) => {
+  const handleCancelBooking = async (booking) => {
     if (
       !window.confirm("Êtes-vous sûr de vouloir annuler cette réservation ?")
     ) {
@@ -69,10 +69,12 @@ function MyAccount() {
     }
 
     try {
-      if (bookingType === "GROUP_PREBOOKING") {
-        await bookingsAPI.cancelGroupPrebooking(bookingId);
+      if (booking.booking_type === "GROUP_PREBOOKING") {
+        // Pour les pré-réservations groupe, utiliser slot_id
+        await bookingsAPI.cancelGroupPrebooking(booking.slot_id);
       } else {
-        await bookingsAPI.cancel(bookingId);
+        // Pour les bookings solo, utiliser booking id
+        await bookingsAPI.cancel(booking.id);
       }
       // Recharger les réservations
       loadMyBookings();
@@ -326,12 +328,7 @@ function MyAccount() {
                       booking.status === "PENDING") && (
                       <div className="ml-4">
                         <button
-                          onClick={() =>
-                            handleCancelBooking(
-                              booking.id,
-                              booking.booking_type,
-                            )
-                          }
+                          onClick={() => handleCancelBooking(booking)}
                           className="px-4 py-2 rounded-lg font-semibold transition-all hover:shadow-md"
                           style={{
                             backgroundColor: "#dc2626",
