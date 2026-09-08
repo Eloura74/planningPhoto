@@ -10,6 +10,7 @@ import GroupSlotManager from "../components/GroupSlotManager";
 import BookingsTable from "../components/BookingsTable";
 import EventsManager from "../components/EventsManager";
 import SlotsManagement from "../components/SlotsManagement";
+import AdminBookingsManager from "../components/AdminBookingsManager";
 
 function AdminDashboard() {
   // Dashboard avec cartes cliquables - v2.0
@@ -690,6 +691,9 @@ function AdminDashboard() {
                 Réparer Septembre 2026
               </button>
             </div>
+
+            {/* Gestion des réservations groupe avec bouton Bloquer & Valider */}
+            <AdminBookingsManager />
 
             {pendingBookings.length > 0 && (
               <div
