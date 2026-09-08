@@ -751,21 +751,11 @@ const deleteGroupPrebooking = async (userId, slotId) => {
 
   const slotData = slot.rows[0];
 
-  // Règle : Modification interdite 1 semaine avant
-  const slotDate = new Date(slotData.date);
-  const today = new Date();
-  const daysDifference = Math.ceil((slotDate - today) / (1000 * 60 * 60 * 24));
-  if (daysDifference < 7) {
+  // Règle : Interdire la désinscription si le groupe est confirmé
+  if (slotData.status === "GROUP_CONFIRMED") {
     throw new Error(
-      "La modification des pré-choix est interdite moins d'une semaine avant la séance",
+      "Impossible de se désinscrire : le groupe a été confirmé par l'administrateur",
     );
-  }
-
-  // Vérifier que la fenêtre de pré-réservation est ouverte
-  const { isGroupPrebookingOpen } = require("../availabilityPeriods/service");
-  const isOpen = await isGroupPrebookingOpen();
-  if (!isOpen) {
-    throw new Error("La fenêtre de pré-réservation groupe est fermée");
   }
 
   const result = await pool.query(
