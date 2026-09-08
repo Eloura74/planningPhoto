@@ -259,12 +259,15 @@ function CalendarPage() {
     }
 
     // PRIORITÉ 4 : GROUPE avec pré-réservations en attente (1-4) → Rouge
-    // Pour ADMIN et MEMBRES GROUPE
+    // Pour TOUS les utilisateurs qui ont pré-réservé
+    const hasGroupPrebooking = myBookings.find(
+      (b) => b.slot_id === slot.id && b.status === "GROUP_PREBOOKING",
+    );
     if (
-      (user?.role === "ADMIN" || user?.is_group_member) &&
       slot.group_prebooking_count > 0 &&
       slot.group_prebooking_count < 5 &&
-      slot.type === "GROUP"
+      slot.type === "GROUP" &&
+      (user?.role === "ADMIN" || user?.is_group_member || hasGroupPrebooking)
     ) {
       return "GROUP_PENDING";
     }
