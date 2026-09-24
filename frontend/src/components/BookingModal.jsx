@@ -16,9 +16,15 @@ function BookingModal({
       b.status !== "CANCELLED_BY_STUDENT" &&
       b.status !== "CANCELLED_BY_ADMIN",
   );
+  // L'utilisateur a une pré-réservation groupe sur ce créneau :
+  // il peut l'annuler tant que CE créneau n'est pas confirmé
+  const canCancelGroupPrebooking =
+    myBooking?.status === "GROUP_PREBOOKING" &&
+    slot.status !== "GROUP_CONFIRMED";
   const canBookSolo =
     status === "OPEN_SOLO" &&
     slot.type === "SOLO" &&
+    !myBooking &&
     status !== "SOLO_CONFIRMED" &&
     status !== "BOOKED" &&
     status !== "PENDING";
@@ -29,6 +35,7 @@ function BookingModal({
       status === "GROUP_PREBOOKING" ||
       slot.type === "GROUP") &&
     user?.isGroupMember &&
+    !myBooking &&
     status !== "GROUP_CONFIRMED" &&
     status !== "SOLO_CONFIRMED" &&
     status !== "BOOKED" &&
@@ -42,6 +49,10 @@ function BookingModal({
         bg: "rgba(255, 183, 71, 0.1)",
         color: "var(--gold-secondary)",
       },
+      GROUP_PENDING: {
+        bg: "rgba(255, 183, 71, 0.1)",
+        color: "var(--gold-secondary)",
+      },
       GROUP_CONFIRMED: { bg: "rgba(0, 0, 255, 0.1)", color: "#0000ff" },
       BOOKED: { bg: "rgba(168, 168, 168, 0.1)", color: "var(--chrome-light)" },
       PENDING: { bg: "rgba(255, 215, 0, 0.1)", color: "var(--gold-primary)" },
@@ -50,6 +61,7 @@ function BookingModal({
       OPEN_SOLO: "Disponible",
       BLOCKED_FOR_GROUP: "Réservé groupe",
       GROUP_PREBOOKING: "Pré-réservation",
+      GROUP_PENDING: "Pré-réservation",
       GROUP_CONFIRMED: "Confirmé",
       SOLO_CONFIRMED: "Réservé",
       BOOKED: "Réservé",
@@ -284,44 +296,65 @@ function BookingModal({
               </div>
             )}
 
-            {status === "PENDING" && myBooking && (
-              <div className="space-y-3">
+            {(status === "PENDING" || canCancelGroupPrebooking) &&
+              myBooking && (
+                <div className="space-y-3">
+                  <div
+                    className="text-center py-3 rounded-xl"
+                    style={{ backgroundColor: "rgba(255, 215, 0, 0.1)" }}
+                  >
+                    <div
+                      className="font-medium"
+                      style={{ color: "var(--gold-primary)" }}
+                    >
+                      ⏳ Votre pré-réservation groupe est en attente
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          "Êtes-vous sûr de vouloir annuler cette pré-réservation ?",
+                        )
+                      ) {
+                        onCancelBooking(myBooking.id);
+                        onClose();
+                      }
+                    }}
+                    className="w-full py-3 rounded-xl font-semibold transition-all hover:shadow-md"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
+                      color: "white",
+                    }}
+                  >
+                    ❌ Annuler ma pré-réservation
+                  </button>
+                </div>
+              )}
+
+            {myBooking?.status === "GROUP_PREBOOKING" &&
+              slot.status === "GROUP_CONFIRMED" && (
                 <div
                   className="text-center py-3 rounded-xl"
-                  style={{ backgroundColor: "rgba(255, 215, 0, 0.1)" }}
+                  style={{ backgroundColor: "rgba(139, 92, 246, 0.1)" }}
                 >
                   <div
                     className="font-medium"
-                    style={{ color: "var(--gold-primary)" }}
+                    style={{ color: "var(--text-primary)" }}
                   >
-                    ⏳ Votre pré-réservation groupe est en attente
+                    ✓ Ce créneau groupe a été confirmé par l'administrateur
                   </div>
                 </div>
-                <button
-                  onClick={() => {
-                    if (
-                      window.confirm(
-                        "Êtes-vous sûr de vouloir annuler cette pré-réservation ?",
-                      )
-                    ) {
-                      onCancelBooking(myBooking.id);
-                      onClose();
-                    }
-                  }}
-                  className="w-full py-3 rounded-xl font-semibold transition-all hover:shadow-md"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
-                    color: "white",
-                  }}
-                >
-                  ❌ Annuler ma pré-réservation
-                </button>
-              </div>
-            )}
+              )}
 
             {!canBookSolo &&
               !canBookGroup &&
+              !canCancelGroupPrebooking &&
+              !(
+                myBooking?.status === "GROUP_PREBOOKING" &&
+                slot.status === "GROUP_CONFIRMED"
+              ) &&
               status !== "BOOKED" &&
               status !== "PENDING" && (
                 <div

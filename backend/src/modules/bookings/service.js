@@ -768,7 +768,13 @@ const deleteGroupPrebooking = async (userId, slotId) => {
     [slotId],
   );
 
-  if (parseInt(remaining.rows[0].count) === 0) {
+  // Si plus aucune pré-réservation : repasser le créneau en attente groupe,
+  // SAUF s'il a été libéré en OPEN_SOLO (créneau rendu aux réservations solo
+  // après confirmation d'un autre créneau du mois)
+  if (
+    parseInt(remaining.rows[0].count) === 0 &&
+    slotData.status !== "OPEN_SOLO"
+  ) {
     await pool.query("UPDATE slots SET status = $1 WHERE id = $2", [
       "BLOCKED_FOR_GROUP",
       slotId,

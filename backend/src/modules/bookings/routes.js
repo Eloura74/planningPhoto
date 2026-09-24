@@ -139,7 +139,7 @@ router.get("/my-group-prebookings", authenticate, async (req, res) => {
         s.start_time,
         s.end_time,
         s.type,
-        s.status,
+        s.status as slot_status,
         'GROUP_PREBOOKING' as status
       FROM group_prebookings gp
       JOIN slots s ON gp.slot_id = s.id

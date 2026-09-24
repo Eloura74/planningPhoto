@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { bookingsAPI, slotsAPI } from "../services/api";
+import { bookingsAPI } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 
 function MyAccount() {
@@ -15,42 +15,36 @@ function MyAccount() {
 
   const loadMyBookings = async () => {
     try {
-      // Charger les bookings solo
-      const soloResponse = await bookingsAPI.getMyBookings();
+      // Charger les bookings solo et les pré-réservations groupe en parallèle
+      // (endpoint groupé : retourne TOUTES les pré-réservations de l'utilisateur,
+      // y compris sur des créneaux reconvertis en SOLO après confirmation)
+      const [soloResponse, groupResponse] = await Promise.all([
+        bookingsAPI.getMyBookings(),
+        bookingsAPI.getMyGroupPrebookings(),
+      ]);
 
-      // Charger les pré-réservations groupe
-      const now = new Date();
-      const startDate = now.toISOString().split("T")[0];
-      const endDate = new Date(now.getFullYear(), now.getMonth() + 3, 0)
-        .toISOString()
-        .split("T")[0];
-      const slotsResponse = await slotsAPI.getAll(startDate, endDate);
+      // Ne garder que les pré-réservations à venir (marge d'1 jour pour les
+      // décalages de fuseau horaire sur les dates sérialisées en ISO)
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split("T")[0];
 
-      // Pour chaque slot groupe, vérifier si l'utilisateur a pré-réservé
-      const groupPrebookings = [];
-      for (const slot of slotsResponse.data.filter((s) => s.type === "GROUP")) {
-        try {
-          const participants = await bookingsAPI.getGroupPrebookings(slot.id);
-          const myPrebooking = participants.data.find(
-            (p) => p.user_id === user.id,
-          );
-          if (myPrebooking) {
-            groupPrebookings.push({
-              id: myPrebooking.id,
-              slot_id: slot.id,
-              slot_date: slot.date,
-              slot_start_time: slot.start_time,
-              slot_end_time: slot.end_time,
-              slot_type: "GROUP",
-              status:
-                slot.status === "BLOCKED_FOR_GROUP" ? "CONFIRMED" : "PENDING",
-              booking_type: "GROUP_PREBOOKING",
-            });
-          }
-        } catch (e) {
-          // Slot sans participants
-        }
-      }
+      const groupPrebookings = groupResponse.data
+        .filter((p) => String(p.date).slice(0, 10) >= yesterdayStr)
+        .map((p) => ({
+          id: p.id,
+          slot_id: p.slot_id,
+          slot_date: p.date,
+          slot_start_time: p.start_time,
+          slot_end_time: p.end_time,
+          slot_type: "GROUP",
+          status:
+            p.slot_status === "GROUP_CONFIRMED" ||
+            p.slot_status === "BLOCKED_FOR_GROUP"
+              ? "CONFIRMED"
+              : "PENDING",
+          booking_type: "GROUP_PREBOOKING",
+        }));
 
       // Combiner les deux
       const allBookings = [...soloResponse.data, ...groupPrebookings];
