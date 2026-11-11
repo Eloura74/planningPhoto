@@ -28,6 +28,18 @@ const getAvailableSlots = async (startDate, endDate) => {
     [startDate, endDate],
   );
 
+  // Récupérer les demandes solo en attente (REQUESTED) pour afficher
+  // les créneaux réservés en rouge sur le calendrier
+  const pendingBookings = await pool.query(
+    `SELECT b.slot_id, COUNT(*) as count
+     FROM bookings b
+     JOIN slots s ON b.slot_id = s.id
+     WHERE s.date >= $1 AND s.date <= $2
+     AND b.status = 'REQUESTED'
+     GROUP BY b.slot_id`,
+    [startDate, endDate],
+  );
+
   // Récupérer les jours indisponibles
   const unavailabilities = await pool.query(
     "SELECT date FROM unavailabilities WHERE date >= $1 AND date <= $2",
@@ -122,6 +134,12 @@ const getAvailableSlots = async (startDate, endDate) => {
     confirmedBookingsBySlot.get(b.slot_id).push(b);
   });
 
+  // Compter les demandes en attente par créneau
+  const pendingRequestsBySlot = new Map();
+  pendingBookings.rows.forEach((row) => {
+    pendingRequestsBySlot.set(row.slot_id, parseInt(row.count));
+  });
+
   const unavailableDates = new Set(
     unavailabilities.rows.map((u) => {
       const date =
@@ -143,6 +161,7 @@ const getAvailableSlots = async (startDate, endDate) => {
     slots.push({
       ...existingSlot,
       group_prebooking_count: totalParticipants,
+      pending_requests_count: pendingRequestsBySlot.get(existingSlot.id) || 0,
     });
   });
 
@@ -261,6 +280,7 @@ const getAvailableSlots = async (startDate, endDate) => {
           capacity_min: type === "GROUP" ? 3 : 1,
           capacity_max: type === "GROUP" ? 5 : 1,
           group_prebooking_count: 0,
+          pending_requests_count: 0,
           is_virtual: true,
           released_for_solo: shouldReleaseForSolo && isTuesdayOrThursday,
         });
